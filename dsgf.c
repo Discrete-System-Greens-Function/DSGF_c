@@ -4,7 +4,7 @@
 // Developed by RETL group at the University of Utah, USA
 
 // VERSION: MARCH 31, 2022 
-// LAST UPDATE: MAY 25, 2022 
+// LAST UPDATE: MAY 25, 2022, edition and update using github 
 // 
 // In this current version:
 //	- A single separation distance between thermal objects is evaluated
@@ -55,8 +55,6 @@ FILE * pos_processing_summary; //
 // #################################################################
 // ################### START OF THE CODE ###########################
 // #################################################################
-
-// comment
 
 
 int main()
@@ -718,7 +716,7 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
 	    	double complex (*b1lapack) = malloc(sizeof *b1lapack *3*3); //double complex blapack[ldb*nrhs];
 	        double (*eye_iter)[3] = calloc(3, sizeof(*eyeG_0)); //double eyeG_0[3][3];        
 	        
-	       //double complex (*epsilon_s) = malloc(sizeof *epsilon_s *tot_sub_vol); //not used
+	       double complex (*epsilon_s) = malloc(sizeof *epsilon_s *tot_sub_vol); //not used
 	       	       
 	       for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++)
 	       {        
