@@ -163,12 +163,12 @@ view(35,20)
 
 if save_fig == 1
     % Center of subvolume discretization
-    fig_path_1 = [file_name_saved '_discretization.fig'];
+    fig_path_1 = ['figure_voxel/' file_name_saved '_discretization.fig'];
     saveas(FIG_discretization, fig_path_1)
     clear FIG_discretization % Remove previous plot handles
 
     % Voxel discretization
-    fig_path_2 = [file_name_saved '_voxel.fig'];
+    fig_path_2 = ['figure_voxel/' file_name_saved '_voxel.fig'];
     saveas(FIG_voxel, fig_path_2)
     clear FIG_voxel % Remove previous plot handles
 end
@@ -180,7 +180,7 @@ end
 
 % Save discretization matrix to an Excel file
 if save_Excel == 1
-    disc_path_1 = [file_name_saved '_discretization.xlsx'];
+    disc_path_1 = ['Excel_files/' file_name_saved '_discretization.xlsx'];
     writematrix(r, disc_path_1)
 end
 
