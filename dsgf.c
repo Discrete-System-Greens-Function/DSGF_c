@@ -776,20 +776,23 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
             		mm_2d = (3*mm + mm_sub);
             		for (int mm_sub_n = 0; mm_sub_n < 3; mm_sub_n++)
            		{
-            			if(mm_sub == mm_sub_n)
-            			{
-            				A_2d[mm_sub][mm_sub_n] = eyeA_2d[mm_2d][mm_2d] - pow(k,2)*delta_V_vector[mm]*epsilon_s[mm]*G_sys_old[mm_2d][mm_2d]; //alpha_0[mm] = delta_V_vector[i_alpha]*(epsilon - epsilon_ref);
+				mm_2dn = (3*mm + mm_sub_n);
+            			//if(mm_sub == mm_sub_n)
+            			//{
+					// First, solve ii = mm system of equations.
+            				A_2d[mm_sub][mm_sub_n] = eyeA_2d[mm_2d][mm_2d] - pow(k,2)*delta_V_vector[mm]*epsilon_s[mm]*G_sys_old[mm_2d][mm_2dn]; //modification...see if it works
+            				//A_2d[mm_sub][mm_sub_n] = eyeA_2d[mm_2d][mm_2d] - pow(k,2)*delta_V_vector[mm]*epsilon_s[mm]*G_sys_old[mm_2d][mm_2d]; //alpha_0[mm] = delta_V_vector[i_alpha]*(epsilon - epsilon_ref);
             				// A_2d[mm_2d][mm_2d] = eyeA_2d[mm_2d][mm_2d] - pow(k,2)*alpha_0[mm]*G_sys_old[mm_2d][mm_2d]; 
-            			}	 
-            			else
-            			{
-           				A_2d[mm_sub][mm_sub_n] = 0; 
-           			}	
+            			//}	 
+            			//else
+            			//{
+           			//	A_2d[mm_sub][mm_sub_n] = 0.; 
+           			//}	
             		//printf("%e + i %e ;\n",creal(A_2d[mm_sub][mm_sub_n]),cimag(A_2d[mm_sub][mm_sub_n])); //matches with matlab
             		}
       		} //mm_sub
             		
-            	for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //tot_sub_vol
+            	for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) // Only loop through remaining perturbations
             	{
             		
             	
