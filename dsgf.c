@@ -780,7 +780,7 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
             			//if(mm_sub == mm_sub_n)
             			//{
 					// First, solve ii = mm system of equations.
-            				A_2d[mm_sub][mm_sub_n] = eyeA_2d[mm_2d][mm_2d] - pow(k,2)*delta_V_vector[mm]*epsilon_s[mm]*G_sys_old[mm_2d][mm_2dn]; //modification...see if it works
+            				A_2d[mm_sub][mm_sub_n] = eyeA_2d[mm_2d][mm_2dn] - pow(k,2)*delta_V_vector[mm]*epsilon_s[mm]*G_sys_old[mm_2d][mm_2dn]; //modification...see if it works
             				//A_2d[mm_sub][mm_sub_n] = eyeA_2d[mm_2d][mm_2d] - pow(k,2)*delta_V_vector[mm]*epsilon_s[mm]*G_sys_old[mm_2d][mm_2d]; //alpha_0[mm] = delta_V_vector[i_alpha]*(epsilon - epsilon_ref);
             				// A_2d[mm_2d][mm_2d] = eyeA_2d[mm_2d][mm_2d] - pow(k,2)*alpha_0[mm]*G_sys_old[mm_2d][mm_2d]; 
             			//}	 
