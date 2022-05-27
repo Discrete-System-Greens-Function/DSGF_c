@@ -714,10 +714,11 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
 		double complex (*A_2d)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*A_2d)); // 2D array, similar to the matlab code
 		double complex (*A1lapack) = malloc(sizeof *A1lapack *3*3); //double complex Alapack[lda*n];
 	    	double complex (*b1lapack) = malloc(sizeof *b1lapack *3*3); //double complex blapack[ldb*nrhs];
-	        double (*eye_iter)[3] = calloc(3, sizeof(*eyeG_0)); //double eyeG_0[3][3];        
 	        
-	       double complex (*epsilon_s) = malloc(sizeof *epsilon_s *tot_sub_vol); //not used
-	       	       
+	        double complex (*epsilon_s) = malloc(sizeof *epsilon_s *tot_sub_vol); //not used
+	       	
+		//3-by-3 unit matrix   
+		double (*eye_iter)[3] = calloc(3, sizeof(*eyeG_0)); //double eyeG_0[3][3];      
 	       for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++)
 	       {        
 	       	for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++)
@@ -734,8 +735,17 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
              		}
              }                      
                                 
-                       
-            // Use free-space Green's function values: G_sys_2D_old = G_0_2D;
+             
+	    // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	    // Calculate background medium Green's function 
+	    // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%     
+		   
+	
+	    // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	    // Calculate system Green's function 
+	    // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	
+	    // Set initial values to free-space Green's function values: G_sys_2D_old = G_0_2D;
             for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
             {
             	for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //tot_sub_vol
@@ -760,7 +770,7 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
            {
            	printf("%d - ",mm+1);
            	mm_2d =0;
-           	epsilon_s[mm] = (epsilon - epsilon_ref);
+           	epsilon_s[mm] = (epsilon - epsilon_ref); // Scattering dielectric function
            	for (int mm_sub = 0; mm_sub < 3; mm_sub++)
            	{
             		mm_2d = (3*mm + mm_sub);
@@ -768,7 +778,7 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
            		{
             			if(mm_sub == mm_sub_n)
             			{
-            				A_2d[mm_sub][mm_sub_n] = eyeA_2d[mm_2d][mm_2d] - pow(k,2)*alpha_0[mm]*G_sys_old[mm_2d][mm_2d]; //alpha_0[mm] = delta_V_vector[i_alpha]*(epsilon - epsilon_ref);
+            				A_2d[mm_sub][mm_sub_n] = eyeA_2d[mm_2d][mm_2d] - pow(k,2)*delta_V_vector[mm]*epsilon_s[mm]*G_sys_old[mm_2d][mm_2d]; //alpha_0[mm] = delta_V_vector[i_alpha]*(epsilon - epsilon_ref);
             				// A_2d[mm_2d][mm_2d] = eyeA_2d[mm_2d][mm_2d] - pow(k,2)*alpha_0[mm]*G_sys_old[mm_2d][mm_2d]; 
             			}	 
             			else
