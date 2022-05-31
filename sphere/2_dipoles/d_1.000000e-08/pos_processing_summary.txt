@@ -1,9 +1,9 @@
 Material: SiO2
  Spectrum range(lambda) = 5.000000e-06--2.500000e-05 m 
  Volume of each subvolume = 5.235988e-22 
-Temperature 2.000000e+02K: Total conductance = 1.650156e-12
-Temperature 2.500000e+02K: Total conductance = 2.854459e-12
-Temperature 3.000000e+02K: Total conductance = 4.311703e-12
-Temperature 3.500000e+02K: Total conductance = 5.884252e-12
-Temperature 4.000000e+02K: Total conductance = 7.438329e-12
-Time counter: 0.008954 s
+Temperature 2.000000e+02K: Total conductance = 2.387410e-21
+Temperature 2.500000e+02K: Total conductance = 2.715322e-20
+Temperature 3.000000e+02K: Total conductance = 1.284242e-19
+Temperature 3.500000e+02K: Total conductance = 3.715572e-19
+Temperature 4.000000e+02K: Total conductance = 7.957646e-19
+Time counter: 0.002583 s
