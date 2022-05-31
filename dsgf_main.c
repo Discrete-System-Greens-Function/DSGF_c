@@ -139,7 +139,6 @@ double (*modulo_r_i_j)[tot_sub_vol] = malloc(sizeof *modulo_r_i_j * tot_sub_vol)
 double complex (*G_element)[tot_sub_vol] = malloc(sizeof *G_element * tot_sub_vol); //double complex G_element[tot_sub_vol][tot_sub_vol]; 
 double (*sum_trans_coeff) = malloc(sizeof *sum_trans_coeff *N_omega); //double sum_trans_coeff[N_omega]; //
 
-double(*Q_omega_subvol) = malloc(sizeof * Q_omega_subvol * tot_sub_vol);//double complex Q_omega_subvol[tot_sub_vol]; // power dissipated per subvolume
 double complex(*Q_omega_thermal_object)[N_omega] = malloc(sizeof * Q_omega_thermal_object * N_bulk_objects);  //double Q_omega_thermal_object[N_bulk_objects][N_omega];
 
 /* 
@@ -962,6 +961,8 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
 	    double complex (*G_sys_cross)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_sys_cross)); //double complex G_sys_cross[tot_sub_vol][tot_sub_vol][3][3];
 	    double complex (*transpose_G_sys)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*transpose_G_sys)); //double complex transpose_G_sys[tot_sub_vol][tot_sub_vol][3][3];
         double(*inner_sum) = malloc(sizeof * inner_sum * tot_sub_vol); //double inner_sum[jg_0];
+        double(*Q_omega_subvol) = malloc(sizeof * Q_omega_subvol * tot_sub_vol);//double complex Q_omega_subvol[tot_sub_vol]; // power dissipated per subvolume
+
 	    //printf("  ----- Spectral transmissivity, spectral conductance, and thermal power dissipated -----\n");
         int counter = 0;
         sum_trans_coeff[i_omega] = 0.;            
@@ -1034,6 +1035,7 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
 	    free(transpose_G_sys);
 
         free(inner_sum);
+        free(Q_omega_subvol);
             
             if(save_spectral_transmissivity =='Y'){
         
@@ -1101,7 +1103,7 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
   	    memset(modulo_r_i_j, 0, sizeof *modulo_r_i_j * tot_sub_vol); //modulo_r_i_j
   	    memset(G_element, 0, sizeof *G_element * tot_sub_vol); //G_element
   	    memset(sum_trans_coeff, 0, sizeof sum_trans_coeff);
-        memset(Q_omega_subvol, 0, sizeof* Q_omega_subvol* tot_sub_vol);
+        //memset(Q_omega_subvol, 0, sizeof* Q_omega_subvol* tot_sub_vol);
   	    memset(Q_omega_thermal_object,0, sizeof Q_omega_thermal_object * N_bulk_objects * N_omega); // //double Q_omega_thermal_object[N_bulk_objects][N_omega]
             
         } // END OMEGA VALUE LOOP FOR FREQUENCY RANGE ANALYSIS, loop started in line 481
@@ -1246,7 +1248,6 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
    
    free(G_12_omega_SGF);
 
-   free(Q_omega_subvol);
    free(Q_omega_thermal_object);
  
 
