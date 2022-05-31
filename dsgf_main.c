@@ -4,19 +4,20 @@
 // Developed by RETL group at the University of Utah, USA
 
 // VERSION: MARCH 31, 2022 
-// LAST UPDATE: MAY 25, 2022, edition and update using github 
+// LAST UPDATE: MAY 31, 2022, edition and update using github desktop
 // 
-// In this current version:
+// In this version:
 //	- A single separation distance between thermal objects is evaluated
 // 	- Large matrices are dynamically stored using MALLOC, 
 //	- Variables and functions are defined using headers, 
-//	- .txt files that removes the need of recompile the code for user modifications:
-//	- N_subvolumes_per_object.txt defines the number of subvolumes per thermal object
-//	- N_bulk_objects.txt defines the number of bulk objects
-//	- N_omega.txt defines the number of frequencies to evaluate
-//	- T_calc.txt defines the temperature where the conductance is calculated
-//	- user_inputs.txt contains all other user definitions 
-//
+//	- The following .txt files remove recompile the code need for user modifications:
+//	    - N_subvolumes_per_object.txt defines the number of subvolumes per thermal object
+//	    - N_bulk_objects.txt defines the number of bulk objects
+//	    - N_omega.txt defines the number of frequencies to evaluate
+//	    - T_calc.txt defines the temperature where the conductance is calculated
+//	    - user_inputs.txt contains all other user definitions
+//  - More info in read_me-user_inputs.txt 
+// 
 //Improvements required:
 //	- "Iterative" solution is not working yet
 //	- Thermal power dissipated (Q_omega_thermal_object) is not calculated correctly yet
@@ -25,9 +26,10 @@
 // 	- The maximum precision is used in this code using double data type
 // 	- The precision of this code is defined on the dielectric function, with 5 digits of precision.
 
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// General c libraries
 #include<stdio.h>
-#include<math.h>
+#include<math.h> 
 #include<time.h> // time counter
 #include<complex.h>  // complex numbers library, code must be compiled as c99 standard https://stackoverflow.com/questions/6418807/how-to-work-with-complex-numbers-in-c
 #include <stdlib.h> // export/import data
@@ -40,9 +42,9 @@
 #include <unistd.h>  
 #include <string.h> // library used to concatenate 2 strings https://stackoverflow.com/questions/46612504/creating-directories-and-files-using-a-loop-in-c
 
-//library with the inputs and functions for DSGF
-#include "user_inputs.h" //user inputs should be modified in this function 
-#include "functions_dsgf.h" //definitions of functions used in DSGF
+// Library with the inputs and functions for DSGF
+#include "user_inputs.h" // User inputs definitions header. No values are defined in this file.  
+#include "functions_dsgf.h" // Definitions of functions used in DSGF
 
 // LAPACKE libraries: https://www.netlib.org/lapack/lapacke.html ; https://extras.csc.fi/math/nag/mark21/pdf/F08/f08anf.pdf
 #include <lapacke.h> 
@@ -50,7 +52,7 @@
 
 //#include <omp.h> // library for OpenMP
 
-FILE * pos_processing_summary; // 
+FILE * pos_processing_summary; // call the main outputs' file,  
   
 // #################################################################
 // ################### START OF THE CODE ###########################
@@ -62,8 +64,11 @@ int main()
     long baseline = get_mem_usage(); // measure baseline memory usage
     clock_t begin = clock();  /* set timer here, do your time-consuming job */
     
-    mu_0 = (4.*pi)*pow(10,-7);
+    mu_0 = (4.*pi)*pow(10,-7); // Permeability of free space [H/m]
     
+    //get_user_inputs(material,geometry,d,radius,Lx,Ly,Lz,T1,T2,T_calc,solution,single_spectrum_analysis,save_A_matrix,save_G0_matrix,save_SGF_matrix,save_spectral_conductance,save_spectral_transmissivity);
+    // Instead of using a function, the .txt user_inputs.txt file is imported in the main code. 
+
     FILE *import_inputs; 
     char dirPathUserInputs[260];
     sprintf(dirPathUserInputs, "user_inputs.txt");
@@ -98,21 +103,18 @@ int main()
     }	
     fclose(import_T_calc);
         
-    //get_user_inputs(material,geometry,d,radius,Lx,Ly,Lz,T1,T2,T_calc,solution,single_spectrum_analysis,save_A_matrix,save_G0_matrix,save_SGF_matrix,save_spectral_conductance,save_spectral_transmissivity);
-    
     int const const_N_subvolumes_per_object = get_N_subvolumes_per_object();
     int const const_N_bulk_objects = get_N_bulk_objects();
     int const const_N_omega = get_N_omega();
-    size_t tot_sub_vol = const_N_subvolumes_per_object*const_N_bulk_objects; // Assign tot_sub_vol: Computes the total number of subvolumes
-    //#define tot_sub_vol const_N_subvolumes_per_object*const_N_bulk_objects // Computes the total number of subvolumes
-    
+    size_t tot_sub_vol = const_N_subvolumes_per_object*const_N_bulk_objects; // Assign tot_sub_vol: Computes the total number of subvolumes in the system. tot_sub_vol is defined this way because it must be a non-variable parameter due to the computations perfomed in the code. Previously, it was defined as #define tot_sub_vol const_N_subvolumes_per_object*const_N_bulk_objects
+
     subvol shape_file[const_N_subvolumes_per_object]; //typedef struct node 
     subvol shape_filetf[tot_sub_vol];
     
-    strcpy(discretization_thin_film_file, discretization_thin_film); //https://stackoverflow.com/questions/6008733/expression-must-be-a-modifiable-l-value
-      
-//   double Q_omega_thermal_object[N_bulk_objects][N_omega]; // Not implemented yet!
-//   free(Q_omega_thermal_object);
+    strcpy(discretization_thin_film_file, discretization_thin_film); // https://stackoverflow.com/questions/6008733/expression-must-be-a-modifiable-l-value
+    
+    double(*Q_omega_subvol) = malloc(sizeof * Q_omega_subvol * tot_sub_vol);//double complex Q_omega_subvol[tot_sub_vol]; // power dissipated per subvolume
+    double Q_omega_thermal_object[N_bulk_objects][N_omega]; // Not implemented yet!
 	
 // ####################################    
 // #### Dynamic memory allocation: ####    
@@ -140,8 +142,8 @@ double (*modulo_r_i_j)[tot_sub_vol] = malloc(sizeof *modulo_r_i_j * tot_sub_vol)
 double complex (*G_element)[tot_sub_vol] = malloc(sizeof *G_element * tot_sub_vol); //double complex G_element[tot_sub_vol][tot_sub_vol]; 
 double (*sum_trans_coeff) = malloc(sizeof *sum_trans_coeff *N_omega); //double sum_trans_coeff[N_omega]; //
 
-
-/*
+/* 
+// The SGF calculation considering the wavelength is not considered, so it is commented. 
 double (*G_12_lambda_SGF)[tot_sub_vol] = calloc(tot_sub_vol, sizeof(*G_12_lambda_SGF)); //double G_12_lambda_SGF[tot_sub_vol][tot_sub_vol];
 double (*trans_coeff_lambda)[tot_sub_vol] = calloc(tot_sub_vol, sizeof(*trans_coeff_lambda)); // double trans_coeff_lambda[tot_sub_vol][tot_sub_vol];
 free(G_12_lambda_SGF);
@@ -175,25 +177,25 @@ if(strcmp(geometry,"sphere")==0) //cannot compare strings in C with ==; source: 
 	    {
 	    	radius1 = radius; // perfect same-sized spheres
     		radius2 = radius; // perfect same-sized spheres
-    		vol1 = vol_sphere(radius1);
-    		vol2 = vol_sphere(radius2);
-    		delta_V_1 = vol1/N_subvolumes_per_object; //printf("delta V_1: %e\n",delta_V_1); 
-    		delta_V_2 = vol2/N_subvolumes_per_object; //printf("delta V_2: %e\n",delta_V_2);
+    		vol1 = vol_sphere(radius1); // calls function that calculates the volume for the sphere 1
+    		vol2 = vol_sphere(radius2); // calls function that calculates the volume for the sphere 2
+    		delta_V_1 = vol1/N_subvolumes_per_object; // defines the subvolumes' volume for sphere 1
+            delta_V_2 = vol2/N_subvolumes_per_object; // defines the subvolumes' volume for sphere 2
     	    }
 	    
 if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; source: https://ideone.com/BrFA00
 	    {
-	    	vol1 = Lx*Ly*Lz;
-    		vol2 = vol1;
-    		delta_V_1 = vol1/N_subvolumes_per_object; 
-    		delta_V_2 = vol2/N_subvolumes_per_object; 
+	    	vol1 = Lx*Ly*Lz; // calculates the volume for membrane 1
+    		vol2 = vol1;     // defines the volume of membrane 2 = membrane 1
+    		delta_V_1 = vol1/N_subvolumes_per_object; // defines the subvolumes' volume for membrane 1
+    		delta_V_2 = vol2/N_subvolumes_per_object;  // defines the subvolumes' volume for membrane 1
 	    } 	
 	    
-    		printf("delta V_1: %e\n",delta_V_1); 
-    		printf("delta V_2: %e\n",delta_V_2);
+    		printf("delta V_1: %e\n",delta_V_1); // prints the subvolumes' volume for thermal object 1
+    		printf("delta V_2: %e\n",delta_V_2); // prints the subvolumes' volume for thermal object 2
         
         // Import data from txt file into C program: https://stackoverflow.com/questions/22745457/import-data-from-txt-file-into-c-program ; https://stackoverflow.com/questions/49563003/importing-data-from-txt-file-into-c-program ; https://www.cs.utah.edu/~germain/PPS/Topics/C_Language/file_IO.html
-        FILE *import_discretization;  //https://stackoverflow.com/questions/22745457/import-data-from-txt-file-into-c-program
+        FILE *import_discretization;  // https://stackoverflow.com/questions/22745457/import-data-from-txt-file-into-c-program
         int i_import = 0;
 
         char dirPathFileNameDISCRETIZATION[260]; // https://stackoverflow.com/questions/46612504/creating-directories-and-files-using-a-loop-in-c 
@@ -713,9 +715,9 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
 		double (*eyeA_2d)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*eyeA_2d)); // 2D array, similar to the matlab code
 		double complex (*A_2d)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*A_2d)); // 2D array, similar to the matlab code
 		double complex (*A1lapack) = malloc(sizeof *A1lapack *3*3); //double complex Alapack[lda*n];
-	    	double complex (*b1lapack) = malloc(sizeof *b1lapack *3*3); //double complex blapack[ldb*nrhs];
+	    double complex (*b1lapack) = malloc(sizeof *b1lapack *3*3); //double complex blapack[ldb*nrhs];
 	        
-	        double complex (*epsilon_s) = malloc(sizeof *epsilon_s *tot_sub_vol); //not used
+	    double complex (*epsilon_s) = malloc(sizeof *epsilon_s *tot_sub_vol); //not used
 	       	
 		//3-by-3 unit matrix   
 		double (*eye_iter)[3] = calloc(3, sizeof(*eyeG_0)); //double eyeG_0[3][3];      
@@ -963,8 +965,8 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
         int counter = 0;
         sum_trans_coeff[i_omega] = 0.;            
             
-        theta_1=theta_function(omega_value,T1); //EDIT VALUES FOR OMEGA AND TEMPERATURE
-        theta_2=theta_function(omega_value,T2); //EDIT VALUES FOR OMEGA AND TEMPERATURE
+        theta_1=theta_function(omega_value,T1); //Calculates the mean energy of an electromagnetic state, given the current evaluated frequency and temperature T1
+        theta_2=theta_function(omega_value,T2); //Calculates the mean energy of an electromagnetic state, given the current evaluated frequency and temperature T2
             
             for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
             {
@@ -998,22 +1000,19 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
                     } 
                     //printf("Q_omega = %e \n", Q_omega_subvol[ig_0]); 
                 
-                /* // Thermal power dissipated commented
+                 // Thermal power dissipated commented
                 if(ig_0 < N_subvolumes_per_object && jg_0 >= N_subvolumes_per_object){
                 	Q_omega_subvol[ig_0] = Q_omega_subvol_function_test(theta_1,theta_2,sum_trans_coeff[i_omega]);
                 }
                 else{
                 	Q_omega_subvol[ig_0]=0;
                 }
-                */
+                
                 } 
+                              
+                Q_omega_subvol[ig_0] = Q_omega_subvol_function(theta[ig_0],sum_trans_coeff[i_omega]);
+                printf("Q_omega subvol= %e \n", Q_omega_subvol[ig_0]); 
                 
-               // double (*Q_omega_subvol) = malloc(sizeof *Q_omega_subvol *tot_sub_vol);//double complex Q_omega_subvol[tot_sub_vol]; // power dissipated per subvolume
-		//free(Q_omega_subvol);
-                
-                //Q_omega_subvol[ig_0] = Q_omega_subvol_function(theta[ig_0],sum_trans_coeff[i_omega]);
-                //printf("Q_omega subvol= %e \n", Q_omega_subvol[ig_0]); 
-                /*
                 if(ig_0 < N_subvolumes_per_object)// Thermal power dissipated was not verified yet!!!!
                 {
                     bulk=0;
@@ -1025,13 +1024,16 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
                     Q_omega_thermal_object[bulk][i_omega] += Q_omega_subvol[ig_0];
                 }
                 //printf("\n");   
-                */  
+                  
             }       
 	    free(G_sys);
 	
 	    free(trans_coeff);
-            free(G_sys_cross);
+        free(G_sys_cross);
 	    free(transpose_G_sys);
+
+        free(Q_omega_subvol);
+        free(Q_omega_thermal_object);
             
             if(save_spectral_transmissivity =='Y'){
         
