@@ -1014,8 +1014,8 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
                     Q_omega_subvol[ig_0] += (1 / (2 * pi)) * inner_sum[jg_0]; // calculates the thermal power dissipated per subvolume
 
                 } 
-                    //Q_subvol[ig_0][i_omega] = Q_omega_subvol[ig_0];
-                printf("Q_omega_subvol_%d= %e \n",ig_0+1, Q_omega_subvol[ig_0]); //matches matlab code
+                    Q_subvol[ig_0][i_omega] = Q_omega_subvol[ig_0];
+                printf("Q_subvol_%d_%d= %e \n",ig_0+1,i_omega+1, Q_subvol[ig_0][i_omega]); //matches matlab code
                 
                 if(ig_0 < N_subvolumes_per_object)// Thermal power dissipated was not verified yet!!!!
                 {
@@ -1027,7 +1027,7 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
                     bulk=1;
                     Q_omega_thermal_object[bulk][i_omega] += Q_omega_subvol[ig_0];
                 } 
-                printf("Q_omega_bulk_%d= %e \n",bulk+1, Q_omega_thermal_object[bulk][i_omega]); //matches matlab code
+                printf("Q_bulk_%d_%d= %e \n",bulk+1, i_omega+1, Q_omega_thermal_object[bulk][i_omega]); //matches matlab code
                  
             }       
 	    free(G_sys);
