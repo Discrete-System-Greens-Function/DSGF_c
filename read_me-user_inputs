@@ -7,20 +7,20 @@ The user simply need to modify the appropriate .txt files, and run the code with
 
 The user can modify: 
 	-N_bulk_objects: number of thermal objects
-	-N_subvolumes_per_object: number of subvolumes per thermal object
-	-N_omega: number of frequencies
+	-N_subvolumes_per_object: number of subvolumes per thermal object, restricted by the .txt discretization files
+	-N_omega: number of frequencies, currently the spectrum range is equally spaced  
 	-T_calc: conductance temperatures
-	-user_inputs: All other simulation modifications the user can do  
+	-user_inputs: All other simulation modifications the user can make  
 
 	-Options for user inputs in user_inputs.txt:
 		material = SiC or SiO2
 		geometry = thin-films or sphere
-		discretization_thin_film = 2_thin_films_Lx02um_Ly1um_Lz200nm_d150nm_N640_discretization
+		discretization_thin_film = 2_thin_films_Lx02um_Ly1um_Lz200nm_d150nm_N640_discretization   --- only for thin films. This discretization is generated using the "discretization/Thin_film_discretization_SCRIPT.m" matlab code.
 		d = 150.e-9
-		radius = 50.e-9
-		Lx = 200.e-9
-		Ly = 1e-6
-		Lz = 200e-9
+		radius = 50.e-9			--- only for spheres
+		Lx = 200.e-9			--- only for thin films
+		Ly = 1e-6			--- only for thin films
+		Lz = 200e-9			--- only for thin films
 		T1 = 301.
 		T2 = 300.
 		solution = direct OR iterative
