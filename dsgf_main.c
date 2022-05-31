@@ -956,20 +956,15 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
             // ###################  Thermal power dissipated ###################
             // #################################################################
             
-            double complex (*trans_coeff)[tot_sub_vol] = calloc(tot_sub_vol, sizeof(*trans_coeff)); //double complex trans_coeff[tot_sub_vol][tot_sub_vol];//[3][3]
+        double complex (*trans_coeff)[tot_sub_vol] = calloc(tot_sub_vol, sizeof(*trans_coeff)); //double complex trans_coeff[tot_sub_vol][tot_sub_vol];//[3][3]
 	    double complex (*G_sys_cross)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_sys_cross)); //double complex G_sys_cross[tot_sub_vol][tot_sub_vol][3][3];
 	    double complex (*transpose_G_sys)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*transpose_G_sys)); //double complex transpose_G_sys[tot_sub_vol][tot_sub_vol][3][3];
-	    
-	    
-	    //
-	    
-            //printf("HERE\n");
-            //printf("  ----- Spectral transmissivity, spectral conductance, and thermal power dissipated -----\n");
-            int counter = 0;
-            sum_trans_coeff[i_omega] = 0.;            
+	    //printf("  ----- Spectral transmissivity, spectral conductance, and thermal power dissipated -----\n");
+        int counter = 0;
+        sum_trans_coeff[i_omega] = 0.;            
             
-            theta_1=theta_function(omega_value,T1); //EDIT VALUES FOR OMEGA AND TEMPERATURE
-            theta_2=theta_function(omega_value,T2); //EDIT VALUES FOR OMEGA AND TEMPERATURE
+        theta_1=theta_function(omega_value,T1); //EDIT VALUES FOR OMEGA AND TEMPERATURE
+        theta_2=theta_function(omega_value,T2); //EDIT VALUES FOR OMEGA AND TEMPERATURE
             
             for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
             {
@@ -1031,11 +1026,7 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
                 }
                 //printf("\n");   
                 */  
-            }      
-            //sum_trans_coeff[i_omega] += trans_coeff[ig_0][jg_0]; [i_subG_0][j_subG_0]
-            //sum_trans_coeff[i_omega] = sum_trans_coeff[i_omega];//sum_trans_coeff[i_omega]/N_bulk_objects;
-            
-            
+            }       
 	    free(G_sys);
 	
 	    free(trans_coeff);

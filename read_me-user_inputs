@@ -1,19 +1,33 @@
-Options for user inputs:
-material = SiC or SiO2
-geometry = thin-films or sphere
-discretization_thin_film = 2_thin_films_Lx02um_Ly1um_Lz200nm_d150nm_N640_discretization
-d = 150.e-9
-radius = 50.e-9
-Lx = 200.e-9
-Ly = 1e-6
-Lz = 200e-9
-T1 = 301.
-T2 = 300.
-solution = direct OR iterative
-single_spectrum_analysis = N
-save_A_matrix = N
-save_G0_matrix = N
-save_SGF_matrix = N
-save_spectral_conductance = Y
-save_spectral_transmissivity = N
-multiple_conductance_temperatures = N
+Welcome to DSGF framework - c99 version!
+
+The main DSGF code is dsgf_main.c, and it can be compiled simply running run_dsgf.sh in your terminal. 
+You should have installed the intel icc compiler, and source it before compile it in your machine.
+However, the DSGF does not need to be compiled when the user modify the simulation parameters. 
+The user simply need to modify the appropriate .txt files, and run the code with the /.dsgf command in your terminal.
+
+The user can modify: 
+	-N_bulk_objects: number of thermal objects
+	-N_subvolumes_per_object: number of subvolumes per thermal object
+	-N_omega: number of frequencies
+	-T_calc: conductance temperatures
+	-user_inputs: All other simulation modifications the user can do  
+
+	-Options for user inputs in user_inputs.txt:
+		material = SiC or SiO2
+		geometry = thin-films or sphere
+		discretization_thin_film = 2_thin_films_Lx02um_Ly1um_Lz200nm_d150nm_N640_discretization
+		d = 150.e-9
+		radius = 50.e-9
+		Lx = 200.e-9
+		Ly = 1e-6
+		Lz = 200e-9
+		T1 = 301.
+		T2 = 300.
+		solution = direct OR iterative
+		single_spectrum_analysis = N
+		save_A_matrix = N
+		save_G0_matrix = N
+		save_SGF_matrix = N
+		save_spectral_conductance = Y
+		save_spectral_transmissivity = N
+		multiple_conductance_temperatures = N
