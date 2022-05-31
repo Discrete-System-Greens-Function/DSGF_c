@@ -191,6 +191,8 @@ int ig_0_2d,jg_0_2d,mm_2d,mm_2d_n, mm_sub, mm_sub_n; // Set indices used in "ite
 //double dtheta_dT; // function used to calculate conductance
 
 double trapz; // Definition for trapezoidal integration. Used in total conductance
+double trapz_Q; // Definition for trapezoidal integration. Used in total power dissipated
+
 
 // Code's output files definitions
 char matrices_folder[100];
