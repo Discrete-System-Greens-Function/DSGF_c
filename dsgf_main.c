@@ -113,9 +113,6 @@ int main()
     
     strcpy(discretization_thin_film_file, discretization_thin_film); // https://stackoverflow.com/questions/6008733/expression-must-be-a-modifiable-l-value
     
-    double(*Q_omega_subvol) = malloc(sizeof * Q_omega_subvol * tot_sub_vol);//double complex Q_omega_subvol[tot_sub_vol]; // power dissipated per subvolume
-    double Q_omega_thermal_object[N_bulk_objects][N_omega]; // Not implemented yet!
-	
 // ####################################    
 // #### Dynamic memory allocation: ####    
 // Links: https://stackoverflow.com/questions/13534966/how-to-dynamically-allocate-a-contiguous-block-of-memory-for-a-2d-array https://stackoverflow.com/questions/39108092/allocating-contiguous-memory-for-a-3d-array-in-c
@@ -141,6 +138,9 @@ double (*G_12_omega_SGF)[N_Tcalc] = calloc(N_omega, sizeof(*G_12_omega_SGF));//d
 double (*modulo_r_i_j)[tot_sub_vol] = malloc(sizeof *modulo_r_i_j * tot_sub_vol); //double modulo_r_i_j[tot_sub_vol][tot_sub_vol];
 double complex (*G_element)[tot_sub_vol] = malloc(sizeof *G_element * tot_sub_vol); //double complex G_element[tot_sub_vol][tot_sub_vol]; 
 double (*sum_trans_coeff) = malloc(sizeof *sum_trans_coeff *N_omega); //double sum_trans_coeff[N_omega]; //
+
+double(*Q_omega_subvol) = malloc(sizeof * Q_omega_subvol * tot_sub_vol);//double complex Q_omega_subvol[tot_sub_vol]; // power dissipated per subvolume
+double complex(*Q_omega_thermal_object)[N_omega] = malloc(sizeof * Q_omega_thermal_object * N_bulk_objects);  //double Q_omega_thermal_object[N_bulk_objects][N_omega];
 
 /* 
 // The SGF calculation considering the wavelength is not considered, so it is commented. 
@@ -961,12 +961,13 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
         double complex (*trans_coeff)[tot_sub_vol] = calloc(tot_sub_vol, sizeof(*trans_coeff)); //double complex trans_coeff[tot_sub_vol][tot_sub_vol];//[3][3]
 	    double complex (*G_sys_cross)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_sys_cross)); //double complex G_sys_cross[tot_sub_vol][tot_sub_vol][3][3];
 	    double complex (*transpose_G_sys)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*transpose_G_sys)); //double complex transpose_G_sys[tot_sub_vol][tot_sub_vol][3][3];
+        double(*inner_sum) = malloc(sizeof * inner_sum * tot_sub_vol); //double inner_sum[jg_0];
 	    //printf("  ----- Spectral transmissivity, spectral conductance, and thermal power dissipated -----\n");
         int counter = 0;
         sum_trans_coeff[i_omega] = 0.;            
             
-        theta_1=theta_function(omega_value,T1); //Calculates the mean energy of an electromagnetic state, given the current evaluated frequency and temperature T1
-        theta_2=theta_function(omega_value,T2); //Calculates the mean energy of an electromagnetic state, given the current evaluated frequency and temperature T2
+        //theta_1=theta_function(omega_value,T1); //Calculates the mean energy of an electromagnetic state, given the current evaluated frequency and temperature T1
+        //theta_2=theta_function(omega_value,T2); //Calculates the mean energy of an electromagnetic state, given the current evaluated frequency and temperature T2
             
             for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
             {
@@ -984,12 +985,22 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
                             //{
                                 G_element[ig_0][jg_0]+=G_sys[ig_0][jg_0][i_subG_0][j_subG_0]*G_sys_cross[ig_0][jg_0][i_subG_0][j_subG_0]; //sum(diag((G_element*(G_element'))
                             //}
+
                         }    
                     }
                     // Transmissivity coefficient matrix tau(omega) for comparison with Czapla Mathematica output [dimensionless]
                     //Matlab code: trans_coeff= 4*(k_0^4)*delta_V(i)*delta_V(j)*imag(epsilon(i))*imag(epsilon(j))*sum(diag((G_element*(G_element')))) 
-                    trans_coeff[ig_0][jg_0] = 4.*pow(k_0,4)*delta_V_vector[ig_0]*delta_V_vector[jg_0]*cimag(epsilon)*cimag(epsilon)*G_element[ig_0][jg_0] ;    
+                    trans_coeff[ig_0][jg_0] = 4.*pow(k_0,4)*delta_V_vector[ig_0]*delta_V_vector[jg_0]*cimag(epsilon)*cimag(epsilon)*G_element[ig_0][jg_0] ;  
                     //printf("%e ; ",trans_coeff[ig_0][jg_0]); // values match with Lindsay's results
+
+                    // Thermal power dissipated calculation, based on the matlab code (Using Eric's Eq. 26)
+                    if (ig_0 != jg_0) 
+                    {
+                        inner_sum[jg_0] = (fabs(theta_function(omega_value, T_vector[jg_0]) - theta_function(omega_value, T_vector[ig_0])) * trans_coeff[ig_0][jg_0]); //Q_omega_subvol_function(theta_1,theta_2, trans_coeff[ig_0][jg_0]);
+                    }
+                    else {
+                        inner_sum[jg_0] = 0;
+                    }
                     
                     //Trans_bulk: Transmission coefficient between two bulk objects
                     // This function calculates the transmission coefficient between bulk objects given the transmission coefficient between every pair of dipoles for a given frequency.
@@ -998,19 +1009,10 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
                         sum_trans_coeff[i_omega] += trans_coeff[ig_0][jg_0];
                         counter+=1;
                     } 
-                    //printf("Q_omega = %e \n", Q_omega_subvol[ig_0]); 
-                
-                 // Thermal power dissipated commented
-                if(ig_0 < N_subvolumes_per_object && jg_0 >= N_subvolumes_per_object){
-                	Q_omega_subvol[ig_0] = Q_omega_subvol_function_test(theta_1,theta_2,sum_trans_coeff[i_omega]);
-                }
-                else{
-                	Q_omega_subvol[ig_0]=0;
-                }
-                
+
+                    Q_omega_subvol[ig_0] += (1 / (2 * pi)) * inner_sum[jg_0]; // calculates the thermal power dissipated per subvolume
+
                 } 
-                              
-                Q_omega_subvol[ig_0] = Q_omega_subvol_function(theta[ig_0],sum_trans_coeff[i_omega]);
                 printf("Q_omega subvol= %e \n", Q_omega_subvol[ig_0]); 
                 
                 if(ig_0 < N_subvolumes_per_object)// Thermal power dissipated was not verified yet!!!!
@@ -1022,8 +1024,7 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
                 {
                     bulk=1;
                     Q_omega_thermal_object[bulk][i_omega] += Q_omega_subvol[ig_0];
-                }
-                //printf("\n");   
+                }   
                   
             }       
 	    free(G_sys);
@@ -1032,8 +1033,7 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
         free(G_sys_cross);
 	    free(transpose_G_sys);
 
-        free(Q_omega_subvol);
-        free(Q_omega_thermal_object);
+        free(inner_sum);
             
             if(save_spectral_transmissivity =='Y'){
         
@@ -1101,61 +1101,47 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
   	    memset(modulo_r_i_j, 0, sizeof *modulo_r_i_j * tot_sub_vol); //modulo_r_i_j
   	    memset(G_element, 0, sizeof *G_element * tot_sub_vol); //G_element
   	    memset(sum_trans_coeff, 0, sizeof sum_trans_coeff);
-  	    
-            //memset(Q_omega_thermal_object,0, sizeof Q_omega_thermal_object);
+        memset(Q_omega_subvol, 0, sizeof* Q_omega_subvol* tot_sub_vol);
+  	    memset(Q_omega_thermal_object,0, sizeof Q_omega_thermal_object * N_bulk_objects * N_omega); // //double Q_omega_thermal_object[N_bulk_objects][N_omega]
             
         } // END OMEGA VALUE LOOP FOR FREQUENCY RANGE ANALYSIS, loop started in line 481
         
         free(R);
-	free(sum_trans_coeff);
-	free(modulo_r_i_j);
-	free(G_element);
-	//free(modulo_r_i_j);
-	//free(G_element);
+	    free(sum_trans_coeff);
+	    free(modulo_r_i_j);
+	    free(G_element);
+	    //free(modulo_r_i_j);
+	    //free(G_element);
         
-	free(alpha_0);
+	    free(alpha_0);
 	
 	double (*Total_conductance) = malloc(sizeof *Total_conductance *N_Tcalc); //double Total_conductance[N_Tcalc];
+    double(*Q_tot_thermal_object) = malloc(sizeof * Q_tot_thermal_object * N_bulk_objects); //double Q_tot_thermal_object[N_bulk_objects];           
+
         trapz=0.;
         if( N_omega > 1)
         {
             printf("\nEnd of frequency loop\n----- Total conductance -----\n");
-            // implementation of trapezoidal numerical integration in C // https://stackoverflow.com/questions/25124569/implementation-of-trapezoidal-numerical-integration-in-c
-            double sum_conductance=0.;
-            double step=0.;
-            /*
-            double (*Q_tot_thermal_object) = malloc(sizeof *Q_tot_thermal_object *N_bulk_objects); //double Q_tot_thermal_object[N_bulk_objects];
-
-            for (int i=1; i < N_omega; ++i)
+            for (int i = 1; i < N_omega; ++i)
             {
-                sum_conductance = (G_12_omega_SGF[i]+G_12_omega_SGF[i-1])/2;
-                step = omega[i]-omega[i-1];
-                trapz += sum_conductance*step;
-                
                 for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
                 {
-                    if(ig_0 < N_subvolumes_per_object)// Thermal power dissipated was not verified yet!!!!   test with T1=301. and T2=300.
+                    if (ig_0 < N_subvolumes_per_object)// Thermal power dissipated was not verified yet!!!!   test with T1=301. and T2=300.
                     {
-                        bulk=0;
-                        Q_tot_thermal_object[bulk] += Q_omega_thermal_object[bulk][i-1];
+                        bulk = 0;
+                        Q_tot_thermal_object[bulk] += Q_omega_thermal_object[bulk][i - 1]; //
                     }
-                    else if(N_subvolumes_per_object<=ig_0<tot_sub_vol)
+                    else if (N_subvolumes_per_object <= ig_0 < tot_sub_vol)
                     {
-                        bulk=1;
-                        Q_tot_thermal_object[bulk] += Q_omega_thermal_object[bulk][i-1];
+                        bulk = 1;
+                        Q_tot_thermal_object[bulk] += Q_omega_thermal_object[bulk][i - 1];
                     }
-                }  
-                  
+                }
             }
             
-            G_12_total_SGF_from_omega = (fabs(trapz)/(2.*pi)); // Total conductance [W/K]
-            //G_12_total_SGF_from_lambda = fabs(trapz(lambda[i_omega], G_12_lambda_SGF));          // Total conductance [W/K]
-            printf("Total conductance = %e \n",G_12_total_SGF_from_omega);
-            
-            //printf("Total conductance calculated from power dissipated= %e \n",(Q_tot_thermal_object[1]-Q_tot_thermal_object[0])/(T2-T1));
-            //printf("\nThermal power dissipated for thermal object 1= %e \nThermal power dissipated for thermal object 2= %e \n", Q_tot_thermal_object[0],Q_tot_thermal_object[1]); 
-            free(Q_tot_thermal_object);
-            */
+            // implementation of trapezoidal numerical integration in C // https://stackoverflow.com/questions/25124569/implementation-of-trapezoidal-numerical-integration-in-c
+            double sum_conductance = 0.;
+            double step = 0.;
             for (int iTcalc = 0; iTcalc < N_Tcalc; iTcalc++) // EDIT VALUE :: change 1 to N_Tcalc for the temperature loop
     	    {      
     		sum_conductance=0.;
@@ -1184,14 +1170,6 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
 
     	    printf("\n");
        
-	    /*
-            FILE * total_conductance; // 
-            char dirPathTotal_cond_FileName[260];
-            sprintf(dirPathTotal_cond_FileName, "%s/total_conductance.csv",sep_distance_folder); // path where the file is stored
-            total_conductance =fopen(dirPathTotal_cond_FileName,"w"); 
-                fprintf(total_conductance,"%e",G_12_total_SGF_from_omega);      
-            fclose(total_conductance);
-            */
             /*
             FILE * power_dissipated; // 
             char dirPathPower_dissipated_FileName[260];
@@ -1216,7 +1194,8 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
     fprintf(pos_processing_summary,"Temperature %eK: Total conductance = %e\n",Tcalc_vector[iTcalc], Total_conductance[iTcalc]); 
     fclose(pos_processing_summary);
     }
-      
+    
+    free(Q_tot_thermal_object);
     free(Total_conductance); 
        
    
@@ -1234,12 +1213,12 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
  //   {
         printf("Usage: %ld + %ld = %ld kb\n", baseline, get_mem_usage()-baseline,get_mem_usage());
  //   }
- //   else
+ //   else //MAC 
  //   {
  //       printf("Usage: %ld + %ld = %ld bytes\n", baseline, get_mem_usage()-baseline,get_mem_usage());
  //   }
  
- /*   
+ /*   // Condition used to compute memory_usage for one frequency.
     if ( single_analysis =='y')
     {
         char memory_folder[100];
@@ -1266,9 +1245,10 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
    free(T_vector);
    
    free(G_12_omega_SGF);
+
+   free(Q_omega_subvol);
+   free(Q_omega_thermal_object);
  
-   
-    // BASH SCRIPTING https://linuxconfig.org/bash-scripting-tutorial
 
 } //end of code 
 

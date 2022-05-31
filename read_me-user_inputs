@@ -1,8 +1,15 @@
 Welcome to DSGF framework - c99 version!
 
-The main DSGF code is dsgf_main.c, and it can be compiled simply running run_dsgf.sh in your terminal. 
-You should have installed the intel icc compiler, and source it before compile it in your machine.
-However, the DSGF does not need to be compiled when the user modify the simulation parameters. 
+- The main DSGF code is dsgf_main.c, and it can be compiled simply running run_dsgf.sh in your terminal. 
+More info about how bash scripting works for compiling codes: https://linuxconfig.org/bash-scripting-tutorial
+
+- For this DSGF version, you should have installed the intel icc compiler, and source it before compile it in your machine.
+The compilers and mkl were installed from https://www.intel.com/content/www/us/en/developer/tools/oneapi/hpc-toolkit-download.html?operatingsystem=linux&distributions=webdownload&options=offline
+They can be sourced as: 
+$ source /opt/intel/oneapi/mkl/2022.0.2/env/vars.sh
+$ source /opt/intel/oneapi/compiler/2022.0.2/env/vars.sh 
+
+However, DSGF does not need to be compiled when the user modify the simulation parameters. 
 The user simply need to modify the appropriate .txt files, and run the code with the /.dsgf command in your terminal.
 
 The user can modify: 

@@ -38,7 +38,7 @@ double Tcalc_vector[N_Tcalc]; // Multiple temperatures at which conductance is c
 
 char solution[]; // Solution method: "direct" or "iterative"
 
-char single_analysis ='y'; // Initial input for spectrum range analysis
+char single_analysis ='y'; // Initial input for spectrum range analysis, used to compute memory_usage.
 char single_spectrum_analysis; // Analysis of one or a range of frequencies
 
 double G_12_total_SGF_from_omega; // total conductance
