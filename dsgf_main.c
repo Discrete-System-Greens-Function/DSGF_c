@@ -648,8 +648,8 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
             double complex (*G_sys)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_sys)); //double complex G_sys[tot_sub_vol][tot_sub_vol][3][3];
 	    
 	    
-            if(strcmp(solution,"direct")==0)
-            {
+            //if(strcmp(solution,"direct")==0)
+            //{
             printf("Direct inversion:\n");
             //double complex Alapack[lda*n], blapack[ldb*nrhs], work[lwork]; // based on example from https://icl.cs.utk.edu/lapack-forum/viewtopic.php?f=2&t=506&p=1692&hilit=zgels#p1692
 	    double complex (*Alapack) = malloc(sizeof *Alapack *lda*n); //double complex Alapack[lda*n];
@@ -700,11 +700,11 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
 	   free(Alapack); 
 	   free(blapack); 
 	   free(work);
-	   }
+	   //}
 	   
-	   
+	   /*
 	   else //if(strcmp(solution,"iterative")==0)
-           { 
+        { 
            	printf("Iterative:\n m= ");
            
 		//double complex (*G_sys_old)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_sys_old)); //double complex G_sys_old[tot_sub_vol][tot_sub_vol][3][3];
@@ -917,12 +917,12 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
            
 	   free(A1lapack); 
 	   free(b1lapack);
-	   //free(epsilon_s);
+	   free(epsilon_s);
            
            printf("Final solution \n");
 	   
 	   }
-	   
+	   */
 	   
         free(G_0);
         free(A);
