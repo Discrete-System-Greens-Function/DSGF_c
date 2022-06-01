@@ -36,7 +36,7 @@ int const N_Tcalc = 5;
 double Tcalc_vector[N_Tcalc]; // Multiple temperatures at which conductance is calculated [K]
 // %%%%%%%%%%%%%%%%%%% Solution %%%%%%%%%%%%%%%%%%%%%
 
-char solution[]; // Solution method: "direct" or "iterative"
+char solution; // Solution method: D for "direct" or I for "iterative"
 
 char single_analysis ='y'; // Initial input for spectrum range analysis, used to compute memory_usage.
 char single_spectrum_analysis; // Analysis of one or a range of frequencies

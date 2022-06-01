@@ -30,7 +30,7 @@ The user can modify:
 		Lz = 200e-9			--- only for thin films
 		T1 = 301.
 		T2 = 300.
-		solution = direct OR iterative
+		solution = D for direct OR I for iterative
 		single_spectrum_analysis = N
 		save_A_matrix = N
 		save_G0_matrix = N

@@ -84,7 +84,7 @@ int main()
     fscanf(import_inputs,"%s = %lf\n",buffer, &Lz);
     fscanf(import_inputs,"%s = %lf\n",buffer, &T1);
     fscanf(import_inputs,"%s = %lf\n",buffer, &T2);
-    fscanf(import_inputs,"%s = %s\n",buffer, solution);
+    fscanf(import_inputs,"%s = %c\n",buffer, &solution);
     fscanf(import_inputs,"%s = %c\n",buffer, &single_spectrum_analysis);
     fscanf(import_inputs,"%s = %c\n",buffer, &save_A_matrix);
     fscanf(import_inputs,"%s = %c\n",buffer, &save_G0_matrix);
@@ -651,7 +651,8 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
 	    
 	    
             //if(strcmp(solution,"direct")==0)
-            //{
+            if(solution =='D')
+            {
             printf("Direct inversion status: ");
             //double complex Alapack[lda*n], blapack[ldb*nrhs], work[lwork]; // based on example from https://icl.cs.utk.edu/lapack-forum/viewtopic.php?f=2&t=506&p=1692&hilit=zgels#p1692
 	    double complex (*Alapack) = malloc(sizeof *Alapack *lda*n); //double complex Alapack[lda*n];
@@ -703,12 +704,12 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
 	   free(blapack); 
 	   free(work);
        printf("concluded\n");
-	   //}
+	   }
 	   
-	   /*
-	   else //if(strcmp(solution,"iterative")==0)
+	   //else if(strcmp(solution,"iterative")==0)
+       else if(solution =='I')
         { 
-           	printf("Iterative:\n m= ");
+           	printf("Iterative status:\n m= ");
            
 		//double complex (*G_sys_old)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_sys_old)); //double complex G_sys_old[tot_sub_vol][tot_sub_vol][3][3];
 		//double complex (*G_sys_new)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_sys_new)); //double complex G_sys_new[tot_sub_vol][tot_sub_vol][3][3]; 
@@ -736,8 +737,8 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
                                     eye_iter[i_subG_0][j_subG_0] = 0.;     // 3x3 Identity matrix 
                                 }
                                 
-             		}
-             }                      
+            }
+            }                      
                                 
              
 	    // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -779,8 +780,8 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
            	{
             		mm_2d = (3*mm + mm_sub);
             		for (int mm_sub_n = 0; mm_sub_n < 3; mm_sub_n++)
-           		{
-				mm_2d_n = (3*mm + mm_sub_n);
+           		    {   
+				    mm_2d_n = (3*mm + mm_sub_n);
             			//if(mm_sub == mm_sub_n)
             			//{
 					// First, solve ii = mm system of equations.
@@ -803,7 +804,7 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
             		// %%%%%%%%%%% Linear inversion using LAPACK %%%%%%%%%%%%%%%%%
             		ipack=0;
             		for (int mm_sub = 0; mm_sub < 3; mm_sub++)
-           		{
+           		    {
             			mm_2d = (3*mm + mm_sub);
                         	for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
                         	{
@@ -821,7 +822,7 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
             		gpack=0; 
             		mm_2d = 0;       	
             		for (int mm_sub = 0; mm_sub < 3; mm_sub++) // 3D coordinate positions
-           		{
+           		    {
            			mm_2d = (3*mm + mm_sub);
            			//ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
                         	for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
@@ -870,21 +871,21 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
                    {
                 		ig_0_2d = (3*ig_0 + i_subG_0); // Set indices	
             		 	for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
-                      		{
+                      	{
                         		jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
                       			G_sys_old[ig_0_2d][jg_0_2d] = G_sys_new[ig_0_2d][jg_0_2d];
                       			//G_sys[ig_0][jg_0][i_subG_0][j_subG_0] = G_sys_new[ig_0_2d][jg_0_2d];
                   			//G_sys_old[ig_0][jg_0][i_subG_0][j_subG_0]=G_sys_new[ig_0][jg_0][i_subG_0][j_subG_0];
-                      		}    
+                      	}    
                  		     	
                   }
                  	//printf("\n");		
             	} // jg_0
             	} // ig_0	
             	            	  
-           memset(A_2d, 0, sizeof *A_2d * 3*tot_sub_vol);
-           memset(A1lapack, 0, sizeof *A1lapack *3*3); //double complex Alapack[lda*n];
-	   memset(b1lapack, 0, sizeof *b1lapack *3*3);
+            memset(A_2d, 0, sizeof *A_2d * 3*tot_sub_vol);
+            memset(A1lapack, 0, sizeof *A1lapack *3*3); //double complex Alapack[lda*n];
+	        memset(b1lapack, 0, sizeof *b1lapack *3*3);
             	
             }//end mm loop 
            
@@ -892,18 +893,18 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
            
            for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
            {
-           	for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
+           	    for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
                 {
                 	ig_0_2d = (3*ig_0 + i_subG_0); // Set indices	
             		for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //tot_sub_vol
-           		{  
+           		    {  
                         	for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions
                         	{
                         		jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
                         		G_sys[ig_0][jg_0][i_subG_0][j_subG_0] = G_sys_new[ig_0_2d][jg_0_2d];
-	    				//G_sys[ig_0][jg_0][i_subG_0][j_subG_0] = G_sys_new[ig_0][jg_0][i_subG_0][j_subG_0];
-	    				//printf("%e + i %e ; ", creal(G_sys[ig_0][jg_0][i_subG_0][j_subG_0]),cimag(G_sys[ig_0][jg_0][i_subG_0][j_subG_0]));
-	    			}
+	    				        //G_sys[ig_0][jg_0][i_subG_0][j_subG_0] = G_sys_new[ig_0][jg_0][i_subG_0][j_subG_0];
+	    				        //printf("%e + i %e ; ", creal(G_sys[ig_0][jg_0][i_subG_0][j_subG_0]),cimag(G_sys[ig_0][jg_0][i_subG_0][j_subG_0]));
+	    			        }
             		} 
             		//printf("\n");
             	}
@@ -925,7 +926,7 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
            printf("Final solution \n");
 	   
 	   }
-	   */
+	   
 	   
         free(G_0);
         free(A);
