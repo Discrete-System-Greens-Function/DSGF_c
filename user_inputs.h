@@ -51,6 +51,7 @@ char save_G0_matrix;
 char save_SGF_matrix;
 char save_spectral_conductance;
 char save_spectral_transmissivity;
+char save_power_dissipated;
 char multiple_conductance_temperatures;
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -15,4 +15,5 @@ save_G0_matrix = N
 save_SGF_matrix = N
 save_spectral_conductance = Y
 save_spectral_transmissivity = N
+save_power_dissipated = Y
 multiple_conductance_temperatures = N

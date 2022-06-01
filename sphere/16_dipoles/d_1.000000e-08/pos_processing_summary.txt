@@ -6,4 +6,4 @@ Temperature 2.500000e+02K: Total conductance = 6.348336e-12
 Temperature 3.000000e+02K: Total conductance = 9.386028e-12
 Temperature 3.500000e+02K: Total conductance = 1.261395e-11
 Temperature 4.000000e+02K: Total conductance = 1.577576e-11
-Time counter: 0.208412 s
+Time counter: 0.166113 s

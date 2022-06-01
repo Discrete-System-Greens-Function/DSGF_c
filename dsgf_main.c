@@ -90,7 +90,8 @@ int main()
     fscanf(import_inputs,"%s = %c\n",buffer, &save_G0_matrix);
     fscanf(import_inputs,"%s = %c\n",buffer, &save_SGF_matrix);
     fscanf(import_inputs,"%s = %c\n",buffer, &save_spectral_conductance);
-    fscanf(import_inputs,"%s = %c",buffer, &save_spectral_transmissivity); 	
+    fscanf(import_inputs,"%s = %c",buffer, &save_spectral_transmissivity); 
+    fscanf(import_inputs,"%s = %c\n",buffer, &save_power_dissipated);	
     fclose(import_inputs);
     
     FILE *import_T_calc; 
@@ -1015,7 +1016,7 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
 
                 } 
                     Q_subvol[ig_0][i_omega] = Q_omega_subvol[ig_0];
-                printf("Q_subvol_%d_%d= %e \n",ig_0+1,i_omega+1, Q_subvol[ig_0][i_omega]); //matches matlab code
+                //printf("Q_subvol_%d_%d= %e \n",ig_0+1,i_omega+1, Q_subvol[ig_0][i_omega]); //matches matlab code
                 
                 if(ig_0 < N_subvolumes_per_object)// Thermal power dissipated was not verified yet!!!!
                 {
@@ -1027,7 +1028,7 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
                     bulk=1;
                     Q_omega_thermal_object[bulk][i_omega] += Q_omega_subvol[ig_0];
                 } 
-                printf("Q_bulk_%d_%d= %e \n",bulk+1, i_omega+1, Q_omega_thermal_object[bulk][i_omega]); //matches matlab code
+                //printf("Q_bulk_%d_%d= %e \n",bulk+1, i_omega+1, Q_omega_thermal_object[bulk][i_omega]); //matches matlab code
                  
             }       
 	    free(G_sys);
@@ -1121,6 +1122,7 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
 	
 	double (*Total_conductance) = malloc(sizeof *Total_conductance *N_Tcalc); //double Total_conductance[N_Tcalc];
     double(*Q_tot_thermal_object) = malloc(sizeof * Q_tot_thermal_object * N_bulk_objects); //double Q_tot_thermal_object[N_bulk_objects];           
+    double (*trapz_Q) = malloc(sizeof *trapz_Q *tot_sub_vol); //double Total_conductance[N_Tcalc];
     // int i_frequency = 0;
     
         trapz=0.;
@@ -1138,32 +1140,30 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
 
             for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
                 {
-                    trapz_Q = 0.;
+                    trapz_Q[ig_0] = 0.;
                     for (int i=1; i < N_omega; ++i)
                     {
-                        step = omega[i]-omega[i-1];
-                        //sum_Q_subvol = Q_subvol[ig_0][i] - Q_subvol[ig_0][i-1]; 
-                    if (ig_0 < N_subvolumes_per_object)// Thermal power dissipated was not verified yet!!!!   test with T1=301. and T2=300.
-                    {
-                        bulk = 0;
-                        //Q_tot_thermal_object[bulk] += Q_omega_thermal_object[bulk][i]; //
-                        sum_Q = (Q_omega_thermal_object[bulk][i] - Q_omega_thermal_object[bulk][i-1]);
-                    }
-                    
-                    else if (N_subvolumes_per_object <= ig_0 < tot_sub_vol)
-                    {
-                        bulk = 1;
-                        //Q_tot_thermal_object[bulk] += Q_omega_thermal_object[bulk][i];
-                        //sum_Q_bulk = (Q_omega_thermal_object[bulk][i] - Q_omega_thermal_object[bulk][i-1]);
-                    }
-                    trapz_Q += sum_Q*step;
-                    
+                        step = omega[i] - omega[i-1];
+                        trapz_Q[ig_0] +=  ((Q_subvol[ig_0][i]+Q_subvol[ig_0][i-1])/2)*step;
                     }
 
+                printf("Power dissipated per subvolume %d = %e\n", ig_0+1,trapz_Q[ig_0]);
 
-                }
-                Q_tot_thermal_object[0] = (trapz_Q)/(2.*pi);
-            printf("Q_tot_thermal_object[1] = %e; Q_tot_thermal_object[2] = %e\n", Q_tot_thermal_object[0],Q_tot_thermal_object[1]);
+                if(save_power_dissipated =='Y'){
+            {
+            FILE * power_dissipated; //append
+            char dirPathPower_dissipated_FileName[260];
+            sprintf(dirPathPower_dissipated_FileName, "%s/d_%e/power_dissipated.csv",folder_subvol,d); // path where the file is stored
+            if(ig_0 == 0) power_dissipated =fopen(dirPathPower_dissipated_FileName,"w"); //write
+            else power_dissipated = fopen(dirPathPower_dissipated_FileName, "a"); //append
+                fprintf(power_dissipated,"%e\n",trapz_Q[ig_0]); 
+           fclose(power_dissipated);
+           }
+           } // end if save_power_dissipated
+           
+           }
+                //Q_tot_thermal_object[0] = (trapz_Q)/(2.*pi);
+            //printf("Q_tot_thermal_object[1] = %e; Q_tot_thermal_object[2] = %e\n", Q_tot_thermal_object[0],Q_tot_thermal_object[1]);
             
 
 
@@ -1197,15 +1197,7 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
            } //end if N_omega>1
 
     	    printf("\n");
-       
-            /*
-            FILE * power_dissipated; // 
-            char dirPathPower_dissipated_FileName[260];
-            sprintf(dirPathPower_dissipated_FileName, "%s/power_dissipated.csv",sep_distance_folder); // path where the file is stored
-            power_dissipated =fopen(dirPathPower_dissipated_FileName,"w");
-            	  fprintf(power_dissipated,"%e",Q_tot_thermal_object[0]);      
-            fclose(power_dissipated);
-            */
+                   
             
    sprintf(dirPathpos_processing_summary_FileName, "%s/pos_processing_summary.txt",sep_distance_folder); // path where the file is stored
     
@@ -1274,6 +1266,7 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
    
    free(G_12_omega_SGF);
 
+   free(trapz_Q);
    free(Q_subvol);
    free(Q_omega_subvol);
    free(Q_omega_thermal_object);
