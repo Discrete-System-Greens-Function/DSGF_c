@@ -1,7 +1,6 @@
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // Functions used in the Discrete System Green's Function 
 // Developed by RETL Lab, Department of Mechanical Engineering, The University of Utah, USA.
-// CREATED ON: MARCH 31, 2022 
 // LAST UPDATE: MAY 31, 2022
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

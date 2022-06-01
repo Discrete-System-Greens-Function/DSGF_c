@@ -1,7 +1,7 @@
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // User inputs definitions in DSGF framework
 // Developed by RETL Lab, Department of Mechanical Engineering, The University of Utah, USA.
-// LAST UPDATE: APRIL 1, 2022  
+// LAST UPDATE: JUNE 1, 2022  
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 #ifndef __user_inputs_h //https://stackoverflow.com/questions/28361391/calling-define-from-another-file
