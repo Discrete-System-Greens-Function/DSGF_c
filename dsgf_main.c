@@ -974,10 +974,7 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
 	    //printf("  ----- Spectral transmissivity, spectral conductance, and thermal power dissipated -----\n");
         int counter = 0;
         sum_trans_coeff[i_omega] = 0.;            
-            
-        //theta_1=theta_function(omega_value,T1); //Calculates the mean energy of an electromagnetic state, given the current evaluated frequency and temperature T1
-        //theta_2=theta_function(omega_value,T2); //Calculates the mean energy of an electromagnetic state, given the current evaluated frequency and temperature T2
-            
+                 
             for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
             {
                  //printf("Theta(%e,%f) = %e\n",omega_value,T_vector[ig_0],theta[ig_0]);
@@ -1129,7 +1126,7 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
 	
 	double (*Total_conductance) = malloc(sizeof *Total_conductance *N_Tcalc); //double Total_conductance[N_Tcalc];
     double(*Q_tot_thermal_object) = malloc(sizeof * Q_tot_thermal_object * N_bulk_objects); //double Q_tot_thermal_object[N_bulk_objects];           
-    double (*trapz_Q) = malloc(sizeof *trapz_Q *tot_sub_vol); //double Total_conductance[N_Tcalc];
+    double (*trapz_Q) = malloc(sizeof *trapz_Q *tot_sub_vol); // Definition for trapezoidal integration. Used in total power dissipated //double Total_conductance[N_Tcalc];
     // int i_frequency = 0;
     
         trapz=0.;
@@ -1170,7 +1167,7 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
            } // end if save_power_dissipated
            
            }
-                //Q_tot_thermal_object[0] = (trapz_Q)/(2.*pi);
+            //Q_tot_thermal_object[0] = (trapz_Q)/(2.*pi);
             //printf("Q_tot_thermal_object[1] = %e; Q_tot_thermal_object[2] = %e\n", Q_tot_thermal_object[0],Q_tot_thermal_object[1]);
             
 

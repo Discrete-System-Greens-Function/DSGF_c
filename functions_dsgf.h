@@ -141,21 +141,13 @@ double theta_function(double omega, double T)
     return theta;                  // return statement
 }
 
-// Function for the calculation of the derivative of the mean energy of an electromagnetic state with respect to the temperature
+// Function for the calculation of the derivative of the mean energy of an electromagnetic state by the temperature
 double  dtheta_dT_function(double omega,double T_calc)
 {
     double psi = h_bar*(omega)/(k_b*T_calc);     // Input for exponential dtheta_dT function[dimensionless]
     double dtheta_dT = (k_b*pow(psi,2)*exp(psi))/(pow(exp(psi)-1.,2)); // [J/K]
     return dtheta_dT;           // return statement
 }
-
-/*          
-double Q_omega_subvol_function(double theta_1,double theta_2, double trans)    
-{
-    double Q_omega_subvol = (1./(2.*pi))*(fabs(theta_2-theta_1)*trans) ;   
-    return Q_omega_subvol;                  // return statement
-}
-*/
 
 // How to measure memory usage inside my program? (getrusage): https://youtu.be/Os5cK0H8EOA
 long get_mem_usage() 
@@ -186,12 +178,7 @@ double denom1, denom2 ; // used in G^0_ij function
 int ipack, gpack; //lapacke counters
 int ig_0_2d,jg_0_2d,mm_2d,mm_2d_n, mm_sub, mm_sub_n; // Set indices used in "iterative" solution
 
-//double theta_1, theta_2; // Definition for the mean energy of an electromagnetic state of the thermal objects
-//double dtheta_dT; // function used to calculate conductance
-
 double trapz; // Definition for trapezoidal integration. Used in total conductance
-//double trapz_Q; // Definition for trapezoidal integration. Used in total power dissipated
-
 
 // Code's output files definitions
 char matrices_folder[100];
