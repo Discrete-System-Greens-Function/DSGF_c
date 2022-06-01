@@ -173,7 +173,7 @@ free(trans_coeff_lambda);
     }	
     
 // ######### Properties for thermal objects ###########
-printf("Simulation for %d dipoles \n",tot_sub_vol);
+printf("Simulation for a total of %d dipoles in %d thermal objects\n",tot_sub_vol,N_bulk_objects);
 if(strcmp(geometry,"sphere")==0) //cannot compare strings in C with ==; source: https://ideone.com/BrFA00
 	    {
 	    	radius1 = radius; // perfect same-sized spheres
@@ -286,7 +286,7 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
         // ################## FREQUENCY RANGE ANALYSIS #####################
         // #################################################################
         //Loop to analyze a range of desired frequencies
-        printf("----- Frequency -----\n");
+        printf("----- Spectrum range calculation -----\n");
                 
     	if(single_spectrum_analysis =='Y') omega_range=1;
     	if(single_spectrum_analysis =='N') omega_range=N_omega;
@@ -300,7 +300,7 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
             
 
             omega_value = omega[i_omega]; // omega definition is on line 212
-            printf("%d) omega = %e ; ", i_omega+1,omega_value);
+            printf("%d) omega = %e. ", i_omega+1,omega_value);
 
 	    if(strcmp(material,"SiO2")==0) //cannot compare strings in C with ==; source: https://ideone.com/BrFA00
 	    { 
@@ -341,7 +341,7 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
         	epsilon = epsilon_inf*(pow(omega_value,2)-pow(omega_LO,2)+I*Gamma*omega_value)/(pow(omega_value,2)-pow(omega_TO,2)+I*Gamma*omega_value) ; // omega_TO omega_LO Gamma epsilon_inf
             }
             
-            printf("Epsilon  = %e + i %e \n",creal(epsilon),cimag(epsilon));
+            //printf("Epsilon  = %e + i %e \n",creal(epsilon),cimag(epsilon));
 
             //printf("##################### \n Build A = I - k_0^2*G^0*alpha_0 \n##################### \n");
     
@@ -645,14 +645,14 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
             //printf("##################### \n SOLVE LINEAR SYSTEM AG=G^0 \n##################### \n");
             //printf("##################### \n LAPACK/LAPACKE ZGELS ROUTINE \n##################### \n");
             //Description of ZGELS: https://extras.csc.fi/math/nag/mark21/pdf/F08/f08anf.pdf
-            printf("  ----- Solve linear system AG=G^0 -----\n");
+            //printf("  ----- Solve linear system AG=G^0 -----\n");
             
             double complex (*G_sys)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_sys)); //double complex G_sys[tot_sub_vol][tot_sub_vol][3][3];
 	    
 	    
             //if(strcmp(solution,"direct")==0)
             //{
-            printf("Direct inversion:\n");
+            printf("Direct inversion status: ");
             //double complex Alapack[lda*n], blapack[ldb*nrhs], work[lwork]; // based on example from https://icl.cs.utk.edu/lapack-forum/viewtopic.php?f=2&t=506&p=1692&hilit=zgels#p1692
 	    double complex (*Alapack) = malloc(sizeof *Alapack *lda*n); //double complex Alapack[lda*n];
 	    double complex (*blapack) = malloc(sizeof *blapack *ldb*nrhs); //double complex blapack[ldb*nrhs];
@@ -702,6 +702,7 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
 	   free(Alapack); 
 	   free(blapack); 
 	   free(work);
+       printf("concluded\n");
 	   //}
 	   
 	   /*
@@ -1128,7 +1129,8 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
         trapz=0.;
         if( N_omega > 1)
         {
-            printf("\nEnd of frequency loop\n----- Total conductance -----\n");
+            printf("\nEnd of frequency loop\n");
+            //printf("----- Total conductance -----\n");
             
             
             // implementation of trapezoidal numerical integration in C // https://stackoverflow.com/questions/25124569/implementation-of-trapezoidal-numerical-integration-in-c
@@ -1147,7 +1149,7 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
                         trapz_Q[ig_0] +=  ((Q_subvol[ig_0][i]+Q_subvol[ig_0][i-1])/2)*step;
                     }
 
-                printf("Power dissipated per subvolume %d = %e\n", ig_0+1,trapz_Q[ig_0]);
+                //printf("Power dissipated per subvolume %d = %e\n", ig_0+1,trapz_Q[ig_0]);
 
             if(save_power_dissipated =='Y'){
             {
