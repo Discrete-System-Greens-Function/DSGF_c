@@ -1149,7 +1149,7 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
 
                 printf("Power dissipated per subvolume %d = %e\n", ig_0+1,trapz_Q[ig_0]);
 
-                if(save_power_dissipated =='Y'){
+            if(save_power_dissipated =='Y'){
             {
             FILE * power_dissipated; //append
             char dirPathPower_dissipated_FileName[260];
