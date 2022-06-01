@@ -1,7 +1,7 @@
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // User inputs definitions in DSGF framework
 // Developed by RETL Lab, Department of Mechanical Engineering, The University of Utah, USA.
-// LAST UPDATE: APRIL 1, 2022  
+// LAST UPDATE: JUNE 1, 2022  
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 #ifndef __user_inputs_h //https://stackoverflow.com/questions/28361391/calling-define-from-another-file
@@ -36,9 +36,9 @@ int const N_Tcalc = 5;
 double Tcalc_vector[N_Tcalc]; // Multiple temperatures at which conductance is calculated [K]
 // %%%%%%%%%%%%%%%%%%% Solution %%%%%%%%%%%%%%%%%%%%%
 
-char solution[]; // Solution method: "direct" or "iterative"
+char solution; // Solution method: D for "direct" or I for "iterative"
 
-char single_analysis ='y'; // Initial input for spectrum range analysis
+char single_analysis ='y'; // Initial input for spectrum range analysis, used to compute memory_usage.
 char single_spectrum_analysis; // Analysis of one or a range of frequencies
 
 double G_12_total_SGF_from_omega; // total conductance
@@ -51,6 +51,7 @@ char save_G0_matrix;
 char save_SGF_matrix;
 char save_spectral_conductance;
 char save_spectral_transmissivity;
+char save_power_dissipated;
 char multiple_conductance_temperatures;
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
