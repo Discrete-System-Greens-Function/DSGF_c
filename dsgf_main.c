@@ -649,9 +649,7 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
             
             double complex (*G_sys)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_sys)); //double complex G_sys[tot_sub_vol][tot_sub_vol][3][3];
 	    
-	    
-            //if(strcmp(solution,"direct")==0)
-            if(solution =='D')
+	        if(solution =='D')
             {
             printf("Direct inversion status: ");
             //double complex Alapack[lda*n], blapack[ldb*nrhs], work[lwork]; // based on example from https://icl.cs.utk.edu/lapack-forum/viewtopic.php?f=2&t=506&p=1692&hilit=zgels#p1692
@@ -706,15 +704,12 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
        printf("concluded\n");
 	   }
 	   
-	   //else if(strcmp(solution,"iterative")==0)
        else if(solution =='I')
         { 
            	printf("Iterative status:\n m= ");
            
-		//double complex (*G_sys_old)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_sys_old)); //double complex G_sys_old[tot_sub_vol][tot_sub_vol][3][3];
-		//double complex (*G_sys_new)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_sys_new)); //double complex G_sys_new[tot_sub_vol][tot_sub_vol][3][3]; 
-		double complex (*G_sys_old)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys_old)); // 2D array, similar to the matlab code
-		double complex (*G_sys_new)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys_old)); // 2D array, similar to the matlab code
+		double complex (*G_sys_old)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys_old)); // 2D array, similar to the matlab code. Previously as //double complex (*G_sys_old)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_sys_old)); //double complex G_sys_old[tot_sub_vol][tot_sub_vol][3][3];
+		double complex (*G_sys_new)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys_old)); // 2D array, similar to the matlab code. Previously as //double complex (*G_sys_new)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_sys_new)); //double complex G_sys_new[tot_sub_vol][tot_sub_vol][3][3]; 
 		double (*eyeA_2d)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*eyeA_2d)); // 2D array, similar to the matlab code
 		double complex (*A_2d)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*A_2d)); // 2D array, similar to the matlab code
 		double complex (*A1lapack) = malloc(sizeof *A1lapack *3*3); //double complex Alapack[lda*n];
@@ -724,21 +719,20 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
 	       	
 		//3-by-3 unit matrix   
 		double (*eye_iter)[3] = calloc(3, sizeof(*eyeG_0)); //double eyeG_0[3][3];      
-	       for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++)
-	       {        
+	    for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++)
+	    {        
 	       	for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++)
 	       	{ // 3D coordinate positions
-                                if (i_subG_0 == j_subG_0)
-                                {
-                                    eye_iter[i_subG_0][j_subG_0] = 1.;     // 3x3 Identity matrix
-                                }    
-                                else
-                                {
-                                    eye_iter[i_subG_0][j_subG_0] = 0.;     // 3x3 Identity matrix 
-                                }
-                                
+                if (i_subG_0 == j_subG_0)
+                {
+                    eye_iter[i_subG_0][j_subG_0] = 1.;     // 3x3 Identity matrix
+                }    
+                else
+                {
+                    eye_iter[i_subG_0][j_subG_0] = 0.;     // 3x3 Identity matrix 
+                }                
             }
-            }                      
+        }                      
                                 
              
 	    // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -751,28 +745,28 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
 	    // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	
 	    // Set initial values to free-space Green's function values: G_sys_2D_old = G_0_2D;
-            for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
-            {
-            	for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //tot_sub_vol
-            	{ 
-            		for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
-                	{
-                       	ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
-                    		for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
-                       	{
-                       		jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
-            				G_sys_old[ig_0_2d][jg_0_2d]=G_0[ig_0][jg_0][i_subG_0][j_subG_0]; //2D matrix
-            				eyeA_2d[ig_0_2d][jg_0_2d] = eyeA[ig_0][jg_0][i_subG_0][j_subG_0]; //2D matrix
-            				//printf("%e + i %e ; ",creal(G_sys_old[ig_0_2d][jg_0_2d]),cimag(G_sys_old[ig_0_2d][jg_0_2d]));
-            			}
+        for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
+        {
+            for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //tot_sub_vol
+            { 
+            	for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
+                {
+                    ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
+                    for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
+                    {
+                       	jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
+            			G_sys_old[ig_0_2d][jg_0_2d]=G_0[ig_0][jg_0][i_subG_0][j_subG_0]; //2D matrix
+            			eyeA_2d[ig_0_2d][jg_0_2d] = eyeA[ig_0][jg_0][i_subG_0][j_subG_0]; //2D matrix
+            			//printf("%e + i %e ; ",creal(G_sys_old[ig_0_2d][jg_0_2d]),cimag(G_sys_old[ig_0_2d][jg_0_2d]));
             		}
-            				//printf("\n");
             	}
-            }	
+            	//printf("\n");
+            }
+        }	
         	
            // First, solve ii = mm system of equations.
-           for (int mm = 0; mm < tot_sub_vol; mm++) //tot_sub_vol
-           {
+        for (int mm = 0; mm < tot_sub_vol; mm++) //tot_sub_vol
+        {
            	printf("%d - ",mm+1);
            	mm_2d =0;
            	epsilon_s[mm] = (epsilon - epsilon_ref); // Scattering dielectric function
@@ -781,90 +775,104 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
             		mm_2d = (3*mm + mm_sub);
             		for (int mm_sub_n = 0; mm_sub_n < 3; mm_sub_n++)
            		    {   
-				    mm_2d_n = (3*mm + mm_sub_n);
-            			//if(mm_sub == mm_sub_n)
-            			//{
-					// First, solve ii = mm system of equations.
-            				A_2d[mm_sub][mm_sub_n] = eyeA_2d[mm_2d][mm_2d_n] - pow(k,2)*delta_V_vector[mm]*epsilon_s[mm]*G_sys_old[mm_2d][mm_2d_n]; //modification...see if it works
-            				//A_2d[mm_sub][mm_sub_n] = eyeA_2d[mm_2d][mm_2d] - pow(k,2)*delta_V_vector[mm]*epsilon_s[mm]*G_sys_old[mm_2d][mm_2d]; //alpha_0[mm] = delta_V_vector[i_alpha]*(epsilon - epsilon_ref);
-            				// A_2d[mm_2d][mm_2d] = eyeA_2d[mm_2d][mm_2d] - pow(k,2)*alpha_0[mm]*G_sys_old[mm_2d][mm_2d]; 
-            			//}	 
-            			//else
-            			//{
-           			//	A_2d[mm_sub][mm_sub_n] = 0.; 
-           			//}	
-            		//printf("%e + i %e ;\n",creal(A_2d[mm_sub][mm_sub_n]),cimag(A_2d[mm_sub][mm_sub_n])); //matches with matlab
+				        mm_2d_n = (3*mm + mm_sub_n);
+            			A_2d[mm_sub][mm_sub_n] = eyeA_2d[mm_2d][mm_2d_n] - pow(k,2)*delta_V_vector[mm]*epsilon_s[mm]*G_sys_old[mm_2d][mm_2d_n]; //modification...see if it works
+            		    //printf("%e + i %e ;\n",creal(A_2d[mm_sub][mm_sub_n]),cimag(A_2d[mm_sub][mm_sub_n])); //matches with matlab
             		}
       		} //mm_sub
             		
-            	for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) // Only loop through remaining perturbations
-            	{
+            for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) // Only loop through remaining perturbations
+            {
             		
             	
-            		// %%%%%%%%%%% Linear inversion using LAPACK %%%%%%%%%%%%%%%%%
-            		ipack=0;
+            	// %%%%%%%%%%% Linear inversion using LAPACK %%%%%%%%%%%%%%%%%
+            	ipack=0;
+                jg_0_2d=0; 
+                mm_2d = 0;  
+                for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
+                {
+                	jg_0_2d = (3*jg_0 + j_subG_0); 
             		for (int mm_sub = 0; mm_sub < 3; mm_sub++)
            		    {
             			mm_2d = (3*mm + mm_sub);
-                        	for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
-                        	{
-                        		jg_0_2d = (3*jg_0 + j_subG_0); 
-                            		A1lapack[ipack] = A_2d[mm_sub][j_subG_0]; //A_2d[mm_2d][mm_2d]; //A[mm][mm][i_subG_0][j_subG_0];
-                            		b1lapack[ipack] = G_sys_old[mm_2d][jg_0_2d]; //G_sys_old[mm][jg_0][i_subG_0][j_subG_0];
-                            		ipack = ipack + 1;
-                        	}    
-            		}
-            		//printf("\n%d\n",ipack);
+                		A1lapack[ipack] = A_2d[mm_sub][j_subG_0]; //A_2d[mm_2d][mm_2d]; //A[mm][mm][i_subG_0][j_subG_0];
+                   		b1lapack[ipack] = G_sys_old[mm_2d][jg_0_2d]; //G_sys_old[mm][jg_0][i_subG_0][j_subG_0];
+                   		ipack = ipack + 1;
+                   	}    
+            	}
+            	//printf("\n%d\n",ipack);
             		
-            		info = LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',3,3,3,A1lapack,3,b1lapack,3); //info = LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',m=3,n=3,nrhs=3,Alapack,lda=3,blapack,ldb=3); 
-            		//info = LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',m,n,nrhs,A1lapack,lda,b1lapack,ldb); 
+            	info = LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',3,3,3,A1lapack,3,b1lapack,3); //info = LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',m=3,n=3,nrhs=3,Alapack,lda=3,blapack,ldb=3); 
+            	//info = LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',m,n,nrhs,A1lapack,lda,b1lapack,ldb); 
+                //https://extras.csc.fi/math/nag/mark21/pdf/F08/f08anf.pdf
             		
-            		gpack=0; 
-            		mm_2d = 0;       	
-            		for (int mm_sub = 0; mm_sub < 3; mm_sub++) // 3D coordinate positions
-           		    {
-           			mm_2d = (3*mm + mm_sub);
-           			//ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
-                        	for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
-                        	{
-                        		jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
+            	gpack=0; 
+            	mm_2d = 0;  
+                jg_0_2d =0;     	
+           		//ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
+                for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
+                {
+                   		jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
+            	    	for (int mm_sub = 0; mm_sub < 3; mm_sub++) // 3D coordinate positions
+           		        {
+           			        mm_2d = (3*mm + mm_sub);
             				G_sys_new[mm_2d][jg_0_2d] = b1lapack[gpack]; // stores G^1_11
             				//G_sys_new[mm][jg_0][i_subG_0][j_subG_0] = b1lapack[gpack]; // stores G^1_11
             				//printf("%e + i %e ;",creal(G_sys_new[mm_2d][jg_0_2d]),cimag(G_sys_new[mm_2d][jg_0_2d]));
             				gpack=gpack + 1;
             			}  
             			//printf("\n");
-            		}
+            	}
             		
-            	} // end jg_0	
-            	
-            		
-                // %%%%%%%%%%% end Linear inversion using LAPACK %%%%%%%%%%%%%%
-            		
-            	// Next, solve all systems of equations for ii not equal to mm		
-            	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
+            } // end jg_0	
+
+                /* //print values
+                for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
             	{ 
-            	if(ig_0 != mm){
             	   for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
                 	{
                 		ig_0_2d = (3*ig_0 + i_subG_0); // Set indices	  	
             			for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //tot_sub_vol  ig_0 //lower triangular matrix
             			{
-            			mm_sub = 0; 
-            		 	for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
-                        	{
-                        		jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
-           				mm_2d = (3*mm + mm_sub);
-                        		G_sys_new[ig_0_2d][jg_0_2d] = G_sys_old[ig_0_2d][jg_0_2d] + pow(k,2)*alpha_0[mm]*G_sys_old[ig_0_2d][mm_2d]*G_sys_new[mm_2d][jg_0_2d]; //alpha_0[mm] = delta_V_vector[mm]*epsilon_s[mm]
-                        		mm_sub = mm_sub + 1; 
-                        	} // j_subG_0            				
-               		} // jg_0
-                        } // i_subG_0   	
-            	} // if(ig_0 != mm)  	                	
-            	} // ig_0    	
+            		 	for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions   
+                        	{ 
+                                jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
+                                //printf(" %e + %e",creal(G_sys_new[ig_0_2d][jg_0_2d]),cimag(G_sys_new[ig_0_2d][jg_0_2d]));
+                            }
+                        }   
+                        //printf("\n"); 
+                    }
+                }	
+                */
+                // %%%%%%%%%%% end Linear inversion using LAPACK %%%%%%%%%%%%%%
+            		
+            	// Next, solve all systems of equations for ii not equal to mm		
+            for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
+            { 
+            	//mm_sub_n = 0;  
+                for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
+                {
+                	ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
+                    //mm_2d_n = (3*mm + mm_sub_n);	  	
+            		for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //tot_sub_vol  ig_0 //lower triangular matrix
+            		{
+            	        if(ig_0 != mm)
+                        {
+            			    mm_sub = 0; 
+            		 	    for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
+                            {
+                        	    jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
+           				        mm_2d = (3*mm + mm_sub);
+                        	    G_sys_new[ig_0_2d][jg_0_2d] = G_sys_old[ig_0_2d][jg_0_2d] + pow(k,2)*alpha_0[mm]*G_sys_old[ig_0_2d][mm_2d]*G_sys_new[mm_2d][jg_0_2d]; //alpha_0[mm] = delta_V_vector[mm]*epsilon_s[mm]
+                        	    mm_sub = mm_sub + 1; 
+                            } // j_subG_0            				
+               		    } // if(ig_0 != mm) 
+                    } // jg_0   	
+            	}// i_subG_0   	                	
+            } // ig_0    	
             	
-            	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
-            	{
+            for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
+            {
             	for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //tot_sub_vol  ig_0
             	{
             	   for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
@@ -872,64 +880,61 @@ if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; sour
                 		ig_0_2d = (3*ig_0 + i_subG_0); // Set indices	
             		 	for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
                       	{
-                        		jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
-                      			G_sys_old[ig_0_2d][jg_0_2d] = G_sys_new[ig_0_2d][jg_0_2d];
-                      			//G_sys[ig_0][jg_0][i_subG_0][j_subG_0] = G_sys_new[ig_0_2d][jg_0_2d];
+                        	jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
+                      		G_sys_old[ig_0_2d][jg_0_2d] = G_sys_new[ig_0_2d][jg_0_2d];
+                      		//G_sys[ig_0][jg_0][i_subG_0][j_subG_0] = G_sys_new[ig_0_2d][jg_0_2d];
                   			//G_sys_old[ig_0][jg_0][i_subG_0][j_subG_0]=G_sys_new[ig_0][jg_0][i_subG_0][j_subG_0];
                       	}    
                  		     	
                   }
                  	//printf("\n");		
             	} // jg_0
-            	} // ig_0	
+            } // ig_0	
             	            	  
             memset(A_2d, 0, sizeof *A_2d * 3*tot_sub_vol);
             memset(A1lapack, 0, sizeof *A1lapack *3*3); //double complex Alapack[lda*n];
 	        memset(b1lapack, 0, sizeof *b1lapack *3*3);
             	
-            }//end mm loop 
+        }//end mm loop 
            
-           //printf("Final solution:\n");
+        printf("Final solution:\n");
            
-           for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
-           {
-           	    for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
-                {
-                	ig_0_2d = (3*ig_0 + i_subG_0); // Set indices	
-            		for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //tot_sub_vol
-           		    {  
-                        	for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions
-                        	{
-                        		jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
-                        		G_sys[ig_0][jg_0][i_subG_0][j_subG_0] = G_sys_new[ig_0_2d][jg_0_2d];
-	    				        //G_sys[ig_0][jg_0][i_subG_0][j_subG_0] = G_sys_new[ig_0][jg_0][i_subG_0][j_subG_0];
-	    				        //printf("%e + i %e ; ", creal(G_sys[ig_0][jg_0][i_subG_0][j_subG_0]),cimag(G_sys[ig_0][jg_0][i_subG_0][j_subG_0]));
-	    			        }
-            		} 
-            		//printf("\n");
-            	}
-           } 
+        for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
+        {
+           	for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
+            {
+                ig_0_2d = (3*ig_0 + i_subG_0); // Set indices	
+            	for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //tot_sub_vol
+           		{  
+                    for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions
+                    {
+                        jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
+                        G_sys[ig_0][jg_0][i_subG_0][j_subG_0] = G_sys_new[ig_0_2d][jg_0_2d];
+	    				//G_sys[ig_0][jg_0][i_subG_0][j_subG_0] = G_sys_new[ig_0][jg_0][i_subG_0][j_subG_0];
+	    				//printf("%e + i %e ; ", creal(G_sys[ig_0][jg_0][i_subG_0][j_subG_0]),cimag(G_sys[ig_0][jg_0][i_subG_0][j_subG_0]));
+	    			}
+            	} 
+            	//printf("\n");
+            }
+        } 
            
-           memset(G_sys_new, 0, sizeof *G_sys_new * 3*tot_sub_vol); //modulo_r_i_j
-           memset(eyeA_2d, 0, sizeof *eyeA_2d * 3*tot_sub_vol);
+        memset(G_sys_new, 0, sizeof *G_sys_new * 3*tot_sub_vol); //modulo_r_i_j
+        memset(eyeA_2d, 0, sizeof *eyeA_2d * 3*tot_sub_vol);
            
-           free(eye_iter);
-           free(G_sys_old);
-           free(G_sys_new);
-           free(eyeA_2d);
-           free(A_2d);
+        free(eye_iter);
+        free(G_sys_old);
+        free(G_sys_new);
+        free(eyeA_2d);
+        free(A_2d);
            
 	   free(A1lapack); 
 	   free(b1lapack);
-	   free(epsilon_s);
-           
-           printf("Final solution \n");
-	   
-	   }
+	   free(epsilon_s);	   
+	}
 	   
 	   
-        free(G_0);
-        free(A);
+    free(G_0);
+    free(A);
 
          if(save_SGF_matrix =='Y'){   
             printf("  --------- Export G_sys -----\n");
