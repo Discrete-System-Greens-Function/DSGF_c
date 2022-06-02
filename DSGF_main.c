@@ -44,7 +44,7 @@
 
 // Library with the inputs and functions for DSGF
 #include "user_inputs.h" // User inputs definitions header. No values are defined in this file.  
-#include "functions_dsgf.h" // Definitions of functions used in DSGF
+#include "functions_DSGF.h" // Definitions of functions used in DSGF
 
 // LAPACKE libraries: https://www.netlib.org/lapack/lapacke.html ; https://extras.csc.fi/math/nag/mark21/pdf/F08/f08anf.pdf
 #include <lapacke.h> 
