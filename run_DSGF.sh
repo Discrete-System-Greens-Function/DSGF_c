@@ -22,7 +22,7 @@ export OMP_THREADS=4 # use multiple cores during the calculation
 icc -O3  -std=c99 DSGF_main.c -o DSGF -mcmodel=medium  -L${MKLROOT}/lib/intel64 -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread -lm -ldl  -I"${MKLROOT}/include" # -openmp 
 #  MALLOC_sgf-sphere-lapacke-linux.c  sgf-flat-surfaces-lapacke-linux.c  sgf-lapacke_original.c or sgf-lapacke-linux.c sgf-sphere-lapacke-linux.c sgf-flat-surfaces-lapacke-linux_v2.c  MALLOC_sgf-sphere-lapacke-linux    
 
-time ./dsgf  #time function displays the real, user and system time for running the code;    /.dsgf_LAPACKE_9N2 runs the compiled code. 
+time ./DSGF  #time function displays the real, user and system time for running the code;    /.dsgf_LAPACKE_9N2 runs the compiled code. 
 
 # Improvement MALLOC:
 # https://stackoverflow.com/questions/13534966/how-to-dynamically-allocate-a-contiguous-block-of-memory-for-a-2d-array
