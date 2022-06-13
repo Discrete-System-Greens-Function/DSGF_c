@@ -7,6 +7,8 @@
 #ifndef __functions_dsgf_h //https://stackoverflow.com/questions/28361391/calling-define-from-another-file
 #define __functions_dsgf_h
 
+#include <math.h>
+#include <stdio.h>
 // ########## dsgf_functions.h ##########
 
 // Constants: 
@@ -34,44 +36,6 @@ double k_function(double omega)         // function definition
     double k = omega*sqrt(epsilon_ref*epsilon_0*mu_0);
     return k;                  // return statement
 }
-
-// Import user input as a const: https://stackoverflow.com/questions/8048203/is-it-possible-to-set-const-using-a-user-input
-/*
-// Instead of using a function, the .txt user_inputs.txt file is imported in the main code. 
-// This way, the code will not need to be recompiled for every user modification.
-// The function remains commented if we decide to modify it.
-int get_user_inputs(char* material, char* geometry, double* d, double* radius, double* Lx, double* Ly, double* Lz, double* T1, double* T2, double* T_calc, char* solution, char* single_spectrum_analysis, char* save_A_matrix, char* save_G0_matrix, char* save_SGF_matrix, char* save_spectral_conductance, char* save_spectral_transmissivity)
-{
-    FILE *import_inputs; 
-    char dirPathUserInputs[50];
-    sprintf(dirPathUserInputs, "user_inputs.txt");
-    import_inputs=fopen(dirPathUserInputs, "r"); 
-    char buffer[50];
-//    fscanf(import_inputs,"%s = %d\n",buffer, &N_bulk_spheres);
-//    fscanf(import_inputs,"%s = %d\n",buffer, &N_sphere);
-//    fscanf(import_inputs,"%s = %d\n",buffer, &N_omega); 
-    fscanf(import_inputs,"%s = %s\n",buffer, material);
-    fscanf(import_inputs,"%s = %s\n",buffer, geometry);
-    fscanf(import_inputs,"%s = %lf\n",buffer, &d);
-    fscanf(import_inputs,"%s = %lf\n",buffer, &radius);
-    fscanf(import_inputs,"%s = %lf\n",buffer, &Lx);
-    fscanf(import_inputs,"%s = %lf\n",buffer, &Ly);
-    fscanf(import_inputs,"%s = %lf\n",buffer, &Lz);
-    fscanf(import_inputs,"%s = %lf\n",buffer, &T1);
-    fscanf(import_inputs,"%s = %lf\n",buffer, &T2);
-    fscanf(import_inputs,"%s = %lf\n",buffer, &T_calc);
-    fscanf(import_inputs,"%s = %s\n",buffer, solution);
-    fscanf(import_inputs,"%s = %c\n",buffer, &single_spectrum_analysis);
-    fscanf(import_inputs,"%s = %c\n",buffer, &save_A_matrix);
-    fscanf(import_inputs,"%s = %c\n",buffer, &save_G0_matrix);
-    fscanf(import_inputs,"%s = %c\n",buffer, &save_SGF_matrix);
-    fscanf(import_inputs,"%s = %c\n",buffer, &save_spectral_conductance);
-    fscanf(import_inputs,"%s = %c",buffer, &save_spectral_transmissivity);
-    fclose(import_inputs);
-//    const int const_user_input_N_sphere = N_sphere;
-    //return const_user_input_N_sphere;
-}
-*/
 
 // The parameters N_subvolumes_per_object, N_bulk_objects, and N_omega need to treated differently in the code.
 // The reason is because they are used to structure the solution matrices and are required to be non-variable parameters.  
