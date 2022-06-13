@@ -3,9 +3,8 @@
 
 void read_user_inputs(char *material, char *geometry, char *discretization_thin_film, double *d, double *radius, double *Lx, double *Ly, double *Lz, double *T1, double *T2, char *solution, char *single_spectrum_analysis, char *save_A_matrix, char *save_G0_matrix, char *save_SGF_matrix, char *save_spectral_conductance, char *save_spectral_transmissivity, char *save_power_dissipated){
 	
-    FILE *import_inputs; 
     char dirPathUserInputs[260] = "user_inputs.txt";
-    import_inputs = fopen(dirPathUserInputs, "r"); 
+    FILE *import_inputs = fopen(dirPathUserInputs, "r"); 
     char buffer[256]; 
     fscanf(import_inputs,"%s = %s\n",buffer, material);
     fscanf(import_inputs,"%s = %s\n",buffer, geometry);
@@ -26,4 +25,16 @@ void read_user_inputs(char *material, char *geometry, char *discretization_thin_
     fscanf(import_inputs,"%s = %c",buffer, save_spectral_transmissivity); 
     fscanf(import_inputs,"%s = %c\n",buffer, save_power_dissipated);	
     fclose(import_inputs);
+}
+
+void read_calculation_temperatures(int N_Tcalc, double Tcalc_vector[]){
+
+    char dirPathT_calc[] = "T_calc.txt";
+    FILE *import_T_calc = fopen(dirPathT_calc, "r"); 
+    for (int i_T_calc=0; i_T_calc<N_Tcalc;i_T_calc++) //tot_sub_vol
+    {
+	    fscanf(import_T_calc,"%lf\n", &Tcalc_vector[i_T_calc]);
+    }	
+    fclose(import_T_calc);
+
 }

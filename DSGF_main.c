@@ -70,16 +70,8 @@ int main()
    
     read_user_inputs(material, geometry, discretization_thin_film, &d, &radius, &Lx, &Ly, &Lz, &T1, &T2, &solution, &single_spectrum_analysis, &save_A_matrix, &save_G0_matrix, &save_SGF_matrix, &save_spectral_conductance, &save_spectral_transmissivity, &save_power_dissipated);
 
-    FILE *import_T_calc; 
-    char dirPathT_calc[260];
-    sprintf(dirPathT_calc, "T_calc.txt");
-    import_T_calc = fopen(dirPathT_calc, "r"); 
-    for (int i_T_calc=0; i_T_calc<N_Tcalc;i_T_calc++) //tot_sub_vol
-    {
-    fscanf(import_T_calc,"%lf\n", &Tcalc_vector[i_T_calc]);
-    }	
-    fclose(import_T_calc);
-        
+    read_calculation_temperatures(N_Tcalc, Tcalc_vector);
+
     int const const_N_subvolumes_per_object = get_N_subvolumes_per_object();
     int const const_N_bulk_objects = get_N_bulk_objects();
     int const const_N_omega = get_N_omega();
