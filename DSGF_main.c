@@ -71,9 +71,9 @@ int main()
 
 	read_calculation_temperatures(N_Tcalc, Tcalc_vector);
 
-	int const const_N_subvolumes_per_object = get_N_subvolumes_per_object();
-	int const const_N_bulk_objects = get_N_bulk_objects();
-	int const const_N_omega = get_N_omega();
+	int const const_N_subvolumes_per_object = get_N_subvolumes_per_object(N_subvolumes_per_object);
+	int const const_N_bulk_objects = get_N_bulk_objects(N_bulk_objects);
+	int const const_N_omega = get_N_omega(N_omega);
 	size_t tot_sub_vol = const_N_subvolumes_per_object*const_N_bulk_objects; // Assign tot_sub_vol: Computes the total number of subvolumes in the system. tot_sub_vol is defined this way because it must be a non-variable parameter due to the computations perfomed in the code. Previously, it was defined as #define tot_sub_vol const_N_subvolumes_per_object*const_N_bulk_objects
 
 	subvol shape_file[const_N_subvolumes_per_object]; //typedef struct node 

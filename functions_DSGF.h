@@ -19,7 +19,7 @@ const double k_b = 1.38064852e-23;       // Boltzmann constant [J/K]
 const double epsilon_0 = 8.8542e-12;     // Permittivity of free space [F/m]
 const double c_0 = 299792458;            // Speed of light in vacuum [m/s]
 double mu_0;                            // Permeability of free space [H/m]
-double epsilon_ref = 1. ;             // dielectric function of the background reference medium
+double epsilon_ref = 1.;             // dielectric function of the background reference medium
 
 double complex epsilon;  // Definition of dielectric function
 
@@ -39,38 +39,41 @@ double k_function(double omega)         // function definition
 
 // The parameters N_subvolumes_per_object, N_bulk_objects, and N_omega need to treated differently in the code.
 // The reason is because they are used to structure the solution matrices and are required to be non-variable parameters.  
-int get_N_subvolumes_per_object()
+int get_N_subvolumes_per_object(int N_subvolumes_per_object)
 {
-    FILE *import_N_subvolumes_per_object; 
-    char dirPathN_subvolumes_per_object[50];
-    sprintf(dirPathN_subvolumes_per_object, "N_subvolumes_per_object.txt");
-    import_N_subvolumes_per_object=fopen(dirPathN_subvolumes_per_object, "r"); 
+    char dirPathN_subvolumes_per_object[] = "N_subvolumes_per_object.txt";
+    
+    FILE *import_N_subvolumes_per_object=fopen(dirPathN_subvolumes_per_object, "r"); 
+    
     fscanf(import_N_subvolumes_per_object,"%d", &N_subvolumes_per_object);
     fclose(import_N_subvolumes_per_object);
+    
     const int const_user_input_N_subvolumes_per_object = N_subvolumes_per_object;
     return const_user_input_N_subvolumes_per_object;
 }
 
-int get_N_bulk_objects()
+int get_N_bulk_objects(int N_bulk_objects)
 {
-    FILE *import_N_bulk_objects; 
-    char dirPathN_bulk_objects[50];
-    sprintf(dirPathN_bulk_objects, "N_bulk_objects.txt");
-    import_N_bulk_objects=fopen(dirPathN_bulk_objects, "r"); 
+    char dirPathN_bulk_objects[] = "N_bulk_objects.txt";
+    
+    FILE *import_N_bulk_objects=fopen(dirPathN_bulk_objects, "r"); 
+    
     fscanf(import_N_bulk_objects,"%d", &N_bulk_objects);
     fclose(import_N_bulk_objects);
+    
     const int const_user_input_N_bulk_objects = N_bulk_objects;
     return const_user_input_N_bulk_objects;
 }
 
-int get_N_omega()
+int get_N_omega(int N_omega)
 {
-    FILE *import_N_omega; 
-    char dirPathN_omega[50];
-    sprintf(dirPathN_omega, "N_omega.txt");
-    import_N_omega=fopen(dirPathN_omega, "r"); 
+    char dirPathN_omega[] = "N_omega.txt";
+    
+    FILE *import_N_omega=fopen(dirPathN_omega, "r"); 
+    
     fscanf(import_N_omega,"%d", &N_omega);
     fclose(import_N_omega);
+    
     const int const_user_input_N_omega = N_omega;
     return const_user_input_N_omega;
 }
