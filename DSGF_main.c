@@ -45,6 +45,7 @@
 // Library with the inputs and functions for DSGF
 #include "user_inputs.h" // User inputs definitions header. No values are defined in this file.  
 #include "functions_DSGF.h" // Definitions of functions used in DSGF
+#include "file_utils.h"
 
 // LAPACKE libraries: https://www.netlib.org/lapack/lapacke.html ; https://extras.csc.fi/math/nag/mark21/pdf/F08/f08anf.pdf
 #include <lapacke.h> 
@@ -53,7 +54,7 @@
 //#include <omp.h> // library for OpenMP
 
 FILE * pos_processing_summary; // call the main outputs' file,  
-  
+
 // #################################################################
 // ################### START OF THE CODE ###########################
 // #################################################################
@@ -66,34 +67,9 @@ int main()
     
     mu_0 = (4.*pi)*pow(10,-7); // Permeability of free space [H/m]
     
-    //get_user_inputs(material,geometry,d,radius,Lx,Ly,Lz,T1,T2,T_calc,solution,single_spectrum_analysis,save_A_matrix,save_G0_matrix,save_SGF_matrix,save_spectral_conductance,save_spectral_transmissivity);
-    // Instead of using a function, the .txt user_inputs.txt file is imported in the main code. 
+   
+    read_user_inputs(material, geometry, discretization_thin_film, &d, &radius, &Lx, &Ly, &Lz, &T1, &T2, &solution, &single_spectrum_analysis, &save_A_matrix, &save_G0_matrix, &save_SGF_matrix, &save_spectral_conductance, &save_spectral_transmissivity, &save_power_dissipated);
 
-    FILE *import_inputs; 
-    char dirPathUserInputs[260];
-    sprintf(dirPathUserInputs, "user_inputs.txt");
-    import_inputs = fopen(dirPathUserInputs, "r"); 
-    char buffer[256]; 
-    fscanf(import_inputs,"%s = %s\n",buffer, material);
-    fscanf(import_inputs,"%s = %s\n",buffer, geometry);
-    fscanf(import_inputs,"%s = %s\n",buffer, discretization_thin_film);
-    fscanf(import_inputs,"%s = %lf\n",buffer, &d);
-    fscanf(import_inputs,"%s = %lf\n",buffer, &radius);
-    fscanf(import_inputs,"%s = %lf\n",buffer, &Lx);
-    fscanf(import_inputs,"%s = %lf\n",buffer, &Ly);
-    fscanf(import_inputs,"%s = %lf\n",buffer, &Lz);
-    fscanf(import_inputs,"%s = %lf\n",buffer, &T1);
-    fscanf(import_inputs,"%s = %lf\n",buffer, &T2);
-    fscanf(import_inputs,"%s = %c\n",buffer, &solution);
-    fscanf(import_inputs,"%s = %c\n",buffer, &single_spectrum_analysis);
-    fscanf(import_inputs,"%s = %c\n",buffer, &save_A_matrix);
-    fscanf(import_inputs,"%s = %c\n",buffer, &save_G0_matrix);
-    fscanf(import_inputs,"%s = %c\n",buffer, &save_SGF_matrix);
-    fscanf(import_inputs,"%s = %c\n",buffer, &save_spectral_conductance);
-    fscanf(import_inputs,"%s = %c",buffer, &save_spectral_transmissivity); 
-    fscanf(import_inputs,"%s = %c\n",buffer, &save_power_dissipated);	
-    fclose(import_inputs);
-    
     FILE *import_T_calc; 
     char dirPathT_calc[260];
     sprintf(dirPathT_calc, "T_calc.txt");
