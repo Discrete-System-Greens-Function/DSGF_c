@@ -26,103 +26,109 @@ double complex epsilon;  // Definition of dielectric function
 // Function for wave vector in free space calculation:
 double k_0_function(double omega)         // function definition
 {
-    double k_0 = omega*sqrt(epsilon_0*mu_0);
-    return k_0;                  // return statement
+	double k_0 = omega*sqrt(epsilon_0*mu_0);
+	return k_0;                  // return statement
 }
 
 // Function for wave vector in background reference medium calculation:
 double k_function(double omega)         // function definition
 {
-    double k = omega*sqrt(epsilon_ref*epsilon_0*mu_0);
-    return k;                  // return statement
+	double k = omega*sqrt(epsilon_ref*epsilon_0*mu_0);
+	return k;                  // return statement
 }
 
 // The parameters N_subvolumes_per_object, N_bulk_objects, and N_omega need to treated differently in the code.
 // The reason is because they are used to structure the solution matrices and are required to be non-variable parameters.  
-int get_N_subvolumes_per_object(int N_subvolumes_per_object)
+int get_N_subvolumes_per_object()
 {
-    char dirPathN_subvolumes_per_object[] = "N_subvolumes_per_object.txt";
-    
-    FILE *import_N_subvolumes_per_object=fopen(dirPathN_subvolumes_per_object, "r"); 
-    
-    fscanf(import_N_subvolumes_per_object,"%d", &N_subvolumes_per_object);
-    fclose(import_N_subvolumes_per_object);
-    
-    const int const_user_input_N_subvolumes_per_object = N_subvolumes_per_object;
-    return const_user_input_N_subvolumes_per_object;
+	char dirPathN_subvolumes_per_object[] = "N_subvolumes_per_object.txt";
+
+	FILE *import_N_subvolumes_per_object=fopen(dirPathN_subvolumes_per_object, "r"); 
+
+	int temp;
+
+	fscanf(import_N_subvolumes_per_object,"%d", &temp);
+	fclose(import_N_subvolumes_per_object);
+
+	const int const_user_input_N_subvolumes_per_object = temp;
+	return const_user_input_N_subvolumes_per_object;
 }
 
-int get_N_bulk_objects(int N_bulk_objects)
+int get_N_bulk_objects()
 {
-    char dirPathN_bulk_objects[] = "N_bulk_objects.txt";
-    
-    FILE *import_N_bulk_objects=fopen(dirPathN_bulk_objects, "r"); 
-    
-    fscanf(import_N_bulk_objects,"%d", &N_bulk_objects);
-    fclose(import_N_bulk_objects);
-    
-    const int const_user_input_N_bulk_objects = N_bulk_objects;
-    return const_user_input_N_bulk_objects;
+	char dirPathN_bulk_objects[] = "N_bulk_objects.txt";
+
+	FILE *import_N_bulk_objects=fopen(dirPathN_bulk_objects, "r"); 
+	
+	int temp;
+
+	fscanf(import_N_bulk_objects,"%d", &temp);
+	fclose(import_N_bulk_objects);
+
+	const int const_user_input_N_bulk_objects = temp;
+	return const_user_input_N_bulk_objects;
 }
 
-int get_N_omega(int N_omega)
+int get_N_omega()
 {
-    char dirPathN_omega[] = "N_omega.txt";
-    
-    FILE *import_N_omega=fopen(dirPathN_omega, "r"); 
-    
-    fscanf(import_N_omega,"%d", &N_omega);
-    fclose(import_N_omega);
-    
-    const int const_user_input_N_omega = N_omega;
-    return const_user_input_N_omega;
+	char dirPathN_omega[] = "N_omega.txt";
+
+	FILE *import_N_omega=fopen(dirPathN_omega, "r"); 
+
+	int temp;
+
+	fscanf(import_N_omega,"%d", &temp);
+	fclose(import_N_omega);
+
+	const int const_user_input_N_omega = temp;
+	return const_user_input_N_omega;
 }
 
 
 // Function for the thermal volumes calculation:
 double vol_sphere(double radius)               // function definition, radius is a variable inside the function   
 {
-    //float diameter= 2*radius;
-    double volume = (4./3)*pi*pow(radius,3);  // volume for sphere 
-    return volume;                            // return statement
+	//float diameter= 2*radius;
+	double volume = (4./3)*pi*pow(radius,3);  // volume for sphere 
+	return volume;                            // return statement
 }
 
 // Definition used to import the discretization positions
 typedef struct node {
-    float x;
-    float y;
-    float z;
+	float x;
+	float y;
+	float z;
 } subvol;
 
 // Function a for free space green's function calculation:
 double a_j_function(double delta_v_vector)         
 {
-    double a = pow( (3.* delta_v_vector)/(4*pi), 1./3);  // volume for sphere 
-    return a;                  // return statement
+	double a = pow( (3.* delta_v_vector)/(4*pi), 1./3);  // volume for sphere 
+	return a;                  // return statement
 }
 
 // Function for the mean energy of an electromagnetic state calculation:
 double theta_function(double omega, double T)    
 {
-    double theta = (h_bar*omega)/(exp(h_bar*omega/(k_b*T))-1) ;   
-    return theta;                  // return statement
+	double theta = (h_bar*omega)/(exp(h_bar*omega/(k_b*T))-1) ;   
+	return theta;                  // return statement
 }
 
 // Function for the calculation of the derivative of the mean energy of an electromagnetic state by the temperature
 double  dtheta_dT_function(double omega,double T_calc)
 {
-    double psi = h_bar*(omega)/(k_b*T_calc);     // Input for exponential dtheta_dT function[dimensionless]
-    double dtheta_dT = (k_b*pow(psi,2)*exp(psi))/(pow(exp(psi)-1.,2)); // [J/K]
-    return dtheta_dT;           // return statement
+	double psi = h_bar*(omega)/(k_b*T_calc);     // Input for exponential dtheta_dT function[dimensionless]
+	double dtheta_dT = (k_b*pow(psi,2)*exp(psi))/(pow(exp(psi)-1.,2)); // [J/K]
+	return dtheta_dT;           // return statement
 }
 
 // How to measure memory usage inside my program? (getrusage): https://youtu.be/Os5cK0H8EOA
 long get_mem_usage() 
 {
-    struct rusage myusage;
-    getrusage(RUSAGE_SELF,&myusage); // getrusage() https://man7.org/linux/man-pages/man2/getrusage.2.html
-    return myusage.ru_maxrss;           // return statement
-   
+	struct rusage myusage;
+	getrusage(RUSAGE_SELF,&myusage); // getrusage() https://man7.org/linux/man-pages/man2/getrusage.2.html
+	return myusage.ru_maxrss;           // return statement
+
 }
 
 // Geometry parameters' definitions
