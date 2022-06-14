@@ -65,8 +65,6 @@ int main()
 	long baseline = get_mem_usage(); // measure baseline memory usage
 	clock_t begin = clock();  /* set timer here, do your time-consuming job */
 
-	mu_0 = (4.*pi)*pow(10,-7); // Permeability of free space [H/m]
-
 	read_user_inputs(material, geometry, discretization_thin_film, &d, &radius, &Lx, &Ly, &Lz, &T1, &T2, &solution, &single_spectrum_analysis, &save_A_matrix, &save_G0_matrix, &save_SGF_matrix, &save_spectral_conductance, &save_spectral_transmissivity, &save_power_dissipated);
 
 	read_calculation_temperatures(N_Tcalc, Tcalc_vector);
