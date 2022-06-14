@@ -85,9 +85,6 @@ int main()
 
 	size_t tot_sub_vol = const_N_subvolumes_per_object*const_N_bulk_objects; // Assign tot_sub_vol: Computes the total number of subvolumes in the system. tot_sub_vol is defined this way because it must be a non-variable parameter due to the computations perfomed in the code. Previously, it was defined as #define tot_sub_vol const_N_subvolumes_per_object*const_N_bulk_objects
 
-
-	printf("-------- %d, %d, %d, %d -------------\n", const_N_subvolumes_per_object, const_N_bulk_objects, const_N_omega, tot_sub_vol);
-
 	subvol shape_file[const_N_subvolumes_per_object]; //typedef struct node 
 	subvol shape_filetf[tot_sub_vol];
 
