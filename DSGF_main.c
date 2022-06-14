@@ -4,7 +4,7 @@
 // Developed by RETL group at the University of Utah, USA
 
 // VERSION: MARCH 31, 2022 
-// LAST UPDATE: MAY 31, 2022, edition and update using github desktop
+// LAST UPDATE: JUNE 14, 2022, edition and update using github desktop
 // 
 // In this version:
 //	- A single separation distance between thermal objects is evaluated
@@ -20,7 +20,6 @@
 // 
 //Improvements required:
 //	- "Iterative" solution is not working yet
-//	- Thermal power dissipated (Q_omega_thermal_object) is not calculated correctly yet
 //
 //Notes:
 // 	- The maximum precision is used in this code using double data type
@@ -45,7 +44,7 @@
 // Library with the inputs and functions for DSGF
 #include "user_inputs.h" // User inputs definitions header. No values are defined in this file.  
 #include "functions_DSGF.h" // Definitions of functions used in DSGF
-#include "file_utils.h"
+#include "file_utils.h" // header with definitions of read_user_inputs and read_calculation_temperatures functions
 
 // LAPACKE libraries: https://www.netlib.org/lapack/lapacke.html ; https://extras.csc.fi/math/nag/mark21/pdf/F08/f08anf.pdf
 #include <lapacke.h> 
