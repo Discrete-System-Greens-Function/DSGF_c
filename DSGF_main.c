@@ -965,7 +965,7 @@ int main()
 				trans_coeff[ig_0][jg_0] = 4.*pow(k_0,4)*delta_V_vector[ig_0]*delta_V_vector[jg_0]*cimag(epsilon)*cimag(epsilon)*G_element[ig_0][jg_0] ;  
 				//printf("%e ; ",trans_coeff[ig_0][jg_0]); // values match with Lindsay's results
 
-				// Thermal power dissipated calculation, based on the matlab code (Using Eric's Eq. 26)
+				// Thermal power dissipated calculation, based on the matlab code (Using Tervo's Eq. 26)
 				if (ig_0 != jg_0) 
 				{
 					inner_sum[jg_0] = (theta_function(omega_value, T_vector[jg_0]) - theta_function(omega_value, T_vector[ig_0])) * trans_coeff[ig_0][jg_0]; //Q_omega_subvol_function(theta_1,theta_2, trans_coeff[ig_0][jg_0]);
