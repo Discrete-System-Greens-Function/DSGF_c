@@ -4,6 +4,9 @@ TITLE="Near-field radiative heat transfer between thermal objects"
 METHOD="DSGF: Discrete System Green Function method" 
 VERSION="Developed by RETL Lab at the Department of Mechanical Engineering, The University of Utah, UT, USA"
 
+# Use this command if permission is denied: sudo chmod u+x run_dsgf.sh
+# Use this command if bad interpreter appears: sed -i -e 's/\r$//' run_dsgf.sh
+
 #print variable on a screen
 echo $TITLE
 echo $METHOD
