@@ -70,9 +70,18 @@ int main()
 
 	read_calculation_temperatures(N_Tcalc, Tcalc_vector);
 
-	int const const_N_subvolumes_per_object = get_N_subvolumes_per_object();
-	int const const_N_bulk_objects = get_N_bulk_objects();
-	int const const_N_omega = get_N_omega();
+	int const const_N_subvolumes_per_object = read_int_from_file(N_subvolumes_per_object_file);
+	
+	N_subvolumes_per_object = const_N_subvolumes_per_object;
+
+	int const const_N_bulk_objects = read_int_from_file(N_bulk_objects_file);
+
+	N_bulk_objects = const_N_bulk_objects;
+
+	int const const_N_omega = read_int_from_file(N_omega_file);
+	
+	N_omega = const_N_omega;
+
 	size_t tot_sub_vol = const_N_subvolumes_per_object*const_N_bulk_objects; // Assign tot_sub_vol: Computes the total number of subvolumes in the system. tot_sub_vol is defined this way because it must be a non-variable parameter due to the computations perfomed in the code. Previously, it was defined as #define tot_sub_vol const_N_subvolumes_per_object*const_N_bulk_objects
 
 	subvol shape_file[const_N_subvolumes_per_object]; //typedef struct node 
@@ -107,7 +116,7 @@ int main()
 	double (*sum_trans_coeff) = malloc(sizeof *sum_trans_coeff *N_omega); //double sum_trans_coeff[N_omega]; //
 
 	double complex (*Q_omega_subvol) = malloc(sizeof * Q_omega_subvol * tot_sub_vol);//double complex Q_omega_subvol[tot_sub_vol]; // power dissipated per subvolume
-	double (*Q_omega_thermal_object)[N_omega] = malloc(sizeof * Q_omega_thermal_object * N_bulk_objects);  //double Q_omega_thermal_object[N_bulk_objects][N_omega];
+	double (*Q_omega_thermal_object)[N_omega] = malloc(sizeof * Q_omega_thermal_object * const_N_bulk_objects);  //double Q_omega_thermal_object[N_bulk_objects][N_omega];
 	double (*Q_subvol)[N_omega] = calloc(tot_sub_vol, sizeof(*Q_subvol)); //Q_subvol[tot_sub_vol][N_omega]
 	/* 
 	// The SGF calculation considering the wavelength is not considered, so it is commented. 
@@ -139,7 +148,8 @@ int main()
 	}	
 
 	// ######### Properties for thermal objects ###########
-	printf("Simulation for a total of %d dipoles in %d thermal objects\n",tot_sub_vol,N_bulk_objects);
+	printf("Simulation for a total of %d dipoles in %d thermal objects\n",tot_sub_vol,const_N_bulk_objects);
+
 	if(strcmp(geometry,"sphere")==0) //cannot compare strings in C with ==; source: https://ideone.com/BrFA00
 	{
 		radius1 = radius; // perfect same-sized spheres
@@ -1091,7 +1101,7 @@ int main()
 	free(alpha_0);
 
 	double (*Total_conductance) = malloc(sizeof *Total_conductance *N_Tcalc); //double Total_conductance[N_Tcalc];
-	double(*Q_tot_thermal_object) = malloc(sizeof * Q_tot_thermal_object * N_bulk_objects); //double Q_tot_thermal_object[N_bulk_objects];           
+	double(*Q_tot_thermal_object) = malloc(sizeof * Q_tot_thermal_object * const_N_bulk_objects); //double Q_tot_thermal_object[N_bulk_objects];           
 	double (*trapz_Q) = malloc(sizeof *trapz_Q *tot_sub_vol); // Definition for trapezoidal integration. Used in total power dissipated //double Total_conductance[N_Tcalc];
 								  // int i_frequency = 0;
 

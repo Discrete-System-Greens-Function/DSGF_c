@@ -1,3 +1,7 @@
 sphere/
 DSGF
 *.xml
+DSGF_debug
+dsgf_debug.sh
+tags
+tags.lock

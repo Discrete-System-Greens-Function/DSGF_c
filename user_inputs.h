@@ -44,6 +44,12 @@ char single_spectrum_analysis; // Analysis of one or a range of frequencies
 double G_12_total_SGF_from_omega; // total conductance
 //double G_12_total_SGF_from_lambda;
 
+// where are the user inputs stored
+
+char N_subvolumes_per_object_file[] = "N_subvolumes_per_object.txt";
+char N_bulk_objects_file[] = "N_bulk_objects.txt";
+char N_omega_file[] = "N_omega.txt";
+
 // %%%%%%%%%%%%%%%%%% Save data %%%%%%%%%%%%%%%%%%%%
 
 char save_A_matrix;
