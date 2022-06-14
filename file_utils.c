@@ -36,5 +36,17 @@ void read_calculation_temperatures(int N_Tcalc, double Tcalc_vector[]){
 	    fscanf(import_T_calc,"%lf\n", &Tcalc_vector[i_T_calc]);
     }	
     fclose(import_T_calc);
+}
 
+int read_int_from_file(char *file_name){
+
+	FILE *int_file = fopen(file_name, "r"); 
+
+	int temp;
+
+	fscanf(int_file,"%d", &temp);
+	fclose(int_file);
+
+	const int const_int = temp;
+	return const_int;
 }

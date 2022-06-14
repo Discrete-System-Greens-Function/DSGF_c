@@ -37,54 +37,6 @@ double k_function(double omega)         // function definition
 	return k;                  // return statement
 }
 
-// The parameters N_subvolumes_per_object, N_bulk_objects, and N_omega need to treated differently in the code.
-// The reason is because they are used to structure the solution matrices and are required to be non-variable parameters.  
-int get_N_subvolumes_per_object()
-{
-	char dirPathN_subvolumes_per_object[] = "N_subvolumes_per_object.txt";
-
-	FILE *import_N_subvolumes_per_object=fopen(dirPathN_subvolumes_per_object, "r"); 
-
-	int temp;
-
-	fscanf(import_N_subvolumes_per_object,"%d", &temp);
-	fclose(import_N_subvolumes_per_object);
-
-	const int const_user_input_N_subvolumes_per_object = temp;
-	return const_user_input_N_subvolumes_per_object;
-}
-
-int get_N_bulk_objects()
-{
-	char dirPathN_bulk_objects[] = "N_bulk_objects.txt";
-
-	FILE *import_N_bulk_objects=fopen(dirPathN_bulk_objects, "r"); 
-	
-	int temp;
-
-	fscanf(import_N_bulk_objects,"%d", &temp);
-	fclose(import_N_bulk_objects);
-
-	const int const_user_input_N_bulk_objects = temp;
-	return const_user_input_N_bulk_objects;
-}
-
-int get_N_omega()
-{
-	char dirPathN_omega[] = "N_omega.txt";
-
-	FILE *import_N_omega=fopen(dirPathN_omega, "r"); 
-
-	int temp;
-
-	fscanf(import_N_omega,"%d", &temp);
-	fclose(import_N_omega);
-
-	const int const_user_input_N_omega = temp;
-	return const_user_input_N_omega;
-}
-
-
 // Function for the thermal volumes calculation:
 double vol_sphere(double radius)               // function definition, radius is a variable inside the function   
 {

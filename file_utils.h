@@ -5,4 +5,6 @@ void read_user_inputs(char *material, char *geometry, char *discretization_thin_
 
 void read_calculation_temperatures(int N_Tcalc, double Tcalc_vector[]);
 
+int read_int_from_file(char file_name[]);
+
 #endif

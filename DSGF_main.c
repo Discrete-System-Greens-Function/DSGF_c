@@ -71,18 +71,15 @@ int main()
 
 	read_calculation_temperatures(N_Tcalc, Tcalc_vector);
 
-
-	// this part is a temporary solution will be redone later
-
-	int const const_N_subvolumes_per_object = get_N_subvolumes_per_object();
+	int const const_N_subvolumes_per_object = read_int_from_file(N_subvolumes_per_object_file);
 	
 	N_subvolumes_per_object = const_N_subvolumes_per_object;
 
-	int const const_N_bulk_objects = get_N_bulk_objects();
+	int const const_N_bulk_objects = read_int_from_file(N_bulk_objects_file);
 
 	N_bulk_objects = const_N_bulk_objects;
 
-	int const const_N_omega = get_N_omega();
+	int const const_N_omega = read_int_from_file(N_omega_file);
 	
 	N_omega = const_N_omega;
 
