@@ -21,7 +21,7 @@ echo "Compilation in process..."
 
 export OMP_THREADS=4 # use multiple cores during the calculation
 
-icc -O3  -std=c99 DSGF_main.c file_utils.c -o DSGF -mcmodel=medium  -L${MKLROOT}/lib/intel64 -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread -lm -ldl  -I"${MKLROOT}/include" # -openmp 
+icc -O3  -std=c99 DSGF_main.c file_utils.c functions_DSGF.c -o DSGF -mcmodel=medium  -L${MKLROOT}/lib/intel64 -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread -lm -ldl  -I"${MKLROOT}/include" # -openmp 
 
 echo "Compilation complete"
 #  MALLOC_sgf-sphere-lapacke-linux.c  sgf-flat-surfaces-lapacke-linux.c  sgf-lapacke_original.c or sgf-lapacke-linux.c sgf-sphere-lapacke-linux.c sgf-flat-surfaces-lapacke-linux_v2.c  MALLOC_sgf-sphere-lapacke-linux    
