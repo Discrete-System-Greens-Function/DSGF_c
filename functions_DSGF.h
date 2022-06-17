@@ -73,12 +73,9 @@ double trapz; // Definition for trapezoidal integration. Used in total conductan
 // Code's output files definitions
 char matrices_folder[100];
 char frequency_folder[100];
-char sep_distance_folder[100];
 char spectral_transmissivity_folder[100];
 char spectral_conductance_folder[100];
 char dirPathpos_processing_summary_FileName[260];
-
-struct stat st; // used in the condition to create new directories
 
 // ########## end dsgf_functions.h ##########
 
