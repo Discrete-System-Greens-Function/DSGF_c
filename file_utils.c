@@ -69,31 +69,16 @@ void create_folder(char folder_name[]){
 	}
 }
 
-char* set_up_results(char geometry[], int tot_sub_vol, double d){
+char* set_up_results(char material[], char geometry[], int tot_sub_vol, double d){
 
 	char parent_folder[] = "results";
 
 	create_folder(parent_folder);	
 
-	time_t rawtime = time(NULL);
-	struct tm *info;
-	char buffer[80];
-
-	info = localtime(&rawtime);
-	strftime(buffer, 80, "%Y_%m_%d_%H_%M_%S", info);
-
-	char folder_geometry[256];
-	sprintf(folder_geometry,"%s/%s_%s", parent_folder, buffer, geometry); // Folder of dipoles
+	int rawtime = (int)time(NULL);
+	char *results_folder = malloc(256*sizeof(char));
+	sprintf(results_folder,"%s/%d_%s_%s_%d_dipoles_d_%.3e", parent_folder, rawtime, material, geometry, tot_sub_vol, d); // Folder of dipoles
 	
-	create_folder(folder_geometry);
-
-	char folder_subvol[256];
-	sprintf(folder_subvol,"%s/%d_dipoles",folder_geometry,tot_sub_vol); // Folder of dipoles
-	create_folder(folder_subvol);
-
-	char *results_folder = malloc(256 * sizeof(char));
-
-	sprintf(results_folder, "%s/d_%e",folder_subvol,d); 
 	create_folder(results_folder);
 
 	return results_folder;
