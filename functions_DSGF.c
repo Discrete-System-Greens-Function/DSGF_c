@@ -1,3 +1,9 @@
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// Definition of some functions in DSGF framework
+// Developed by RETL Lab, Department of Mechanical Engineering, The University of Utah, USA.
+// LAST UPDATE: JUNE 20, 2022  
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 #include "functions_DSGF.h"
 
 struct stat st = {0};
