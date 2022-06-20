@@ -6,8 +6,6 @@
 
 #include "functions_DSGF.h"
 
-struct stat st = {0};
-
 double k_0_function(double omega, double epsilon_0, double mu_0){
 	return omega*sqrt(epsilon_0*mu_0);
 }

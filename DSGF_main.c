@@ -29,16 +29,11 @@
 // General c libraries
 #include<stdio.h>
 #include<math.h> 
-#include<time.h> // time counter
+
 #include<complex.h>  // complex numbers library, code must be compiled as c99 standard https://stackoverflow.com/questions/6418807/how-to-work-with-complex-numbers-in-c
 #include <stdlib.h> // export/import data
 
 // Libraries for creating directories and files using a loop in C. Sources: https://stackoverflow.com/questions/46612504/creating-directories-and-files-using-a-loop-in-c and https://stackoverflow.com/questions/7430248/creating-a-new-directory-in-c 
-#include <fcntl.h> 
-#include <sys/types.h> 
-#include <sys/stat.h> 
-#include <sys/resource.h>
-#include <unistd.h>  
 #include <string.h> // library used to concatenate 2 strings https://stackoverflow.com/questions/46612504/creating-directories-and-files-using-a-loop-in-c
 
 // Library with the inputs and functions for DSGF
@@ -139,24 +134,9 @@ int main()
 
 	// ############# Folders for results ################
 
-	char folder_geometry[100];
-	sprintf(folder_geometry,"%s",geometry); // Folder of dipoles
-	if (stat(folder_geometry, &st) == -1) // This condition does not allow that new folders with the same name are created 
-	{
-		mkdir(folder_geometry, 0700); // Create directory for the frequency that is analyzed
-	}
-	char folder_subvol[100];
-	sprintf(folder_subvol,"%s/%d_dipoles",folder_geometry,tot_sub_vol); // Folder of dipoles
-	if (stat(folder_subvol, &st) == -1) // This condition does not allow that new folders with the same name are created 
-	{
-		mkdir(folder_subvol, 0700); // Create directory for the frequency that is analyzed
-	}
 	printf("d = %e m \n",d);
-	sprintf(sep_distance_folder, "%s/d_%e",folder_subvol,d); 
-	if (stat(sep_distance_folder, &st) == -1) 
-	{
-		mkdir(sep_distance_folder, 0700); 
-	}	
+	
+	char *results_folder = set_up_results(geometry, tot_sub_vol, d);
 
 	// ######### Properties for thermal objects ###########
 	printf("Simulation for a total of %d dipoles in %d thermal objects\n",tot_sub_vol,const_N_bulk_objects);
@@ -568,18 +548,12 @@ int main()
 		//mkdir(array[i_omega], 0700);  // Create directory: https://stackoverflow.com/questions/7430248/creating-a-new-directory-in-c
 
 		if(save_A_matrix =='Y'|save_G0_matrix =='Y'|save_SGF_matrix =='Y'){
-			sprintf(matrices_folder, "%s/matrices_folder", sep_distance_folder); // How to store words in an array in C? https://www.geeksforgeeks.org/how-to-store-words-in-an-array-in-c/
-			if (stat(matrices_folder, &st) == -1) // This condition does not allow that new folders with the same name are created 
-			{
-				mkdir(matrices_folder, 0700); // Create directory for the frequency that is analyzed
-			}
+			sprintf(matrices_folder, "%s/matrices_folder", results_folder); // How to store words in an array in C? https://www.geeksforgeeks.org/how-to-store-words-in-an-array-in-c/
+			create_folder(matrices_folder);
 
 			// Folder of frequencies
 			sprintf(frequency_folder, "%s/omega_%d", matrices_folder,i_omega+1); // How to store words in an array in C? https://www.geeksforgeeks.org/how-to-store-words-in-an-array-in-c/
-			if (stat(frequency_folder, &st) == -1) // This condition does not allow that new folders with the same name are created 
-			{
-				mkdir(frequency_folder, 0700); // Create directory for the frequency that is analyzed
-			}
+			create_folder(frequency_folder);
 
 			//printf("----- Export data -----\n");
 			if(save_A_matrix =='Y'){
@@ -1033,11 +1007,8 @@ int main()
 
 		if(save_spectral_transmissivity =='Y'){
 
-			sprintf(spectral_transmissivity_folder, "%s/spectral_transmissivity",sep_distance_folder); 
-			if (stat(spectral_transmissivity_folder, &st) == -1)  
-			{
-				mkdir(spectral_transmissivity_folder, 0700); 
-			}
+			sprintf(spectral_transmissivity_folder, "%s/spectral_transmissivity",results_folder); 
+			create_folder(spectral_transmissivity_folder);
 
 			{
 				FILE * spectral_transmissivity; 
@@ -1067,7 +1038,7 @@ int main()
 				{
 					FILE * spectral_conductance; //append
 					char dirPathSpectral_cond_FileName[260];
-					sprintf(dirPathSpectral_cond_FileName, "%s/d_%e/spectral_conductance_%eK.csv",folder_subvol,d,Tcalc_vector[iTcalc]); // path where the file is stored
+					sprintf(dirPathSpectral_cond_FileName, "%s/spectral_conductance_%eK.csv", results_folder, Tcalc_vector[iTcalc]); // path where the file is stored
 					if(i_omega == 0) spectral_conductance =fopen(dirPathSpectral_cond_FileName,"w"); //write
 					else spectral_conductance = fopen(dirPathSpectral_cond_FileName, "a"); //append
 													       //fprintf(spectral_conductance,"%e ; %e\n",omega_value,G_12_omega_SGF[i_omega]); 
@@ -1145,7 +1116,7 @@ int main()
 				{
 					FILE * power_dissipated; //append
 					char dirPathPower_dissipated_FileName[260];
-					sprintf(dirPathPower_dissipated_FileName, "%s/d_%e/power_dissipated.csv",folder_subvol,d); // path where the file is stored
+					sprintf(dirPathPower_dissipated_FileName, "%s/power_dissipated.csv",results_folder); // path where the file is stored
 					if(ig_0 == 0) power_dissipated =fopen(dirPathPower_dissipated_FileName,"w"); //write
 					else power_dissipated = fopen(dirPathPower_dissipated_FileName, "a"); //append
 					fprintf(power_dissipated,"%e\n",trapz_Q[ig_0]); 
@@ -1191,7 +1162,7 @@ int main()
 	printf("\n");
 
 
-	sprintf(dirPathpos_processing_summary_FileName, "%s/pos_processing_summary.txt",sep_distance_folder); // path where the file is stored
+	sprintf(dirPathpos_processing_summary_FileName, "%s/pos_processing_summary.txt",results_folder); // path where the file is stored
 
 	pos_processing_summary =fopen(dirPathpos_processing_summary_FileName,"w"); 
 	fprintf(pos_processing_summary,"Material: %s\n Spectrum range(lambda) = %e--%e m \n Volume of each subvolume = %e \n",material, initial,final,delta_V_1);  // \nThermal power dissipated for thermal object 1= 

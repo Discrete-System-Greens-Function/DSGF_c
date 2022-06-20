@@ -56,9 +56,45 @@ int read_int_from_file(char *file_name){
 	return const_int;
 }
 
-void create_folder(char folder_name[], struct stat *st){
+void create_folder(char folder_name[]){
 	
-	if (stat(folder_name, st) == -1){
-		mkdir(folder_name, 0700);
+	struct stat st = {0};
+
+	if (stat(folder_name, &st) == -1){
+		if (0 != mkdir(folder_name, 0700)){
+			printf("when executing mkdir(\"%s\")\n", folder_name);
+			perror("mkdir");
+			exit(1);
+		}
 	}
+}
+
+char* set_up_results(char geometry[], int tot_sub_vol, double d){
+
+	char parent_folder[] = "results";
+
+	create_folder(parent_folder);	
+
+	time_t rawtime = time(NULL);
+	struct tm *info;
+	char buffer[80];
+
+	info = localtime(&rawtime);
+	strftime(buffer, 80, "%Y_%m_%d_%H_%M_%S", info);
+
+	char folder_geometry[256];
+	sprintf(folder_geometry,"%s/%s_%s", parent_folder, buffer, geometry); // Folder of dipoles
+	
+	create_folder(folder_geometry);
+
+	char folder_subvol[256];
+	sprintf(folder_subvol,"%s/%d_dipoles",folder_geometry,tot_sub_vol); // Folder of dipoles
+	create_folder(folder_subvol);
+
+	char *results_folder = malloc(256 * sizeof(char));
+
+	sprintf(results_folder, "%s/d_%e",folder_subvol,d); 
+	create_folder(results_folder);
+
+	return results_folder;
 }
