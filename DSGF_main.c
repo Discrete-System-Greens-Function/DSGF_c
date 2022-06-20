@@ -29,16 +29,11 @@
 // General c libraries
 #include<stdio.h>
 #include<math.h> 
-#include<time.h> // time counter
+
 #include<complex.h>  // complex numbers library, code must be compiled as c99 standard https://stackoverflow.com/questions/6418807/how-to-work-with-complex-numbers-in-c
 #include <stdlib.h> // export/import data
 
 // Libraries for creating directories and files using a loop in C. Sources: https://stackoverflow.com/questions/46612504/creating-directories-and-files-using-a-loop-in-c and https://stackoverflow.com/questions/7430248/creating-a-new-directory-in-c 
-#include <fcntl.h> 
-#include <sys/types.h> 
-#include <sys/stat.h> 
-#include <sys/resource.h>
-#include <unistd.h>  
 #include <string.h> // library used to concatenate 2 strings https://stackoverflow.com/questions/46612504/creating-directories-and-files-using-a-loop-in-c
 
 // Library with the inputs and functions for DSGF
