@@ -4,12 +4,14 @@ TITLE="Near-field radiative heat transfer between thermal objects"
 METHOD="DSGF: Discrete System Green Function method" 
 VERSION="Developed by RETL Lab at the Department of Mechanical Engineering, The University of Utah, UT, USA"
 
+# Use this command if permission is denied: sudo chmod u+x run_dsgf.sh
+# Use this command if bad interpreter appears: sed -i -e 's/\r$//' run_dsgf.sh
+
 #print variable on a screen
 echo $TITLE
 echo $METHOD
 echo $VERSION
 echo "Compilation in process..."
-echo "Compilation complete"
 #Cuma  
 
 # Insert these command lines when open a new terminal to use icc compiler
@@ -19,7 +21,9 @@ echo "Compilation complete"
 
 export OMP_THREADS=4 # use multiple cores during the calculation
 
-icc -O3  -std=c99 DSGF_main.c -o DSGF -mcmodel=medium  -L${MKLROOT}/lib/intel64 -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread -lm -ldl  -I"${MKLROOT}/include" # -openmp 
+icc -O3  -std=c99 DSGF_main.c file_utils.c functions_DSGF.c -o DSGF -mcmodel=medium  -L${MKLROOT}/lib/intel64 -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread -lm -ldl  -I"${MKLROOT}/include" # -openmp 
+
+echo "Compilation complete"
 #  MALLOC_sgf-sphere-lapacke-linux.c  sgf-flat-surfaces-lapacke-linux.c  sgf-lapacke_original.c or sgf-lapacke-linux.c sgf-sphere-lapacke-linux.c sgf-flat-surfaces-lapacke-linux_v2.c  MALLOC_sgf-sphere-lapacke-linux    
 
 time ./DSGF  #time function displays the real, user and system time for running the code;    /.dsgf_LAPACKE_9N2 runs the compiled code. 

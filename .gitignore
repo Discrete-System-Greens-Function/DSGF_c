@@ -1,0 +1,6 @@
+sphere/
+DSGF
+*.xml
+DSGF_debug
+tags
+tags.lock
