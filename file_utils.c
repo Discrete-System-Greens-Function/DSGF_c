@@ -1,5 +1,4 @@
 #include "file_utils.h"
-#include "stdio.h"
 
 void read_user_inputs(char *material, char *geometry, char *discretization_thin_film, double *d, double *radius, double *Lx, double *Ly, double *Lz, double *T1, double *T2, char *solution, char *single_spectrum_analysis, char *save_A_matrix, char *save_G0_matrix, char *save_SGF_matrix, char *save_spectral_conductance, char *save_spectral_transmissivity, char *save_power_dissipated){
 	
@@ -49,4 +48,11 @@ int read_int_from_file(char *file_name){
 
 	const int const_int = temp;
 	return const_int;
+}
+
+void create_folder(char folder_name[], struct stat *st){
+	
+	if (stat(folder_name, st) == -1){
+		mkdir(folder_name, 0700);
+	}
 }

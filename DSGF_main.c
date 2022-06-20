@@ -60,10 +60,23 @@ FILE * pos_processing_summary; // call the main outputs' file,
 
 
 int main()
-{   
+{
+
+	// ----------- CONSTANTS ------------------
+	
+	const double pi = 3.14159265359;         // pi number   
+	const double q = 1.602176634e-19;        // number of Joules per eV
+	const double h_bar = 1.054571817e-34;    // Planck's constant [J*s]
+	const double k_b = 1.38064852e-23;       // Boltzmann constant [J/K]
+	const double epsilon_0 = 8.8542e-12;     // Permittivity of free space [F/m]
+	const double c_0 = 299792458;            // Speed of light in vacuum [m/s]
+	double mu_0 = (4.*pi)*pow(10,-7);        // Permeability of free space [H/m]
+	double epsilon_ref = 1.;             	 // dielectric function of the background reference medium
+
+
 	long baseline = get_mem_usage(); // measure baseline memory usage
 	clock_t begin = clock();  /* set timer here, do your time-consuming job */
-	mu_0 = (4.*pi)*pow(10,-7);                            // Permeability of free space [H/m]
+	
 	read_user_inputs(material, geometry, discretization_thin_film, &d, &radius, &Lx, &Ly, &Lz, &T1, &T2, &solution, &single_spectrum_analysis, &save_A_matrix, &save_G0_matrix, &save_SGF_matrix, &save_spectral_conductance, &save_spectral_transmissivity, &save_power_dissipated);
 
 	read_calculation_temperatures(N_Tcalc, Tcalc_vector);
@@ -152,8 +165,8 @@ int main()
 	{
 		radius1 = radius; // perfect same-sized spheres
 		radius2 = radius; // perfect same-sized spheres
-		vol1 = vol_sphere(radius1); // calls function that calculates the volume for the sphere 1
-		vol2 = vol_sphere(radius2); // calls function that calculates the volume for the sphere 2
+		vol1 = vol_sphere(radius1, pi); // calls function that calculates the volume for the sphere 1
+		vol2 = vol_sphere(radius2, pi); // calls function that calculates the volume for the sphere 2
 		delta_V_1 = vol1/N_subvolumes_per_object; // defines the subvolumes' volume for sphere 1
 		delta_V_2 = vol2/N_subvolumes_per_object; // defines the subvolumes' volume for sphere 2
 	}
@@ -319,10 +332,10 @@ int main()
 
 		//printf("##################### \n Build A = I - k_0^2*G^0*alpha_0 \n##################### \n");
 
-		double k_0=k_0_function(omega_value) ; //wave vector in free space
+		double k_0=k_0_function(omega_value, epsilon_0, mu_0) ; //wave vector in free space
 						       //printf("k_0 = %e; ",k_0);
 
-		double k=k_function(omega_value); //wave vector in reference medium
+		double k=k_function(omega_value, epsilon_ref, epsilon_0, mu_0); //wave vector in reference medium
 						  //printf("k = %e; ",k);
 
 						  //printf("alpha_0 = [ ");
@@ -484,7 +497,7 @@ int main()
 
 		for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 		{
-			a_j[ig_0] = a_j_function(delta_V_vector[ig_0]);
+			a_j[ig_0] = a_j_function(delta_V_vector[ig_0], pi);
 			//printf("a_j = %e; ",a_j[ig_0]);
 			part1ii[ig_0] = 1./(3.*delta_V_vector[ig_0]*epsilon_ref*pow(k_0,2));
 			//printf("Cte 1: %e \n",part1ii[ig_0]);
@@ -976,7 +989,7 @@ int main()
 				// Thermal power dissipated calculation, based on the matlab code (Using Tervo's Eq. 26)
 				if (ig_0 != jg_0) 
 				{
-					inner_sum[jg_0] = (theta_function(omega_value, T_vector[jg_0]) - theta_function(omega_value, T_vector[ig_0])) * trans_coeff[ig_0][jg_0]; //Q_omega_subvol_function(theta_1,theta_2, trans_coeff[ig_0][jg_0]);
+					inner_sum[jg_0] = (theta_function(omega_value, T_vector[jg_0], h_bar, k_b) - theta_function(omega_value, T_vector[ig_0], h_bar, k_b)) * trans_coeff[ig_0][jg_0]; //Q_omega_subvol_function(theta_1,theta_2, trans_coeff[ig_0][jg_0]);
 				}
 				else {
 					inner_sum[jg_0] = 0;
@@ -1042,7 +1055,7 @@ int main()
 		{
 			// printf("T_calc = %e; \n",Tcalc_vector[iTcalc]);
 			//dtheta_dT[0] = dtheta_dT_function(omega_value,T_calc); 
-			dtheta_dT[iTcalc] = dtheta_dT_function(omega_value,Tcalc_vector[iTcalc]); 
+			dtheta_dT[iTcalc] = dtheta_dT_function(omega_value,Tcalc_vector[iTcalc], h_bar, k_b); 
 			//printf("dT = %e; \n",dtheta_dT);            
 			//G_12_omega_SGF[i_omega][0] = dtheta_dT[0]*sum_trans_coeff[i_omega];
 			G_12_omega_SGF[i_omega][iTcalc] = dtheta_dT[iTcalc]*sum_trans_coeff[i_omega];
