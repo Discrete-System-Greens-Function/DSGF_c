@@ -15,6 +15,6 @@ int read_int_from_file(char file_name[]);
 void create_folder(char folder_name[]);
 
 // this returns the final folder for all the variables and where the matrices will be stored
-char* set_up_results(char geometry[], int tot_sub_vol, double d);
+char* set_up_results(char material[], char geometry[], int tot_sub_vol, double d);
 
 #endif

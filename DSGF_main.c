@@ -136,7 +136,7 @@ int main()
 
 	printf("d = %e m \n",d);
 	
-	char *results_folder = set_up_results(geometry, tot_sub_vol, d);
+	char *results_folder = set_up_results(material, geometry, tot_sub_vol, d);
 
 	// ######### Properties for thermal objects ###########
 	printf("Simulation for a total of %d dipoles in %d thermal objects\n",tot_sub_vol,const_N_bulk_objects);
