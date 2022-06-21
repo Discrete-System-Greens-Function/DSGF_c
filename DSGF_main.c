@@ -11,9 +11,9 @@
 // 	- Large matrices are dynamically stored using MALLOC, 
 //	- Variables and functions are defined using headers, 
 //	- The following .txt files remove recompile the code need for user modifications:
-//	    - N_subvolumes_per_object.txt defines the number of subvolumes per thermal object
-//	    - N_bulk_objects.txt defines the number of bulk objects
-//	    - N_omega.txt defines the number of frequencies to evaluate
+//	    - const_N_subvolumes_per_object.txt defines the number of subvolumes per thermal object
+//	    - const_N_bulk_objects.txt defines the number of bulk objects
+//	    - const_N_omega.txt defines the number of frequencies to evaluate
 //	    - T_calc.txt defines the temperature where the conductance is calculated
 //	    - user_inputs.txt contains all other user definitions
 //  - More info in read_me-user_inputs.txt 
@@ -65,8 +65,8 @@ int main()
 	const double k_b = 1.38064852e-23;       // Boltzmann constant [J/K]
 	const double epsilon_0 = 8.8542e-12;     // Permittivity of free space [F/m]
 	const double c_0 = 299792458;            // Speed of light in vacuum [m/s]
-	double mu_0 = (4.*pi)*pow(10,-7);        // Permeability of free space [H/m]
-	double epsilon_ref = 1.;             	 // dielectric function of the background reference medium
+	const double mu_0 = (4.*pi)*pow(10,-7);        // Permeability of free space [H/m]
+	const double epsilon_ref = 1.;             	 // dielectric function of the background reference medium
 
 
 	long baseline = get_mem_usage(); // measure baseline memory usage
@@ -77,16 +77,10 @@ int main()
 	read_calculation_temperatures(N_Tcalc, Tcalc_vector);
 
 	int const const_N_subvolumes_per_object = read_int_from_file(N_subvolumes_per_object_file);
-	
-	N_subvolumes_per_object = const_N_subvolumes_per_object;
 
 	int const const_N_bulk_objects = read_int_from_file(N_bulk_objects_file);
 
-	N_bulk_objects = const_N_bulk_objects;
-
 	int const const_N_omega = read_int_from_file(N_omega_file);
-	
-	N_omega = const_N_omega;
 
 	size_t tot_sub_vol = const_N_subvolumes_per_object*const_N_bulk_objects; // Assign tot_sub_vol: Computes the total number of subvolumes in the system. tot_sub_vol is defined this way because it must be a non-variable parameter due to the computations perfomed in the code. Previously, it was defined as #define tot_sub_vol const_N_subvolumes_per_object*const_N_bulk_objects
 
@@ -104,26 +98,26 @@ int main()
 	double (*R)[3] = calloc(tot_sub_vol, sizeof(*R));//double R[tot_sub_vol][3]; // center of subvolumes for thermal objects: info imported from a .txt file
 
 	// radial frequency [rad/s]
-	double (*x_omega) = malloc(sizeof *x_omega *N_omega); //double x_omega[N_omega];
-	double (*lambda) = malloc(sizeof *lambda *N_omega); //double lambda[N_omega];
-	double (*omega) = malloc(sizeof *omega *N_omega); //double omega[N_omega]; 
-							  //double E_joules[N_omega];
-							  //double E_ev[N_omega];
+	double (*x_omega) = malloc(sizeof *x_omega *const_N_omega); //double x_omega[const_N_omega];
+	double (*lambda) = malloc(sizeof *lambda *const_N_omega); //double lambda[const_N_omega];
+	double (*omega) = malloc(sizeof *omega *const_N_omega); //double omega[const_N_omega]; 
+							  //double E_joules[const_N_omega];
+							  //double E_ev[const_N_omega];
 
 	double (*delta_V_vector) = malloc(sizeof *delta_V_vector *tot_sub_vol); //double delta_V_vector[tot_sub_vol]; //Vector of all subvolume size. Combines delta_V_1 and delta_V_2 in the same array
 	double (*T_vector) = malloc(sizeof *T_vector *tot_sub_vol); //double T_vector[tot_sub_vol]; // (N x 1) vector of all subvolume temperatures [K]
 	double complex (*alpha_0) = malloc(sizeof *alpha_0 *tot_sub_vol); //  double complex alpha_0[tot_sub_vol]; //Bare polarizability [m^3]
 
-	//double (*G_12_omega_SGF) = malloc(sizeof *G_12_omega_SGF *N_omega); //double G_12_omega_SGF[N_omega]; //  //double G_12_omega_SGF[tot_sub_vol][tot_sub_vol];
-	double (*G_12_omega_SGF)[N_Tcalc] = calloc(N_omega, sizeof(*G_12_omega_SGF));//double G_12_omega_SGF[N_omega][N_Tcalc]; //
+	//double (*G_12_omega_SGF) = malloc(sizeof *G_12_omega_SGF *const_N_omega); //double G_12_omega_SGF[const_N_omega]; //  //double G_12_omega_SGF[tot_sub_vol][tot_sub_vol];
+	double (*G_12_omega_SGF)[N_Tcalc] = calloc(const_N_omega, sizeof(*G_12_omega_SGF));//double G_12_omega_SGF[const_N_omega][N_Tcalc]; //
 
 	double (*modulo_r_i_j)[tot_sub_vol] = malloc(sizeof *modulo_r_i_j * tot_sub_vol); //double modulo_r_i_j[tot_sub_vol][tot_sub_vol];
 	double complex (*G_element)[tot_sub_vol] = malloc(sizeof *G_element * tot_sub_vol); //double complex G_element[tot_sub_vol][tot_sub_vol]; 
-	double (*sum_trans_coeff) = malloc(sizeof *sum_trans_coeff *N_omega); //double sum_trans_coeff[N_omega]; //
+	double (*sum_trans_coeff) = malloc(sizeof *sum_trans_coeff *const_N_omega); //double sum_trans_coeff[const_N_omega]; //
 
 	double complex (*Q_omega_subvol) = malloc(sizeof * Q_omega_subvol * tot_sub_vol);//double complex Q_omega_subvol[tot_sub_vol]; // power dissipated per subvolume
-	double (*Q_omega_thermal_object)[N_omega] = malloc(sizeof * Q_omega_thermal_object * const_N_bulk_objects);  //double Q_omega_thermal_object[N_bulk_objects][N_omega];
-	double (*Q_subvol)[N_omega] = calloc(tot_sub_vol, sizeof(*Q_subvol)); //Q_subvol[tot_sub_vol][N_omega]
+	double (*Q_omega_thermal_object)[const_N_omega] = malloc(sizeof * Q_omega_thermal_object * const_N_bulk_objects);  //double Q_omega_thermal_object[const_N_bulk_objects][const_N_omega];
+	double (*Q_subvol)[const_N_omega] = calloc(tot_sub_vol, sizeof(*Q_subvol)); //Q_subvol[tot_sub_vol][const_N_omega]
 	/* 
 	// The SGF calculation considering the wavelength is not considered, so it is commented. 
 	double (*G_12_lambda_SGF)[tot_sub_vol] = calloc(tot_sub_vol, sizeof(*G_12_lambda_SGF)); //double G_12_lambda_SGF[tot_sub_vol][tot_sub_vol];
@@ -147,16 +141,16 @@ int main()
 		radius2 = radius; // perfect same-sized spheres
 		vol1 = vol_sphere(radius1, pi); // calls function that calculates the volume for the sphere 1
 		vol2 = vol_sphere(radius2, pi); // calls function that calculates the volume for the sphere 2
-		delta_V_1 = vol1/N_subvolumes_per_object; // defines the subvolumes' volume for sphere 1
-		delta_V_2 = vol2/N_subvolumes_per_object; // defines the subvolumes' volume for sphere 2
+		delta_V_1 = vol1/const_N_subvolumes_per_object; // defines the subvolumes' volume for sphere 1
+		delta_V_2 = vol2/const_N_subvolumes_per_object; // defines the subvolumes' volume for sphere 2
 	}
 
 	if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; source: https://ideone.com/BrFA00
 	{
 		vol1 = Lx*Ly*Lz; // calculates the volume for membrane 1
 		vol2 = vol1;     // defines the volume of membrane 2 = membrane 1
-		delta_V_1 = vol1/N_subvolumes_per_object; // defines the subvolumes' volume for membrane 1
-		delta_V_2 = vol2/N_subvolumes_per_object;  // defines the subvolumes' volume for membrane 1
+		delta_V_1 = vol1/const_N_subvolumes_per_object; // defines the subvolumes' volume for membrane 1
+		delta_V_2 = vol2/const_N_subvolumes_per_object;  // defines the subvolumes' volume for membrane 1
 	} 	
 
 	printf("delta V_1: %e\n",delta_V_1); // prints the subvolumes' volume for thermal object 1
@@ -170,7 +164,7 @@ int main()
 
 	if(strcmp(geometry,"sphere")==0) //cannot compare strings in C with ==; source: https://ideone.com/BrFA00
 	{
-		sprintf(dirPathFileNameDISCRETIZATION, "discretizations/sphere_subvol_%d.txt",N_subvolumes_per_object); // path where the file is stored
+		sprintf(dirPathFileNameDISCRETIZATION, "discretizations/sphere_subvol_%d.txt",const_N_subvolumes_per_object); // path where the file is stored
 		import_discretization = fopen(dirPathFileNameDISCRETIZATION, "r"); // "r" = read, "w" = write
 		while (3 == fscanf(import_discretization, "%e %e %e", &shape_file[i_import].x, &shape_file[i_import].y, &shape_file[i_import].z))
 		{   
@@ -180,7 +174,7 @@ int main()
 		double origin2[3]= {origin1[0]+radius1+d+radius2,origin1[1]+radius2-radius1,origin1[2]+radius2-radius1}; // first index is 0
 		for (int i_subvol=0; i_subvol<tot_sub_vol;i_subvol++) //tot_sub_vol
 		{
-			if(i_subvol<N_subvolumes_per_object)
+			if(i_subvol<const_N_subvolumes_per_object)
 			{
 				R[i_subvol][0] = shape_file[i_subvol].x *pow(delta_V_1,1./3) + origin1[0]; // Lindsay's code: R1*pow(delta_V_1,1/3) + origin1[i]
 				R[i_subvol][1] = shape_file[i_subvol].y *pow(delta_V_1,1./3) + origin1[1]; // Lindsay's code: R1*pow(delta_V_1,1/3) + origin1[i]
@@ -190,9 +184,9 @@ int main()
 			}
 			else
 			{
-				R[i_subvol][0] = shape_file[i_subvol-N_subvolumes_per_object].x* pow(delta_V_2,1./3) + origin2[0]; // Lindsay's code: R2*pow(delta_V_2,1/3) + origin2[i]
-				R[i_subvol][1] = shape_file[i_subvol-N_subvolumes_per_object].y*pow(delta_V_2,1./3) + origin2[1]; // Lindsay's code: R2*pow(delta_V_2,1/3) + origin2[i]
-				R[i_subvol][2] = shape_file[i_subvol-N_subvolumes_per_object].z*pow(delta_V_2,1./3) + origin2[2]; // Lindsay's code: R2*pow(delta_V_2,1/3) + origin2[i]    
+				R[i_subvol][0] = shape_file[i_subvol-const_N_subvolumes_per_object].x* pow(delta_V_2,1./3) + origin2[0]; // Lindsay's code: R2*pow(delta_V_2,1/3) + origin2[i]
+				R[i_subvol][1] = shape_file[i_subvol-const_N_subvolumes_per_object].y*pow(delta_V_2,1./3) + origin2[1]; // Lindsay's code: R2*pow(delta_V_2,1/3) + origin2[i]
+				R[i_subvol][2] = shape_file[i_subvol-const_N_subvolumes_per_object].z*pow(delta_V_2,1./3) + origin2[2]; // Lindsay's code: R2*pow(delta_V_2,1/3) + origin2[i]    
 																  //printf("R = %e, %e, %e \n",R[i_subvol][0],R[i_subvol][1],R[i_subvol][2]);
 			}
 
@@ -223,7 +217,7 @@ int main()
 
 	for (int i_vec=0; i_vec<tot_sub_vol; i_vec++)
 	{
-		if (i_vec < N_subvolumes_per_object) // 2-body case
+		if (i_vec < const_N_subvolumes_per_object) // 2-body case
 		{
 			delta_V_vector[i_vec] = delta_V_1;
 			T_vector[i_vec] = T1;
@@ -239,8 +233,8 @@ int main()
 	//Uniform spectrum:
 	double initial = 5.e-6;//5.e-6;
 	double final = 25.e-6; //25.e-6;
-	double step_lambda = (final-initial)/(N_omega-1); // linspace in C: https://stackoverflow.com/questions/60695284/linearly-spaced-array-in-c
-	for(int i_lambda = 0; i_lambda < N_omega; i_lambda++)
+	double step_lambda = (final-initial)/(const_N_omega-1); // linspace in C: https://stackoverflow.com/questions/60695284/linearly-spaced-array-in-c
+	for(int i_lambda = 0; i_lambda < const_N_omega; i_lambda++)
 	{
 		lambda[i_lambda]= initial + i_lambda*step_lambda; // Wavelength [m]
 		omega[i_lambda] = 2.*pi*c_0/lambda[i_lambda];  // Radial frequency [rad/s]
@@ -256,7 +250,7 @@ int main()
 	printf("----- Spectrum range calculation -----\n");
 
 	if(single_spectrum_analysis =='Y') omega_range=1;
-	if(single_spectrum_analysis =='N') omega_range=N_omega;
+	if(single_spectrum_analysis =='N') omega_range=const_N_omega;
 	for (int i_omega = 0; i_omega < omega_range; i_omega++) // Frequency loop
 	{
 
@@ -971,7 +965,7 @@ int main()
 
 				//Trans_bulk: Transmission coefficient between two bulk objects
 				// This function calculates the transmission coefficient between bulk objects given the transmission coefficient between every pair of dipoles for a given frequency.
-				if(ig_0 < N_subvolumes_per_object && jg_0 >= N_subvolumes_per_object)// bulk 1 -> 2
+				if(ig_0 < const_N_subvolumes_per_object && jg_0 >= const_N_subvolumes_per_object)// bulk 1 -> 2
 				{
 					sum_trans_coeff[i_omega] += trans_coeff[ig_0][jg_0];
 					counter+=1;
@@ -983,12 +977,12 @@ int main()
 			Q_subvol[ig_0][i_omega] = Q_omega_subvol[ig_0];
 			//printf("Q_subvol_%d_%d= %e \n",ig_0+1,i_omega+1, Q_subvol[ig_0][i_omega]); //matches matlab code
 
-			if(ig_0 < N_subvolumes_per_object)// Thermal power dissipated was not verified yet!!!!
+			if(ig_0 < const_N_subvolumes_per_object)// Thermal power dissipated was not verified yet!!!!
 			{
 				bulk=0;
 				Q_omega_thermal_object[bulk][i_omega] += Q_omega_subvol[ig_0];
 			}
-			else if(N_subvolumes_per_object<=ig_0<tot_sub_vol)
+			else if(const_N_subvolumes_per_object<=ig_0<tot_sub_vol)
 			{
 				bulk=1;
 				Q_omega_thermal_object[bulk][i_omega] += Q_omega_subvol[ig_0];
@@ -1069,7 +1063,7 @@ int main()
 		memset(G_element, 0, sizeof *G_element * tot_sub_vol); //G_element
 		memset(sum_trans_coeff, 0, sizeof sum_trans_coeff);
 		memset(Q_omega_subvol, 0, sizeof* Q_omega_subvol* tot_sub_vol); 
-		//memset(Q_omega_thermal_object,0, sizeof Q_omega_thermal_object * N_bulk_objects * N_omega); // //double Q_omega_thermal_object[N_bulk_objects][N_omega]
+		//memset(Q_omega_thermal_object,0, sizeof Q_omega_thermal_object * const_N_bulk_objects * const_N_omega); // //double Q_omega_thermal_object[N_bulk_objects][const_N_omega]
 
 	} // END OMEGA VALUE LOOP FOR FREQUENCY RANGE ANALYSIS, loop started in line 481
 
@@ -1083,12 +1077,12 @@ int main()
 	free(alpha_0);
 
 	double (*Total_conductance) = malloc(sizeof *Total_conductance *N_Tcalc); //double Total_conductance[N_Tcalc];
-	double(*Q_tot_thermal_object) = malloc(sizeof * Q_tot_thermal_object * const_N_bulk_objects); //double Q_tot_thermal_object[N_bulk_objects];           
+	double(*Q_tot_thermal_object) = malloc(sizeof * Q_tot_thermal_object * const_N_bulk_objects); //double Q_tot_thermal_object[const_N_bulk_objects];           
 	double (*trapz_Q) = malloc(sizeof *trapz_Q *tot_sub_vol); // Definition for trapezoidal integration. Used in total power dissipated //double Total_conductance[N_Tcalc];
 								  // int i_frequency = 0;
 
 	trapz=0.;
-	if( N_omega > 1)
+	if( const_N_omega > 1)
 	{
 		printf("\nEnd of frequency loop\n");
 		//printf("----- Total conductance -----\n");
@@ -1104,7 +1098,7 @@ int main()
 		for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 		{
 			trapz_Q[ig_0] = 0.;
-			for (int i=1; i < N_omega; ++i)
+			for (int i=1; i < const_N_omega; ++i)
 			{
 				step = omega[i] - omega[i-1];
 				trapz_Q[ig_0] +=  ((Q_subvol[ig_0][i]+Q_subvol[ig_0][i-1])/2)*step;
@@ -1137,7 +1131,7 @@ int main()
 			trapz=0.;
 			G_12_total_SGF_from_omega=0.;
 
-			for (int i=1; i < N_omega; ++i)
+			for (int i=1; i < const_N_omega; ++i)
 			{
 
 				step = omega[i]-omega[i-1];
@@ -1157,7 +1151,7 @@ int main()
 
 		printf("Total conductance at %e K= %e \n",Tcalc_vector[2],Total_conductance[2]);    
 
-	} //end if N_omega>1
+	} //end if const_N_omega>1
 
 	printf("\n");
 
@@ -1233,7 +1227,7 @@ int main()
 	free(Q_subvol);
 	free(Q_omega_subvol);
 	free(Q_omega_thermal_object);
-
+	free(results_folder);
 
 } //end of code 
 
