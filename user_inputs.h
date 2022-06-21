@@ -46,9 +46,9 @@ double G_12_total_SGF_from_omega; // total conductance
 
 // where are the user inputs stored
 
-char N_subvolumes_per_object_file[] = "N_subvolumes_per_object.txt";
-char N_bulk_objects_file[] = "N_bulk_objects.txt";
-char N_omega_file[] = "N_omega.txt";
+char N_subvolumes_per_object_file[] = "user_inputs/N_subvolumes_per_object.txt";
+char N_bulk_objects_file[] = "user_inputs/N_bulk_objects.txt";
+char N_omega_file[] = "user_inputs/N_omega.txt";
 
 // %%%%%%%%%%%%%%%%%% Save data %%%%%%%%%%%%%%%%%%%%
 
