@@ -40,6 +40,7 @@
 #include "user_inputs.h" // User inputs definitions header. No values are defined in this file.  
 #include "functions_DSGF.h" // Definitions of functions used in DSGF
 #include "file_utils.h" // header with definitions of read_user_inputs and read_calculation_temperatures functions
+#include "iterative_solver.h"
 
 // LAPACKE libraries: https://www.netlib.org/lapack/lapacke.html ; https://extras.csc.fi/math/nag/mark21/pdf/F08/f08anf.pdf
 #include <lapacke.h> 
@@ -673,22 +674,7 @@ int main()
 			double complex (*epsilon_s) = malloc(sizeof *epsilon_s *tot_sub_vol); //not used
 
 			//3-by-3 unit matrix   
-			double (*eye_iter)[3] = calloc(3, sizeof(*eyeG_0)); //double eyeG_0[3][3];      
-			for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++)
-			{        
-				for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++)
-				{ // 3D coordinate positions
-					if (i_subG_0 == j_subG_0)
-					{
-						eye_iter[i_subG_0][j_subG_0] = 1.;     // 3x3 Identity matrix
-					}    
-					else
-					{
-						eye_iter[i_subG_0][j_subG_0] = 0.;     // 3x3 Identity matrix 
-					}                
-				}
-			}                      
-
+			double eye_iter[3][3] = {{1., 0., 0.}, {0., 1., 0.}, {0., 0., 1.}}; //double eyeG_0[3][3];      
 
 			// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 			// Calculate background medium Green's function 
@@ -700,6 +686,7 @@ int main()
 			// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 			// Set initial values to free-space Green's function values: G_sys_2D_old = G_0_2D;
+			/*
 			for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 			{
 				for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //tot_sub_vol
@@ -718,6 +705,8 @@ int main()
 					//printf("\n");
 				}
 			}	
+			*/
+			matrix_reshape(3, tot_sub_vol, G_sys_old, eyeA_2d, G_0, eyeA);
 
 			// First, solve ii = mm system of equations.
 			for (int mm = 0; mm < tot_sub_vol; mm++) //tot_sub_vol
@@ -876,7 +865,6 @@ int main()
 			memset(G_sys_new, 0, sizeof *G_sys_new * 3*tot_sub_vol); //modulo_r_i_j
 			memset(eyeA_2d, 0, sizeof *eyeA_2d * 3*tot_sub_vol);
 
-			free(eye_iter);
 			free(G_sys_old);
 			free(G_sys_new);
 			free(eyeA_2d);
