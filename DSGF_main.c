@@ -41,6 +41,7 @@
 #include "functions_DSGF.h" // Definitions of functions used in DSGF
 #include "file_utils.h" // header with definitions of read_user_inputs and read_calculation_temperatures functions
 #include "iterative_solver.h"
+#include "indexing_util.h"
 
 // LAPACKE libraries: https://www.netlib.org/lapack/lapacke.html ; https://extras.csc.fi/math/nag/mark21/pdf/F08/f08anf.pdf
 #include <lapacke.h> 
@@ -684,28 +685,10 @@ int main()
 			// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 			// Calculate system Green's function 
 			// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-			// Set initial values to free-space Green's function values: G_sys_2D_old = G_0_2D;
-			/*
-			for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
-			{
-				for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //tot_sub_vol
-				{ 
-					for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
-					{
-						ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
-						for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
-						{
-							jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
-							G_sys_old[ig_0_2d][jg_0_2d]=G_0[ig_0][jg_0][i_subG_0][j_subG_0]; //2D matrix
-							eyeA_2d[ig_0_2d][jg_0_2d] = eyeA[ig_0][jg_0][i_subG_0][j_subG_0]; //2D matrix
-															  //printf("%e + i %e ; ",creal(G_sys_old[ig_0_2d][jg_0_2d]),cimag(G_sys_old[ig_0_2d][jg_0_2d]));
-						}
-					}
-					//printf("\n");
-				}
-			}	
-			*/
+			
+			// this reshapes 2 4D matrices to 2 2D matrices
+			// G0 and eyeA are 4D
+			// G_sys_old and eyeA_2d are the respective 2D matrices
 			matrix_reshape(3, tot_sub_vol, G_sys_old, eyeA_2d, G_0, eyeA);
 
 			// First, solve ii = mm system of equations.
@@ -721,7 +704,6 @@ int main()
 					{   
 						mm_2d_n = (3*mm + mm_sub_n);
 						A_2d[mm_sub][mm_sub_n] = eyeA_2d[mm_2d][mm_2d_n] - pow(k,2)*delta_V_vector[mm]*epsilon_s[mm]*G_sys_old[mm_2d][mm_2d_n]; //modification...see if it works
-																					//printf("%e + i %e ;\n",creal(A_2d[mm_sub][mm_sub_n]),cimag(A_2d[mm_sub][mm_sub_n])); //matches with matlab
 					}
 				} //mm_sub
 
