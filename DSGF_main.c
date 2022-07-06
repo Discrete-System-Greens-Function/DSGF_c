@@ -668,7 +668,7 @@ int main()
 			double complex (*G_sys_old)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys_old)); // 2D array, similar to the matlab code. Previously as //double complex (*G_sys_old)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_sys_old)); //double complex G_sys_old[tot_sub_vol][tot_sub_vol][3][3];
 			double complex (*G_sys_new)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys_old)); // 2D array, similar to the matlab code. Previously as //double complex (*G_sys_new)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_sys_new)); //double complex G_sys_new[tot_sub_vol][tot_sub_vol][3][3]; 
 			double (*eyeA_2d)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*eyeA_2d)); // 2D array, similar to the matlab code
-			double complex (*A_2d)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*A_2d)); // 2D array, similar to the matlab code
+			double complex (*A_2d)[3] = calloc(3, sizeof(*A_2d)); // 2D array, similar to the matlab code
 			double complex (*A1lapack) = malloc(sizeof *A1lapack *3*3); //double complex Alapack[lda*n];
 			double complex (*b1lapack) = malloc(sizeof *b1lapack *3*3); //double complex blapack[ldb*nrhs];
 
@@ -697,19 +697,11 @@ int main()
 				printf("%d - ",mm+1);
 				mm_2d =0;
 				epsilon_s[mm] = (epsilon - epsilon_ref); // Scattering dielectric function
-				for (int mm_sub = 0; mm_sub < 3; mm_sub++)
-				{
-					mm_2d = (3*mm + mm_sub);
-					for (int mm_sub_n = 0; mm_sub_n < 3; mm_sub_n++)
-					{   
-						mm_2d_n = (3*mm + mm_sub_n);
-						A_2d[mm_sub][mm_sub_n] = eyeA_2d[mm_2d][mm_2d_n] - pow(k,2)*delta_V_vector[mm]*epsilon_s[mm]*G_sys_old[mm_2d][mm_2d_n]; //modification...see if it works
-					}
-				} //mm_sub
+				
+				A2d_solver(epsilon_s[mm], mm, tot_sub_vol, eyeA_2d, delta_V_vector[mm], G_sys_old, A_2d, k);
 
 				for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) // Only loop through remaining perturbations
 				{
-
 
 					// %%%%%%%%%%% Linear inversion using LAPACK %%%%%%%%%%%%%%%%%
 					ipack=0;
@@ -817,7 +809,7 @@ int main()
 					} // jg_0
 				} // ig_0	
 
-				memset(A_2d, 0, sizeof *A_2d * 3*tot_sub_vol);
+				memset(A_2d, 0, sizeof *A_2d * 3);
 				memset(A1lapack, 0, sizeof *A1lapack *3*3); //double complex Alapack[lda*n];
 				memset(b1lapack, 0, sizeof *b1lapack *3*3);
 

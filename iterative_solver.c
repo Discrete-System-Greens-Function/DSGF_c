@@ -23,3 +23,18 @@ void matrix_reshape(int inner_size, int outer_size, double complex matrix_2d_1[]
 	free(indexing_map);
 
 }
+
+void A2d_solver(double complex epsilon, int mm, int tot_sub_vol, double eyeA_2d[][3*tot_sub_vol], double delta_V, double complex G_sys_old[][3*tot_sub_vol], double complex A_2d[][3*tot_sub_vol], double k){
+	
+	index_map *new_index_map = init_index_map();
+
+	for(int minor_x = 0; minor_x < 3; minor_x++){
+		for (int minor_y = 0; minor_y < 3; minor_y++){
+			four_d_two_d_mapping(new_index_map, mm, minor_x, mm, minor_y);
+
+			A_2d[minor_x][minor_y] = eyeA_2d[new_index_map->new_x][new_index_map->new_y] - pow(k,2)*delta_V*epsilon*G_sys_old[new_index_map->new_x][new_index_map->new_y]; //modification...see if it works
+		}
+	}
+
+	free(new_index_map);
+}
