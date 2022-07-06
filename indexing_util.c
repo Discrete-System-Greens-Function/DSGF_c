@@ -13,3 +13,8 @@ void four_d_two_d_mapping(index_map *index_map_struct, int major_x, int minor_x,
 	index_map_struct->new_y = 3*major_y + minor_y;
 
 }
+
+void two_d_one_d_mapping(index_map *indexing_map_struct, int x, int y, bool x_leading){
+
+	
+}

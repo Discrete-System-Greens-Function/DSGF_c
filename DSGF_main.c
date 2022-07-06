@@ -715,7 +715,7 @@ int main()
 							mm_2d = (3*mm + mm_sub);
 							A1lapack[ipack] = A_2d[mm_sub][j_subG_0]; //A_2d[mm_2d][mm_2d]; //A[mm][mm][i_subG_0][j_subG_0];
 							b1lapack[ipack] = G_sys_old[mm_2d][jg_0_2d]; //G_sys_old[mm][jg_0][i_subG_0][j_subG_0];
-							ipack = ipack + 1;
+							ipack++; 
 						}    
 					}
 					//printf("\n%d\n",ipack);
