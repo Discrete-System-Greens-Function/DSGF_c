@@ -1,7 +1,7 @@
 #include "iterative_solver.h"
 
 void matrix_reshape(int inner_size, int outer_size, double complex matrix_2d_1[][3*outer_size], double matrix_2d_2[][3*outer_size], double complex matrix_4d_1[outer_size][outer_size][inner_size][inner_size], double matrix_4d_2[outer_size][outer_size][inner_size][inner_size]){
-	
+
 	index_map *indexing_map = init_index_map();
 
 	for (int major_x = 0; major_x < outer_size; major_x++)
@@ -25,7 +25,7 @@ void matrix_reshape(int inner_size, int outer_size, double complex matrix_2d_1[]
 }
 
 void A2d_solver(double complex epsilon, int mm, int tot_sub_vol, double eyeA_2d[][3*tot_sub_vol], double delta_V, double complex G_sys_old[][3*tot_sub_vol], double complex A_2d[3][3], double k){
-	
+
 	index_map *new_index_map = init_index_map();
 
 	for(int minor_x = 0; minor_x < 3; minor_x++){
@@ -38,3 +38,28 @@ void A2d_solver(double complex epsilon, int mm, int tot_sub_vol, double eyeA_2d[
 
 	free(new_index_map);
 }
+
+void A1_lapack_B1_lapack_populator(int tot_sub_vol, double complex *A1lapack, double complex *b1lapack, double complex A_2d[3][3], double complex G_sys_old[3*tot_sub_vol][3*tot_sub_vol],int mm, int jg_0){
+
+	
+	index_map *indexing_map_2D = init_index_map();
+	index_map *indexing_map_4D = init_index_map();
+
+	for(int col = 0; col < 3; col++) // 3D coordinate positions 
+	{
+		for (int row = 0; row < 3; row++)
+		{
+			four_d_two_d_mapping(indexing_map_4D, 3, mm, row, jg_0, col);
+			two_d_one_d_mapping(indexing_map_2D, 3, row, col, false);
+	
+			A1lapack[indexing_map_2D->new_x] = A_2d[row][col];
+			b1lapack[indexing_map_2D->new_x] = G_sys_old[indexing_map_4D->new_x][indexing_map_4D->new_y];
+		}    
+	}
+	
+	free(indexing_map_2D);
+	free(indexing_map_4D);
+
+}
+
+

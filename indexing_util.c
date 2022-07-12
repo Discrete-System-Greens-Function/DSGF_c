@@ -14,11 +14,11 @@ void four_d_two_d_mapping(index_map *index_map_struct, int offset, int major_x, 
 
 }
 
-void two_d_one_d_mapping(index_map *indexing_map_struct, int offset, int x, int y, bool x_leading){
+void two_d_one_d_mapping(index_map *indexing_map_struct, int offset, int row, int col, bool row_leading){
 
-	if (x_leading){
-		indexing_map_struct->new_x = offset * y + x;
+	if (row_leading){
+		indexing_map_struct->new_x = offset * row + col;
 	}else {
-		indexing_map_struct->new_x = offset * x + y;
+		indexing_map_struct->new_x = offset * col + row;
 	}	
 }

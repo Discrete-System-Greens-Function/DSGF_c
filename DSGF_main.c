@@ -703,22 +703,10 @@ int main()
 				for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) // Only loop through remaining perturbations
 				{
 
+
+					A1_lapack_B1_lapack_populator(tot_sub_vol, A1lapack, b1lapack, A_2d, G_sys_old, mm, jg_0);
+
 					// %%%%%%%%%%% Linear inversion using LAPACK %%%%%%%%%%%%%%%%%
-					ipack=0;
-					jg_0_2d=0; 
-					mm_2d = 0;  
-					for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
-					{
-						jg_0_2d = (3*jg_0 + j_subG_0); 
-						for (int mm_sub = 0; mm_sub < 3; mm_sub++)
-						{
-							mm_2d = (3*mm + mm_sub);
-							A1lapack[ipack] = A_2d[mm_sub][j_subG_0]; //A_2d[mm_2d][mm_2d]; //A[mm][mm][i_subG_0][j_subG_0];
-							b1lapack[ipack] = G_sys_old[mm_2d][jg_0_2d]; //G_sys_old[mm][jg_0][i_subG_0][j_subG_0];
-							ipack++; 
-						}    
-					}
-					//printf("\n%d\n",ipack);
 
 					info = LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',3,3,3,A1lapack,3,b1lapack,3); //info = LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',m=3,n=3,nrhs=3,Alapack,lda=3,blapack,ldb=3); 
 														//info = LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',m,n,nrhs,A1lapack,lda,b1lapack,ldb); 
