@@ -43,6 +43,9 @@
 #include "iterative_solver.h"
 #include "indexing_util.h"
 
+// debugging utils
+#include "debugging/debugging_utils.h"
+
 // LAPACKE libraries: https://www.netlib.org/lapack/lapacke.html ; https://extras.csc.fi/math/nag/mark21/pdf/F08/f08anf.pdf
 #include <lapacke.h> 
 #include "lapack_header.h" //header with Lapack definitions
@@ -691,6 +694,8 @@ int main()
 			// G_sys_old and eyeA_2d are the respective 2D matrices
 			matrix_reshape(3, tot_sub_vol, G_sys_old, eyeA_2d, G_0, eyeA);
 
+		//	print_matrix(3*tot_sub_vol, 3*tot_sub_vol, G_sys_old);
+
 			// First, solve ii = mm system of equations.
 			for (int mm = 0; mm < tot_sub_vol; mm++) //tot_sub_vol
 			{
@@ -698,8 +703,8 @@ int main()
 				mm_2d =0;
 				epsilon_s[mm] = (epsilon - epsilon_ref); // Scattering dielectric function
 				
-				A2d_solver(epsilon_s[mm], mm, tot_sub_vol, eyeA_2d, delta_V_vector[mm], G_sys_old, A_2d, k);
-
+				A2d_solver(epsilon_s[mm], mm, tot_sub_vol, eye_iter, delta_V_vector[mm], G_sys_old, A_2d, k);
+				
 				for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) // Only loop through remaining perturbations
 				{
 
