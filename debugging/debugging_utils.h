@@ -3,6 +3,7 @@
 
 #include <complex.h>
 #include <stdio.h>
+#include "../file_utils.h"
 
 void print_matrix_complex(int row, int col, double complex array[row][col]);
 
