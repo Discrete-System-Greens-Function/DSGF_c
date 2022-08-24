@@ -40,6 +40,11 @@
 #include "user_inputs.h" // User inputs definitions header. No values are defined in this file.  
 #include "functions_DSGF.h" // Definitions of functions used in DSGF
 #include "file_utils.h" // header with definitions of read_user_inputs and read_calculation_temperatures functions
+#include "iterative_solver.h"
+#include "indexing_util.h"
+
+// debugging utils
+#include "debugging/debugging_utils.h"
 
 // LAPACKE libraries: https://www.netlib.org/lapack/lapacke.html ; https://extras.csc.fi/math/nag/mark21/pdf/F08/f08anf.pdf
 #include <lapacke.h> 
@@ -666,29 +671,14 @@ int main()
 			double complex (*G_sys_old)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys_old)); // 2D array, similar to the matlab code. Previously as //double complex (*G_sys_old)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_sys_old)); //double complex G_sys_old[tot_sub_vol][tot_sub_vol][3][3];
 			double complex (*G_sys_new)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys_old)); // 2D array, similar to the matlab code. Previously as //double complex (*G_sys_new)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_sys_new)); //double complex G_sys_new[tot_sub_vol][tot_sub_vol][3][3]; 
 			double (*eyeA_2d)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*eyeA_2d)); // 2D array, similar to the matlab code
-			double complex (*A_2d)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*A_2d)); // 2D array, similar to the matlab code
+			double complex (*A_2d)[3] = calloc(3, sizeof(*A_2d)); // 2D array, similar to the matlab code
 			double complex (*A1lapack) = malloc(sizeof *A1lapack *3*3); //double complex Alapack[lda*n];
 			double complex (*b1lapack) = malloc(sizeof *b1lapack *3*3); //double complex blapack[ldb*nrhs];
 
 			double complex (*epsilon_s) = malloc(sizeof *epsilon_s *tot_sub_vol); //not used
 
 			//3-by-3 unit matrix   
-			double (*eye_iter)[3] = calloc(3, sizeof(*eyeG_0)); //double eyeG_0[3][3];      
-			for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++)
-			{        
-				for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++)
-				{ // 3D coordinate positions
-					if (i_subG_0 == j_subG_0)
-					{
-						eye_iter[i_subG_0][j_subG_0] = 1.;     // 3x3 Identity matrix
-					}    
-					else
-					{
-						eye_iter[i_subG_0][j_subG_0] = 0.;     // 3x3 Identity matrix 
-					}                
-				}
-			}                      
-
+			double eye_iter[3][3] = {{1., 0., 0.}, {0., 1., 0.}, {0., 0., 1.}}; //double eyeG_0[3][3];      
 
 			// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 			// Calculate background medium Green's function 
@@ -698,26 +688,13 @@ int main()
 			// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 			// Calculate system Green's function 
 			// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+			
+			// this reshapes 2 4D matrices to 2 2D matrices
+			// G0 and eyeA are 4D
+			// G_sys_old and eyeA_2d are the respective 2D matrices
+			matrix_reshape(3, tot_sub_vol, G_sys_old, eyeA_2d, G_0, eyeA);
 
-			// Set initial values to free-space Green's function values: G_sys_2D_old = G_0_2D;
-			for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
-			{
-				for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //tot_sub_vol
-				{ 
-					for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
-					{
-						ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
-						for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
-						{
-							jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
-							G_sys_old[ig_0_2d][jg_0_2d]=G_0[ig_0][jg_0][i_subG_0][j_subG_0]; //2D matrix
-							eyeA_2d[ig_0_2d][jg_0_2d] = eyeA[ig_0][jg_0][i_subG_0][j_subG_0]; //2D matrix
-															  //printf("%e + i %e ; ",creal(G_sys_old[ig_0_2d][jg_0_2d]),cimag(G_sys_old[ig_0_2d][jg_0_2d]));
-						}
-					}
-					//printf("\n");
-				}
-			}	
+		//	print_matrix(3*tot_sub_vol, 3*tot_sub_vol, G_sys_old);
 
 			// First, solve ii = mm system of equations.
 			for (int mm = 0; mm < tot_sub_vol; mm++) //tot_sub_vol
@@ -725,37 +702,16 @@ int main()
 				printf("%d - ",mm+1);
 				mm_2d =0;
 				epsilon_s[mm] = (epsilon - epsilon_ref); // Scattering dielectric function
-				for (int mm_sub = 0; mm_sub < 3; mm_sub++)
-				{
-					mm_2d = (3*mm + mm_sub);
-					for (int mm_sub_n = 0; mm_sub_n < 3; mm_sub_n++)
-					{   
-						mm_2d_n = (3*mm + mm_sub_n);
-						A_2d[mm_sub][mm_sub_n] = eyeA_2d[mm_2d][mm_2d_n] - pow(k,2)*delta_V_vector[mm]*epsilon_s[mm]*G_sys_old[mm_2d][mm_2d_n]; //modification...see if it works
-																					//printf("%e + i %e ;\n",creal(A_2d[mm_sub][mm_sub_n]),cimag(A_2d[mm_sub][mm_sub_n])); //matches with matlab
-					}
-				} //mm_sub
-
+				
+				A2d_solver(epsilon_s[mm], mm, tot_sub_vol, eye_iter, delta_V_vector[mm], G_sys_old, A_2d, k);
+				
 				for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) // Only loop through remaining perturbations
 				{
 
 
+					A1_lapack_B1_lapack_populator(tot_sub_vol, A1lapack, b1lapack, A_2d, G_sys_old, mm, jg_0);
+
 					// %%%%%%%%%%% Linear inversion using LAPACK %%%%%%%%%%%%%%%%%
-					ipack=0;
-					jg_0_2d=0; 
-					mm_2d = 0;  
-					for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
-					{
-						jg_0_2d = (3*jg_0 + j_subG_0); 
-						for (int mm_sub = 0; mm_sub < 3; mm_sub++)
-						{
-							mm_2d = (3*mm + mm_sub);
-							A1lapack[ipack] = A_2d[mm_sub][j_subG_0]; //A_2d[mm_2d][mm_2d]; //A[mm][mm][i_subG_0][j_subG_0];
-							b1lapack[ipack] = G_sys_old[mm_2d][jg_0_2d]; //G_sys_old[mm][jg_0][i_subG_0][j_subG_0];
-							ipack = ipack + 1;
-						}    
-					}
-					//printf("\n%d\n",ipack);
 
 					info = LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',3,3,3,A1lapack,3,b1lapack,3); //info = LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',m=3,n=3,nrhs=3,Alapack,lda=3,blapack,ldb=3); 
 														//info = LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',m,n,nrhs,A1lapack,lda,b1lapack,ldb); 
@@ -846,7 +802,7 @@ int main()
 					} // jg_0
 				} // ig_0	
 
-				memset(A_2d, 0, sizeof *A_2d * 3*tot_sub_vol);
+				memset(A_2d, 0, sizeof *A_2d * 3);
 				memset(A1lapack, 0, sizeof *A1lapack *3*3); //double complex Alapack[lda*n];
 				memset(b1lapack, 0, sizeof *b1lapack *3*3);
 
@@ -876,7 +832,6 @@ int main()
 			memset(G_sys_new, 0, sizeof *G_sys_new * 3*tot_sub_vol); //modulo_r_i_j
 			memset(eyeA_2d, 0, sizeof *eyeA_2d * 3*tot_sub_vol);
 
-			free(eye_iter);
 			free(G_sys_old);
 			free(G_sys_new);
 			free(eyeA_2d);

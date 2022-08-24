@@ -109,3 +109,17 @@ char* set_up_results(char material[], char geometry[], int tot_sub_vol, double d
 
 	return results_folder;
 }
+
+void write_to_csv_double_imag(char file_name[], int rows, int cols, double complex matrix[rows][cols]){
+	FILE * CSV_file = fopen(file_name, "w");
+		
+		for(int i = 0; i < rows; i++){
+			for(int j = 0; j < cols; j++){
+				fprintf(CSV_file, "%e+%ej\t", creal(matrix[i][j]), cimag(matrix[i][j]));
+			}
+			fprintf(CSV_file, "\n");
+		}
+
+	fclose(CSV_file);
+	
+}
