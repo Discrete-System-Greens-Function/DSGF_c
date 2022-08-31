@@ -556,9 +556,9 @@ int main()
 
 			//printf("----- Export data -----\n");
 			if(save_A_matrix =='Y'){
-				FILE * Amatrix; // A matrix .txt file
+				FILE * Amatrix; // A matrix .csv file
 				char dirPathAFileName[260]; // https://stackoverflow.com/questions/46612504/creating-directories-and-files-using-a-loop-in-c
-				sprintf(dirPathAFileName, "%s/%s", frequency_folder, "A_matrix.txt"); // path where the file is stored
+				sprintf(dirPathAFileName, "%s/%s", frequency_folder, "A_matrix.csv"); // path where the file is stored
 				Amatrix = fopen(dirPathAFileName,"w");//array[i_omega]"/A_matrix.txt" // EN: https://www.tutorialspoint.com/c_standard_library/c_function_fopen.htm
 				for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 				{
@@ -568,7 +568,7 @@ int main()
 						{
 							for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions
 							{
-								fprintf(Amatrix,"%e + i %e ; ", creal(A[ig_0][jg_0][i_subG_0][j_subG_0]),cimag(A[ig_0][jg_0][i_subG_0][j_subG_0])); // PS: note that the function is fprintf not printf    
+								fprintf(Amatrix,"%e + i %e \t ", creal(A[ig_0][jg_0][i_subG_0][j_subG_0]),cimag(A[ig_0][jg_0][i_subG_0][j_subG_0])); // PS: note that the function is fprintf not printf    
 							}    
 						}
 						fprintf(Amatrix,"\n"); 
@@ -577,9 +577,9 @@ int main()
 				fclose(Amatrix);
 			}
 			if(save_G0_matrix =='Y'){
-				FILE * G0matrix; // G^0 matrix .txt file
+				FILE * G0matrix; // G^0 matrix .csv file
 				char dirPathG0FileName[260];
-				sprintf(dirPathG0FileName, "%s/%s", frequency_folder,"G0_matrix.txt"); // path where the file is stored
+				sprintf(dirPathG0FileName, "%s/%s", frequency_folder,"G0_matrix.csv"); // path where the file is stored
 				G0matrix =fopen(dirPathG0FileName,"w"); // PT: https://terminalroot.com.br/2014/12/linguagem-c-utilizando-as-funcoes-fopen.html
 				for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 				{
@@ -589,7 +589,7 @@ int main()
 						{
 							for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
 							{
-								fprintf(G0matrix,"%e + i %e ; ", creal(G_0[ig_0][jg_0][i_subG_0][j_subG_0]),cimag(G_0[ig_0][jg_0][i_subG_0][j_subG_0]));
+								fprintf(G0matrix,"%e + i %e \t ", creal(G_0[ig_0][jg_0][i_subG_0][j_subG_0]),cimag(G_0[ig_0][jg_0][i_subG_0][j_subG_0]));
 							}    
 						}
 						fprintf(G0matrix,"\n");
@@ -679,11 +679,11 @@ int main()
    
 			double eye_iter[3][3] = {{1., 0., 0.}, {0., 1., 0.}, {0., 0., 1.}}; // 3-by-3 unit matrix
 			
-			FILE * G_sys_matrix_iterative; // G matrix .txt file
+			FILE * G_sys_matrix_iterative; // G matrix .csv file
 			char dirPathG_sys_FileName_iterative[260];
 			
 			double complex (*G_sys_new_conj)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys_new_conj));
-			int k_2d;
+			int mm_2d;
 			
 			double complex (*G_sys_prod)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys_prod));
 			
@@ -713,15 +713,15 @@ int main()
 				epsilon_s[mm] = (epsilon - epsilon_ref); // Scattering dielectric function
 				
 				A2d_solver(epsilon_s[mm], mm, tot_sub_vol, eye_iter, delta_V_vector[mm], G_sys_old, A_2d, k);
+				if (mm == 0){
+					write_to_csv_double_imag("A_2d.csv", 3, 3, A_2d);
+				}
 				
 				
 								
 				for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) // Only loop through remaining perturbations
 				{
 
-
-					 
-					 
 					 A1_lapack_B1_lapack_populator(tot_sub_vol, A1lapack, b1lapack, A_2d, G_sys_old, mm, jg_0);
 
 					// %%%%%%%%%%% Linear inversion using LAPACK %%%%%%%%%%%%%%%%%
@@ -732,12 +732,12 @@ int main()
 					mm_2d = 0;  
 					jg_0_2d =0;     	
 					//ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
-					for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
+					for (int mm_sub = 0; mm_sub < 3; mm_sub++) // 3D coordinate positions
 					{
-						jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
-						for (int mm_sub = 0; mm_sub < 3; mm_sub++) // 3D coordinate positions
+						mm_2d = (3*mm + mm_sub);
+						for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
 						{
-							mm_2d = (3*mm + mm_sub);
+							jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
 							G_sys_new[mm_2d][jg_0_2d] = b1lapack[gpack]; // stores G^1_11
 							//G_sys_new[mm][jg_0][i_subG_0][j_subG_0] = b1lapack[gpack]; // stores G^1_11
 							//printf("%e + i %e ;",creal(G_sys_new[mm_2d][jg_0_2d]),cimag(G_sys_new[mm_2d][jg_0_2d]));
@@ -748,6 +748,9 @@ int main()
 					
 
 				} // end jg_0	
+				if (mm == 0){
+					write_to_csv_double_imag("G_sys_new.csv", 48,48, G_sys_new);
+				}
 				
 				
 				memset(A_2d, 0, sizeof *A_2d * 3);
@@ -773,6 +776,8 @@ int main()
 				}
 				}	
 				*/
+				
+			
 				// %%%%%%%%%%% end Linear inversion using LAPACK %%%%%%%%%%%%%%
 				
 				/*
@@ -804,54 +809,74 @@ int main()
 						{
 							if(ig_0 != mm)
 							{
-								mm_sub =0;
 								for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
 								{
 									jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
-									//for(int mm_sub = 0;  mm_sub < 3;  mm_sub++)
-									//{
-									//mm_2d = (3*mm + mm_sub);
-									
 									G_sys_prod[ig_0_2d][jg_0_2d] = 0.;
-										for(int k_sub = 0;  k_sub < 3;  k_sub++)
-										{
-										k_2d = (3*mm + k_sub); 
-										G_sys_prod[ig_0_2d][jg_0_2d] += G_sys_old[ig_0_2d][k_2d]*G_sys_new[k_2d][jg_0_2d];//
-										}
-										
-									G_sys_new[ig_0_2d][jg_0_2d] = G_sys_old[ig_0_2d][jg_0_2d] + pow(k,2)*alpha_0[mm]*G_sys_prod[ig_0_2d][jg_0_2d];
-									//G_sys_new[ig_0_2d][jg_0_2d] = G_sys_old[ig_0_2d][jg_0_2d] + pow(k,2)*alpha_0[mm]*G_sys_old[ig_0_2d][mm_2d]*G_sys_new[mm_2d][jg_0_2d];
-									//mm_sub = mm_sub +1;
+									for(int m_sub = 0;  m_sub < 3;  m_sub++)//loop for matricial multiplication
+									{
+										mm_2d = (3*mm + m_sub); 
+										G_sys_prod[ig_0_2d][jg_0_2d] += G_sys_old[ig_0_2d][mm_2d]*G_sys_new[mm_2d][jg_0_2d];//
+									}
 									
+									G_sys_new[ig_0_2d][jg_0_2d] = G_sys_old[ig_0_2d][jg_0_2d] + pow(k,2)*alpha_0[mm]*G_sys_prod[ig_0_2d][jg_0_2d];									
+									//G_sys_new[ig_0_2d][jg_0_2d] = G_sys_old[ig_0_2d][jg_0_2d] + pow(k,2)*alpha_0[mm]*G_sys_old[ig_0_2d][mm_2d]*G_sys_new[mm_2d][jg_0_2d];									
 								} // j_subG_0            				
 							} // if(ig_0 != mm) 
 						} // jg_0   	
 					}// i_subG_0   	                	
 				} // ig_0    	
 
+				
+				/*
 				for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
-				{
-					for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //tot_sub_vol  ig_0
+				{ 
+					//mm_sub_n = 0;  
+					for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
 					{
-						for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
+						ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
+									       //mm_2d_n = (3*mm + mm_sub_n);	  	
+						for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //tot_sub_vol  ig_0 //lower triangular matrix
 						{
-							ig_0_2d = (3*ig_0 + i_subG_0); // Set indices	
-							for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
+							if(ig_0 != mm)
 							{
-								jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
-								G_sys_old[ig_0_2d][jg_0_2d] = G_sys_new[ig_0_2d][jg_0_2d];
+								for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
+								{
+									jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
+									G_sys_new[ig_0_2d][jg_0_2d] = G_sys_old[ig_0_2d][jg_0_2d] + pow(k,2)*alpha_0[mm]*G_sys_prod[ig_0_2d][jg_0_2d];
+								} // j_subG_0            				
+							} // if(ig_0 != mm) 
+						} // jg_0   	
+					}// i_subG_0   	                	
+				} // ig_0
+				*/
+				
+			
+				
+				for (int ig_0 = 0; ig_0 < 3*tot_sub_vol; ig_0++) //tot_sub_vol
+				{
+					for (int jg_0 = 0; jg_0 < 3*tot_sub_vol; jg_0++) //tot_sub_vol  ig_0
+					{
+						//for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
+						//{
+							//ig_0_2d = (3*ig_0 + i_subG_0); // Set indices	
+							//for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
+							//{
+								//jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
+								G_sys_old[ig_0][jg_0] = G_sys_new[ig_0][jg_0];
+								//G_sys_old[ig_0_2d][jg_0_2d] = G_sys_new[ig_0_2d][jg_0_2d];
 								//G_sys[ig_0][jg_0][i_subG_0][j_subG_0] = G_sys_new[ig_0_2d][jg_0_2d];
 								//G_sys_old[ig_0][jg_0][i_subG_0][j_subG_0]=G_sys_new[ig_0][jg_0][i_subG_0][j_subG_0];
-							}    
+							//}    
 
-						}
+						//}
 						//printf("\n");		
 					} // jg_0
 				} // ig_0
 				
-				if(mm==2)
+							if(mm==0)
 			{
-			sprintf(dirPathG_sys_FileName_iterative, "%s/%s", frequency_folder,"G_sys_matrix_iterative.txt"); // path where the file is stored
+			sprintf(dirPathG_sys_FileName_iterative, "%s/%s", frequency_folder,"G_sys_matrix_iterative.csv"); // path where the file is stored
 			G_sys_matrix_iterative =fopen(dirPathG_sys_FileName_iterative,"w"); 
 			for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 			{
@@ -863,14 +888,15 @@ int main()
 						for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions
 						{
 							jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
-							fprintf(G_sys_matrix_iterative,"%e + i %e ; ", creal(G_sys_new[ig_0_2d][jg_0_2d]),cimag(G_sys_new[ig_0_2d][jg_0_2d]));    
+							fprintf(G_sys_matrix_iterative,"%e + i %e \t ", creal(G_sys_new[ig_0_2d][jg_0_2d]),cimag(G_sys_new[ig_0_2d][jg_0_2d]));    
 						}    
 					}
 					fprintf(G_sys_matrix_iterative,"\n");
 				}        
 			} 
 			fclose(G_sys_matrix_iterative); 
-			}	
+			}
+				
 
 
 			}//end mm loop 
@@ -919,9 +945,9 @@ int main()
 		if(save_SGF_matrix =='Y'){   
 			printf("  --------- Export G_sys -----\n");
 
-			FILE * G_sys_matrix; // G matrix .txt file
+			FILE * G_sys_matrix; // G matrix .csv file
 			char dirPathG_sys_FileName[260];
-			sprintf(dirPathG_sys_FileName, "%s/%s", frequency_folder,"G_sys_matrix.txt"); // path where the file is stored
+			sprintf(dirPathG_sys_FileName, "%s/%s", frequency_folder,"G_sys_matrix.csv"); // path where the file is stored
 			G_sys_matrix =fopen(dirPathG_sys_FileName,"w"); // PT: https://terminalroot.com.br/2014/12/linguagem-c-utilizando-as-funcoes-fopen.html
 			for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 			{
@@ -931,7 +957,7 @@ int main()
 					{
 						for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
 						{
-							fprintf(G_sys_matrix,"%e + i %e ; ", creal(G_sys[ig_0][jg_0][i_subG_0][j_subG_0]),cimag(G_sys[ig_0][jg_0][i_subG_0][j_subG_0]));    
+							fprintf(G_sys_matrix,"%e + i %e \t ", creal(G_sys[ig_0][jg_0][i_subG_0][j_subG_0]),cimag(G_sys[ig_0][jg_0][i_subG_0][j_subG_0]));    
 						}    
 					}
 					fprintf(G_sys_matrix,"\n");

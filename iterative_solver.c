@@ -29,10 +29,12 @@ void A2d_solver(double complex epsilon, int mm, int tot_sub_vol, double eyeA_2d[
 	index_map *new_index_map = init_index_map();
 
 	for(int minor_x = 0; minor_x < 3; minor_x++){
+		int new_x = 3*mm + minor_x;
 		for (int minor_y = 0; minor_y < 3; minor_y++){
-			four_d_two_d_mapping(new_index_map, 3, mm, minor_x, mm, minor_y);
-
-			A_2d[minor_x][minor_y] = eyeA_2d[minor_x][minor_y] - pow(k,2)*delta_V*epsilon*G_sys_old[new_index_map->new_x][new_index_map->new_y]; //modification...see if it works
+			int new_y = 3*mm + minor_y;
+			//four_d_two_d_mapping(new_index_map, 3, mm, minor_x, mm, minor_y);
+			//Amm[mm_sub][mm_sub_n] = eye_iter[mm_sub][mm_sub_n] - pow(k,2)*epsilon_s[mm]*delta_V_vector[mm]*G_sys_old[mm_2d][mm_2d_n]; 
+			A_2d[minor_x][minor_y] = eyeA_2d[minor_x][minor_y] - pow(k,2)*delta_V*epsilon*G_sys_old[new_x][new_y]; //modification...see if it works
 		}
 	}
 
@@ -44,16 +46,23 @@ void A1_lapack_B1_lapack_populator(int tot_sub_vol, double complex *A1lapack, do
 	
 	index_map *indexing_map_2D = init_index_map();
 	index_map *indexing_map_4D = init_index_map();
-
-	for(int col = 0; col < 3; col++) // 3D coordinate positions 
-	{
-		for (int row = 0; row < 3; row++)
-		{
-			four_d_two_d_mapping(indexing_map_4D, 3, mm, row, jg_0, col);
-			two_d_one_d_mapping(indexing_map_2D, 3, row, col, false);
 	
-			A1lapack[indexing_map_2D->new_x] = A_2d[row][col];
-			b1lapack[indexing_map_2D->new_x] = G_sys_old[indexing_map_4D->new_x][indexing_map_4D->new_y];
+	int ipack=0;
+
+	for (int row = 0; row < 3; row++)
+	{
+		int new_x = (3*mm + row);
+		for(int col = 0; col < 3; col++) // 3D coordinate positions 
+		{
+			int new_y = (3*jg_0 + col);
+			A1lapack[ipack] = A_2d[row][col]; //A_2d[mm_2d][mm_2d]; //A[mm][mm][i_subG_0][j_subG_0];
+			b1lapack[ipack] = G_sys_old[new_x][new_y]; //G_sys_old[mm][jg_0][i_subG_0][j_subG_0];
+			ipack = ipack + 1;
+			//four_d_two_d_mapping(indexing_map_4D, 3, mm, row, jg_0, col);
+			//two_d_one_d_mapping(indexing_map_2D, 3, row, col, false);
+	
+			//A1lapack[indexing_map_2D->new_x] = A_2d[row][col];
+			//b1lapack[indexing_map_2D->new_x] = G_sys_old[indexing_map_4D->new_x][indexing_map_4D->new_y];
 		}    
 	}
 	
