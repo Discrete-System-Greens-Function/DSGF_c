@@ -874,7 +874,7 @@ int main()
 					} // jg_0
 				} // ig_0
 				
-							if(mm==0)
+		/*					if(mm==0)
 			{
 			sprintf(dirPathG_sys_FileName_iterative, "%s/%s", frequency_folder,"G_sys_matrix_iterative.csv"); // path where the file is stored
 			G_sys_matrix_iterative =fopen(dirPathG_sys_FileName_iterative,"w"); 
@@ -897,7 +897,7 @@ int main()
 			fclose(G_sys_matrix_iterative); 
 			}
 				
-
+*/
 
 			}//end mm loop 
 
