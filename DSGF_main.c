@@ -712,11 +712,7 @@ int main()
 				mm_2d =0;
 				epsilon_s[mm] = (epsilon - epsilon_ref); // Scattering dielectric function
 				
-				A2d_solver(epsilon_s[mm], mm, tot_sub_vol, eye_iter, delta_V_vector[mm], G_sys_old, A_2d, k);
-				if (mm == 0){
-					write_to_csv_double_imag("A_2d.csv", 3, 3, A_2d);
-				}
-				
+				A2d_solver(epsilon_s[mm], mm, tot_sub_vol, eye_iter, delta_V_vector[mm], G_sys_old, A_2d, k);	
 				
 								
 				for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) // Only loop through remaining perturbations
@@ -747,11 +743,7 @@ int main()
 					}
 					
 
-				} // end jg_0	
-				if (mm == 0){
-					write_to_csv_double_imag("G_sys_new.csv", 48,48, G_sys_new);
-				}
-				
+				} // end jg_0					
 				
 				memset(A_2d, 0, sizeof *A_2d * 3);
 				memset(A1lapack, 0, sizeof *A1lapack *3*3); //double complex Alapack[lda*n];
@@ -874,30 +866,6 @@ int main()
 					} // jg_0
 				} // ig_0
 				
-		/*					if(mm==0)
-			{
-			sprintf(dirPathG_sys_FileName_iterative, "%s/%s", frequency_folder,"G_sys_matrix_iterative.csv"); // path where the file is stored
-			G_sys_matrix_iterative =fopen(dirPathG_sys_FileName_iterative,"w"); 
-			for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
-			{
-				for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
-				{
-					ig_0_2d = (3*ig_0 + i_subG_0); // Set indices	
-					for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //tot_sub_vol
-					{  
-						for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions
-						{
-							jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
-							fprintf(G_sys_matrix_iterative,"%e + i %e \t ", creal(G_sys_new[ig_0_2d][jg_0_2d]),cimag(G_sys_new[ig_0_2d][jg_0_2d]));    
-						}    
-					}
-					fprintf(G_sys_matrix_iterative,"\n");
-				}        
-			} 
-			fclose(G_sys_matrix_iterative); 
-			}
-				
-*/
 
 			}//end mm loop 
 
