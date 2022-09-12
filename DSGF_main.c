@@ -671,7 +671,7 @@ int main()
 			double complex (*G_sys_old)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys_old)); // 2D array (3xtot_sub_vol, 3xtot_sub_vol)
 			double complex (*G_sys_new)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys_old)); // 2D array (3xtot_sub_vol, 3xtot_sub_vol)
 			double (*eyeA_2d)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*eyeA_2d)); // 2D array, similar to the matlab code
-			double complex (*A_mm)[3] = calloc(3, sizeof(double complex)); // 2D array
+			double complex (*A_mm)[3] = calloc(3, sizeof(double complex) * 3); // 2D array
 			double complex (*A1lapack) = malloc(sizeof *A1lapack *3*3); //double complex Alapack[lda*n];
 			double complex (*b1lapack) = malloc(sizeof *b1lapack *3*3); //double complex blapack[ldb*nrhs];
 
@@ -737,7 +737,7 @@ int main()
 
 				} // end jg_0					
 				
-				memset(A_mm, 0, sizeof(double complex) * 3);
+				memset(A_mm, 0, sizeof (double complex) * 3);
 				memset(A1lapack, 0, sizeof *A1lapack *3*3); //double complex Alapack[lda*n];
 				memset(b1lapack, 0, sizeof *b1lapack *3*3);
 				
