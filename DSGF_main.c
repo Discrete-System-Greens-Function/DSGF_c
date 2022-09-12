@@ -671,7 +671,7 @@ int main()
 			double complex (*G_sys_old)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys_old)); // 2D array (3xtot_sub_vol, 3xtot_sub_vol)
 			double complex (*G_sys_new)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys_old)); // 2D array (3xtot_sub_vol, 3xtot_sub_vol)
 			double (*eyeA_2d)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*eyeA_2d)); // 2D array, similar to the matlab code
-			double complex (*A_2d)[3] = calloc(3, sizeof(*A_2d)); // 2D array
+			double complex (*A_mm)[3] = calloc(3, sizeof(double complex)); // 2D array
 			double complex (*A1lapack) = malloc(sizeof *A1lapack *3*3); //double complex Alapack[lda*n];
 			double complex (*b1lapack) = malloc(sizeof *b1lapack *3*3); //double complex blapack[ldb*nrhs];
 
@@ -708,13 +708,13 @@ int main()
 				mm_2d =0;
 				epsilon_s[mm] = (epsilon - epsilon_ref); // Scattering dielectric function
 				
-				A2d_solver(epsilon_s[mm], mm, tot_sub_vol, eye_iter, delta_V_vector[mm], G_sys_old, A_2d, k);	
+				A2d_solver(epsilon_s[mm], mm, tot_sub_vol, eye_iter, delta_V_vector[mm], G_sys_old, A_mm, k);	
 				
 								
 				for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) // Only loop through remaining perturbations
 				{
 
-					 A1_lapack_B1_lapack_populator(tot_sub_vol, A1lapack, b1lapack, A_2d, G_sys_old, mm, jg_0);
+					 A1_lapack_B1_lapack_populator(tot_sub_vol, A1lapack, b1lapack, A_mm, G_sys_old, mm, jg_0);
 
 					// %%%%%%%%%%% Linear inversion using LAPACK %%%%%%%%%%%%%%%%%
 
@@ -737,7 +737,7 @@ int main()
 
 				} // end jg_0					
 				
-				memset(A_2d, 0, sizeof *A_2d * 3);
+				memset(A_mm, 0, sizeof(double complex) * 3);
 				memset(A1lapack, 0, sizeof *A1lapack *3*3); //double complex Alapack[lda*n];
 				memset(b1lapack, 0, sizeof *b1lapack *3*3);
 				
@@ -816,7 +816,7 @@ int main()
 			free(G_sys_old);
 			free(G_sys_new);
 			free(eyeA_2d);
-			free(A_2d);
+			free(A_mm);
 
 			free(A1lapack); 
 			free(b1lapack);
