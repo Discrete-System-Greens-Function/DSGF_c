@@ -50,15 +50,15 @@ show_titles = 1;
 % Dimension inputs %
 %%%%%%%%%%%%%%%%%%%%
 
-d = 150e-9;  % Distance between the two films [m]
+d = 100e-9;  % Distance between the two films [m]
 
 % Thin film #1
-Lx_1 = 200e-9;         % Length of film #1   -- Previously tested: 200e-9, 400e-9, 800e-9
+Lx_1 = 400e-9;         % Length of film #1   -- Previously tested: 200e-9, 400e-9, 800e-9
 Ly_1 = 1e-6;           % Width of film #1
-Lz_1 = 200e-9;         % Thickness of film #1 -- Previously tested: 200e-9
+Lz_1 = 50e-9;         % Thickness of film #1 -- Previously tested: 200e-9
 origin_1 = [0,0,0];    % Point of back, left, bottom of cube [x,y,z]
 cord_1 = 'min';          % String of coordinate along which direction mesh is to be refined 
-mesh_1 = 4;            % Number of subvolumes across the dimension given in the input 'cord' -- Previously tested:4, 5
+mesh_1 = 2;            % Number of subvolumes across the dimension given in the input 'cord' -- Previously tested:4, 5
 
 % Thin film #2
 Lx_2 = Lx_1;              % Length of film #2
@@ -66,7 +66,7 @@ Ly_2 = Ly_1;              % Width of film #2
 Lz_2 = Lz_1;              % Thickness of film #2
 origin_2 = [Lx_1+d,0,0];  % Point of back, left, bottom of cube [x,y,z]
 cord_2 = 'min';             % String of coordinate along which direction mesh is to be refined 
-mesh_2 = 4;               % Number of subvolumes across the dimension given in the input 'cord' -- Previously tested:4, 5
+mesh_2 = 2;               % Number of subvolumes across the dimension given in the input 'cord' -- Previously tested:4, 5
 
 
 
@@ -109,7 +109,8 @@ L_sub = delta_V_vector.^(1/3);
 
 % File name for saved discretizations
 description = '2_thin_films';  % Very short description of results
-file_name_saved = [description '_Lx' num2str((1e6)*Lx_1) 'um_Ly' num2str((1e6)*Ly_1) 'um_Lz' num2str((1e9)*Lz_1) 'nm_d' num2str((1e9)*d) 'nm_N'  num2str(N)]; % File name where results will be saved
+%file_name_saved = [description '_Lx' num2str((1e6)*Lx_1) 'um_Ly' num2str((1e6)*Ly_1) 'um_Lz' num2str((1e9)*Lz_1) 'nm_d' num2str((1e9)*d) 'nm_N'  num2str(N)]; % File name where results will be saved
+file_name_saved = [description '_Lx' num2str((1e9)*Lx_1) 'nm_Ly' num2str((1e9)*Ly_1) 'nm_Lz' num2str((1e9)*Lz_1) 'nm_d' num2str((1e9)*d) 'nm_N'  num2str(N)]; % File name where results will be saved
 
 
 %%%%%%%%%%%%%%%%%%%%%%%
@@ -117,8 +118,7 @@ file_name_saved = [description '_Lx' num2str((1e6)*Lx_1) 'um_Ly' num2str((1e6)*L
 %%%%%%%%%%%%%%%%%%%%%%%
 
 % Figure title
-title_string = {['Location of each subvolume for N = ', num2str(N) ' total subvolumes'],...
-    ['L_x = ' num2str((1e6)*Lx_1) ' \mum, L_y = ' num2str((1e6)*Ly_1) ' \mum, L_z = ' num2str((1e9)*Lz_1) ' nm, d = ' num2str((1e9)*d) ' nm']};
+title_string = {['Location of each subvolume for N = ', num2str(N) ' total subvolumes'],['L_x = ' num2str((1e6)*Lx_1) ' \mum, L_y = ' num2str((1e6)*Ly_1) ' \mum, L_z = ' num2str((1e9)*Lz_1) ' nm, d = ' num2str((1e9)*d) ' nm']};
 
 % Visualize discretized lattice
 FIG_discretization = figure(1);

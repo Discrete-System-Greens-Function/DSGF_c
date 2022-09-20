@@ -32,6 +32,48 @@ void read_user_inputs(char *material, char *geometry, char *discretization_thin_
     fclose(import_inputs);
 }
 
+void read_user_control(char *geometry,char *material, char *solution, char *single_spectrum_analysis, char *save_spectral_conductance, char *save_spectral_transmissivity, char *save_power_dissipated){
+	
+    char dirPathUserControl[260] = "user_inputs/control.txt";
+    FILE *import_control_inputs = fopen(dirPathUserControl, "r"); 
+    char buffer[256]; 
+    
+    fscanf(import_control_inputs,"%s = %s\n",buffer, geometry);	
+    fscanf(import_control_inputs,"%s = %s\n",buffer, material);
+    fscanf(import_control_inputs,"%s = %c\n",buffer, solution);
+    fscanf(import_control_inputs,"%s = %c\n",buffer, single_spectrum_analysis);
+    fscanf(import_control_inputs,"%s = %c\n",buffer, save_spectral_conductance);
+    fscanf(import_control_inputs,"%s = %c",buffer, save_spectral_transmissivity); 
+    fscanf(import_control_inputs,"%s = %c\n",buffer, save_power_dissipated);	
+    fclose(import_control_inputs);
+}
+
+void read_geometry_sphere(double *d, double *radius, double *T1, double *T2){
+	
+    char dirPathGeometrySphereInputs[260] = "user_inputs/Geometry/sphere.txt";
+    FILE *import_sphere_inputs = fopen(dirPathGeometrySphereInputs, "r"); 
+    char buffer[256]; 
+    fscanf(import_sphere_inputs,"%s = %lf\n",buffer, d);
+    fscanf(import_sphere_inputs,"%s = %lf\n",buffer, radius);
+    fscanf(import_sphere_inputs,"%s = %lf\n",buffer, T1);
+    fscanf(import_sphere_inputs,"%s = %lf\n",buffer, T2);
+    fclose(import_sphere_inputs);
+}
+
+void read_geometry_thin_films(double *d, double *Lx, double *Ly, double *Lz, double *T1, double *T2){
+	
+    char dirPathGeometryThinFilmsInputs[260] = "user_inputs/Geometry/thin_films.txt";
+    FILE *import_thin_films_inputs = fopen(dirPathGeometryThinFilmsInputs, "r"); 
+    char buffer[256]; 
+    fscanf(import_thin_films_inputs,"%s = %lf\n",buffer, d);
+    fscanf(import_thin_films_inputs,"%s = %lf\n",buffer, Lx);
+    fscanf(import_thin_films_inputs,"%s = %lf\n",buffer, Ly);
+    fscanf(import_thin_films_inputs,"%s = %lf\n",buffer, Lz);
+    fscanf(import_thin_films_inputs,"%s = %lf\n",buffer, T1);
+    fscanf(import_thin_films_inputs,"%s = %lf\n",buffer, T2);	
+    fclose(import_thin_films_inputs);
+}
+
 void read_calculation_temperatures(int N_Tcalc, double Tcalc_vector[]){
 
     char dirPathT_calc[] = "user_inputs/T_calc.txt";
