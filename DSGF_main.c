@@ -783,7 +783,7 @@ int main()
 			double complex (*b_iterative) = malloc(sizeof *b_iterative *3*3); //direct inversion when i=m;
    					
 			double eye_iter[3][3] = {{1., 0., 0.}, {0., 1., 0.}, {0., 0., 1.}}; // 3-by-3 unit matrix used in iterative solver
-						  		
+						
 			// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 			// Calculate background medium Green's function 
 			// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%     
@@ -794,7 +794,7 @@ int main()
 			//matrix_reshape(3, tot_sub_vol, G_sys_old, eyeA_2d, G_0, eyeA);
 			matrix_reshape(3, tot_sub_vol, G_sys_old, G_0);
 
-		//	print_matrix(3*tot_sub_vol, 3*tot_sub_vol, G_sys_old);
+    	//	print_matrix(3*tot_sub_vol, 3*tot_sub_vol, G_sys_old);
 		
 			// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 			// Calculate system Green's function 
@@ -805,6 +805,7 @@ int main()
 			{
 				printf("%d - ",mm+1);
 				mm_2d =0;
+        
 				epsilon_s = (epsilon - epsilon_ref); // Scattering dielectric function
 				
 				A2d_solver(epsilon_s, mm, tot_sub_vol, eye_iter, delta_V_vector[mm], G_sys_old, A_2d, k);	
@@ -833,19 +834,23 @@ int main()
 					// %%%%%%%%%%% G_new using Linear inversion using LAPACK %%%%%%%%%%%%%%%%%
 					info = LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',3,3,3,A_iterative,3,b_iterative,3); 
 					gpack=0;     	
+
 					for (int mm_sub = 0; mm_sub < 3; mm_sub++) // 3D coordinate positions
 					{
 						mm_2d = (3*mm + mm_sub);
 						for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
 						{
 							jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
+
 							G_sys_new[mm_2d][jg_0_2d] = b_iterative[gpack]; // stores G^1_11
 							//G_sys_new[mm][jg_0][i_subG_0][j_subG_0] = b1lapack[gpack]; // stores G^1_11
+
 							gpack=gpack + 1;
 						}  
 					}
 					// %%%%%%%%%%% End G_new using linear inversion using LAPACK %%%%%%%%%%%%%%%%%
 					
+
 					/*				
 					// %%%%%%%%%%%%%%%%%% G_new using manual inversion of Amm %%%%%%%%%%%%%%%%%%%% 
 										
@@ -865,7 +870,7 @@ int main()
 					}
 					// %%%%%%%%%%%%%%%%%% end G_new using manual inversion of Amm %%%%%%%%%%%%%%%%%%%% 
 					*/
-					
+
 
 				} // end jg_0					
 				
@@ -880,7 +885,6 @@ int main()
 					for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
 					{
 						ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
-									       //mm_2d_n = (3*mm + mm_sub_n);	  	
 						for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //tot_sub_vol  ig_0 //lower triangular matrix
 						{
 							if(ig_0 != mm)
@@ -896,8 +900,10 @@ int main()
 										G_sys_prod += G_sys_old[ig_0_2d][mm_2d]*G_sys_new[mm_2d][jg_0_2d];// 
 										//G_sys_prod[ig_0_2d][jg_0_2d] += G_sys_old[ig_0_2d][mm_2d]*G_sys_new[mm_2d][jg_0_2d];//
 									}
+
 									G_sys_new[ig_0_2d][jg_0_2d] = G_sys_old[ig_0_2d][jg_0_2d] + pow(k,2)*alpha_0[mm]*G_sys_prod;
 									//G_sys_new[ig_0_2d][jg_0_2d] = G_sys_old[ig_0_2d][jg_0_2d] + pow(k,2)*alpha_0[mm]*G_sys_prod[ig_0_2d][jg_0_2d];		
+
 								} // j_subG_0            				
 							} // if(ig_0 != mm) 
 						} // jg_0   	
@@ -906,9 +912,11 @@ int main()
 								
 				memcpy(G_sys_old,G_sys_new,3*tot_sub_vol*3*tot_sub_vol*sizeof(double complex)); // Update G_old = G_new for next iteration.
 				
+
 			}//end mm loop 
 			
 			printf("Final solution:\n");
+
 			free(A_iterative); 
 			free(b_iterative);
 			free(A_2d);
@@ -916,7 +924,7 @@ int main()
 			
 			memcpy(G_sys,G_sys_new,3*tot_sub_vol*3*tot_sub_vol*sizeof(double complex)); //Populate G_sys with G_new 
 			free(G_sys_new);	   
-			
+
 		}
 
 		free(G_0);
