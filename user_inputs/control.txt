@@ -1,0 +1,7 @@
+geometry = sphere
+material = SiO2
+solution = I
+single_spectrum_analysis = N
+save_spectral_conductance = Y
+save_spectral_transmissivity = Y
+save_power_dissipated = Y

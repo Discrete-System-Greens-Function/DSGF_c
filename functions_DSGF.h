@@ -65,8 +65,10 @@ int bulk; //Indice used to thermal power dissipated
 
 double denom1, denom2 ; // used in G^0_ij function
 
+double complex epsilon_s; // Scattering dielectric function used in iterative solver
 int ipack, gpack; //lapacke counters
 int ig_0_2d,jg_0_2d,mm_2d,mm_2d_n, mm_sub, mm_sub_n; // Set indices used in "iterative" solution
+double complex G_sys_prod; // Matricial product in iterative solver
 
 double trapz; // Definition for trapezoidal integration. Used in total conductance
 
