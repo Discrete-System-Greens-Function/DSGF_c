@@ -66,9 +66,7 @@ int main()
 
 	long baseline = get_mem_usage(); // measure baseline memory usage
 	clock_t begin = clock();  /* set timer here, do your time-consuming job */
-	
-	//read_user_inputs(material, geometry, discretization_thin_film, &d, &radius, &Lx, &Ly, &Lz, &T1, &T2, &solution, &single_spectrum_analysis, &save_A_matrix, &save_G0_matrix, &save_SGF_matrix, &save_spectral_conductance, &save_spectral_transmissivity, &save_power_dissipated);
-	
+		
 	read_user_control(geometry, material, &solution, &single_spectrum_analysis, &save_spectral_conductance, &save_spectral_transmissivity, &save_power_dissipated);
 
 	read_calculation_temperatures(N_Tcalc, Tcalc_vector);
@@ -81,29 +79,25 @@ int main()
 
 	size_t tot_sub_vol = const_N_subvolumes_per_object*const_N_bulk_objects; // Assign tot_sub_vol: Computes the total number of subvolumes in the system. tot_sub_vol is defined this way because it must be a non-variable parameter due to the computations perfomed in the code. Previously, it was defined as #define tot_sub_vol const_N_subvolumes_per_object*const_N_bulk_objects
 
-	subvol shape_file[const_N_subvolumes_per_object]; //typedef struct node 
+	subvol shape_file[const_N_subvolumes_per_object];
 	subvol shape_filetf[tot_sub_vol];
 
 	// ####################################    
 	// #### Dynamic memory allocation: ####    
 	// Links: https://stackoverflow.com/questions/13534966/how-to-dynamically-allocate-a-contiguous-block-of-memory-for-a-2d-array https://stackoverflow.com/questions/39108092/allocating-contiguous-memory-for-a-3d-array-in-c
 
-	//int (*a)[sz[1]][sz[2]] = calloc(sz[0], sizeof(*a));
 
-	double (*R)[3] = calloc(tot_sub_vol, sizeof(*R));//double R[tot_sub_vol][3]; // center of subvolumes for thermal objects: info imported from a .txt file
+	double (*R)[3] = calloc(tot_sub_vol, sizeof(*R)); // center of subvolumes for thermal objects: info imported from a .txt file
 
 	// radial frequency [rad/s]
 	double (*x_omega) = malloc(sizeof *x_omega *const_N_omega); 
 	double (*lambda) = malloc(sizeof *lambda *const_N_omega); 
 	double (*omega) = malloc(sizeof *omega *const_N_omega); 
-							  //double E_joules[const_N_omega];
-							  //double E_ev[const_N_omega];
 
 	double (*delta_V_vector) = malloc(sizeof *delta_V_vector *tot_sub_vol);  //Vector of all subvolume size. Combines delta_V_1 and delta_V_2 in the same array
 	double (*T_vector) = malloc(sizeof *T_vector *tot_sub_vol); // (N x 1) vector of all subvolume temperatures [K]
 	double complex (*alpha_0) = malloc(sizeof *alpha_0 *tot_sub_vol); //Bare polarizability [m^3]
 
-	//double (*G_12_omega_SGF) = malloc(sizeof *G_12_omega_SGF *const_N_omega); //double G_12_omega_SGF[const_N_omega]; //  //double G_12_omega_SGF[tot_sub_vol][tot_sub_vol];
 	double (*G_12_omega_SGF)[N_Tcalc] = calloc(const_N_omega, sizeof(*G_12_omega_SGF));
 
 	double (*modulo_r_i_j)[tot_sub_vol] = malloc(sizeof *modulo_r_i_j * tot_sub_vol);
@@ -113,13 +107,6 @@ int main()
 	double complex (*Q_omega_subvol) = malloc(sizeof * Q_omega_subvol * tot_sub_vol); // power dissipated per subvolume
 	double (*Q_omega_thermal_object)[const_N_omega] = malloc(sizeof * Q_omega_thermal_object * const_N_bulk_objects);  
 	double (*Q_subvol)[const_N_omega] = calloc(tot_sub_vol, sizeof(*Q_subvol));
-	/* 
-	// The SGF calculation considering the wavelength is not considered, so it is commented. 
-	double (*G_12_lambda_SGF)[tot_sub_vol] = calloc(tot_sub_vol, sizeof(*G_12_lambda_SGF)); //double G_12_lambda_SGF[tot_sub_vol][tot_sub_vol];
-	double (*trans_coeff_lambda)[tot_sub_vol] = calloc(tot_sub_vol, sizeof(*trans_coeff_lambda)); // double trans_coeff_lambda[tot_sub_vol][tot_sub_vol];
-	free(G_12_lambda_SGF);
-	free(trans_coeff_lambda);
-	*/
 
 	// ######### Properties for thermal objects ###########
 	printf("Simulation for a total of %d dipoles in %d thermal objects\n",tot_sub_vol,const_N_bulk_objects);
@@ -131,7 +118,7 @@ int main()
 
 	char dirPathFileNameDISCRETIZATION[260]; // https://stackoverflow.com/questions/46612504/creating-directories-and-files-using-a-loop-in-c 
 
-	if(strcmp(geometry,"sphere")==0) //cannot compare strings in C with ==; source: https://ideone.com/BrFA00
+	if(strcmp(geometry,"sphere")==0)
 	{
 		read_geometry_sphere(&d, &radius, &T1, &T2);
 		radius1 = radius; // perfect same-sized spheres
@@ -142,36 +129,33 @@ int main()
 		delta_V_2 = vol2/const_N_subvolumes_per_object; // defines the subvolumes' volume for sphere 2
 	
 		sprintf(dirPathFileNameDISCRETIZATION, "discretizations/sphere_subvol_%d.txt",const_N_subvolumes_per_object); // path where the file is stored
-		import_discretization = fopen(dirPathFileNameDISCRETIZATION, "r"); // "r" = read, "w" = write
+		import_discretization = fopen(dirPathFileNameDISCRETIZATION, "r");
 		while (3 == fscanf(import_discretization, "%e %e %e", &shape_file[i_import].x, &shape_file[i_import].y, &shape_file[i_import].z))
 		{   
 			i_import++;
 		}
-		double origin1[3] = {radius1,radius1,radius1}; // first index is 0
-		double origin2[3]= {origin1[0]+radius1+d+radius2,origin1[1]+radius2-radius1,origin1[2]+radius2-radius1}; // first index is 0
+		double origin1[3] = {radius1,radius1,radius1};
+		double origin2[3]= {origin1[0]+radius1+d+radius2,origin1[1]+radius2-radius1,origin1[2]+radius2-radius1};
 		for (int i_subvol=0; i_subvol<tot_sub_vol;i_subvol++) //tot_sub_vol
 		{
 			if(i_subvol<const_N_subvolumes_per_object)
 			{
-				R[i_subvol][0] = shape_file[i_subvol].x *pow(delta_V_1,1./3) + origin1[0]; // Lindsay's code: R1*pow(delta_V_1,1/3) + origin1[i]
-				R[i_subvol][1] = shape_file[i_subvol].y *pow(delta_V_1,1./3) + origin1[1]; // Lindsay's code: R1*pow(delta_V_1,1/3) + origin1[i]
-				R[i_subvol][2] = shape_file[i_subvol].z *pow(delta_V_1,1./3) + origin1[2]; // Lindsay's code: R1*pow(delta_V_1,1/3) + origin1[i]
-													   //printf("delta_V_1 = %e\n",pow(delta_V_1,1./3));
-													   //printf("R[%d] = %e, %e, %e \n",i_subvol,R[i_subvol][0],R[i_subvol][1],R[i_subvol][2]);
+				R[i_subvol][0] = shape_file[i_subvol].x *pow(delta_V_1,1./3) + origin1[0];
+				R[i_subvol][1] = shape_file[i_subvol].y *pow(delta_V_1,1./3) + origin1[1];
+				R[i_subvol][2] = shape_file[i_subvol].z *pow(delta_V_1,1./3) + origin1[2];
 			}
 			else
 			{
-				R[i_subvol][0] = shape_file[i_subvol-const_N_subvolumes_per_object].x* pow(delta_V_2,1./3) + origin2[0]; // Lindsay's code: R2*pow(delta_V_2,1/3) + origin2[i]
-				R[i_subvol][1] = shape_file[i_subvol-const_N_subvolumes_per_object].y*pow(delta_V_2,1./3) + origin2[1]; // Lindsay's code: R2*pow(delta_V_2,1/3) + origin2[i]
-				R[i_subvol][2] = shape_file[i_subvol-const_N_subvolumes_per_object].z*pow(delta_V_2,1./3) + origin2[2]; // Lindsay's code: R2*pow(delta_V_2,1/3) + origin2[i]    
-																  //printf("R = %e, %e, %e \n",R[i_subvol][0],R[i_subvol][1],R[i_subvol][2]);
+				R[i_subvol][0] = shape_file[i_subvol-const_N_subvolumes_per_object].x* pow(delta_V_2,1./3) + origin2[0]; 
+				R[i_subvol][1] = shape_file[i_subvol-const_N_subvolumes_per_object].y*pow(delta_V_2,1./3) + origin2[1]; 
+				R[i_subvol][2] = shape_file[i_subvol-const_N_subvolumes_per_object].z*pow(delta_V_2,1./3) + origin2[2]; 
 			}
 
 		}   
 	}   
 
 
-	if(strcmp(geometry,"thin-films")==0) //cannot compare strings in C with ==; source: https://ideone.com/BrFA00
+	if(strcmp(geometry,"thin-films")==0)
 	{
 		read_geometry_thin_films(&d, &Lx, &Ly, &Lz, &T1, &T2);
 		
@@ -185,19 +169,17 @@ int main()
 		Ly_int = Ly*pow(10,9); 
 		Lz_int = Lz*pow(10,9); 
 		d_int = d*pow(10,9); 
-		//sprintf(dirPathFileNameDISCRETIZATION, "discretizations/%s.txt", discretization_thin_film);
-		sprintf(dirPathFileNameDISCRETIZATION, "discretizations/%d_thin_films_Lx%dnm_Ly%dnm_Lz%dnm_d%dnm_N%d_discretization.txt",const_N_bulk_objects,  Lx_int, Ly_int, Lz_int, d_int, tot_sub_vol); //under modification
-		import_discretization = fopen(dirPathFileNameDISCRETIZATION, "r"); // "r" = read, "w" = write
+		sprintf(dirPathFileNameDISCRETIZATION, "discretizations/%d_thin_films_Lx%dnm_Ly%dnm_Lz%dnm_d%dnm_N%d_discretization.txt",const_N_bulk_objects,  Lx_int, Ly_int, Lz_int, d_int, tot_sub_vol);
+		import_discretization = fopen(dirPathFileNameDISCRETIZATION, "r");
 		while (3 == fscanf(import_discretization, "%e %e %e", &shape_filetf[i_import].x, &shape_filetf[i_import].y, &shape_filetf[i_import].z))
 		{   
 			i_import++;
 		}
 		for (int i_subvol=0; i_subvol<tot_sub_vol;i_subvol++) //tot_sub_vol
 		{
-			R[i_subvol][0] = shape_filetf[i_subvol].x ; // Lindsay's code: R1*pow(delta_V_1,1/3) + origin1[i]
-			R[i_subvol][1] = shape_filetf[i_subvol].y ; // Lindsay's code: R1*pow(delta_V_1,1/3) + origin1[i]
-			R[i_subvol][2] = shape_filetf[i_subvol].z ; // Lindsay's code: R1*pow(delta_V_1,1/3) + origin1[i]
-								    //printf("R[%d] = %e, %e, %e \n",i_subvol,R[i_subvol][0],R[i_subvol][1],R[i_subvol][2]);
+			R[i_subvol][0] = shape_filetf[i_subvol].x ;
+			R[i_subvol][1] = shape_filetf[i_subvol].y ;
+			R[i_subvol][2] = shape_filetf[i_subvol].z ;
 		} 
 	}
 
@@ -229,8 +211,8 @@ int main()
 	if(strcmp(material,"SiO2")==0) 
 	{
 	//Uniform spectrum
-	double initial_lambda = 5.e-6;//5.e-6;
-	double final_lambda = 25.e-6; //25.e-6;
+	double initial_lambda = 5.e-6;
+	double final_lambda = 25.e-6;
 	initial = initial_lambda;
 	final = final_lambda;
 	double step_lambda = (final-initial)/(const_N_omega-1); // linspace in C: https://stackoverflow.com/questions/60695284/linearly-spaced-array-in-c
@@ -238,18 +220,14 @@ int main()
 	{
 		lambda[i_lambda]= initial + i_lambda*step_lambda; // Wavelength [m]
 		omega[i_lambda] = 2.*pi*c_0/lambda[i_lambda];  // Radial frequency [rad/s]
-							       //printf("lambda = %e; omega = %e\n ", lambda[i_lambda],omega[i_lambda]);
-							       //E_joules[i_lambda] = h_bar/omega[i_lambda];   // Wave energy [J] h_bar;//
-							       //E_ev[i_lambda] = E_joules[i_lambda]/q;        // Wave energy [eV]
-							       //printf("E = %e J; E = %e eV \n",,E_joules[i_lambda],E_ev[i_lambda]);
 	}
 	}
 	
 	if(strcmp(material,"SiC")==0) 
 	{
 	//Uniform spectrum: SAME SPECTRUM AS SiO2
-	double initial_lambda = 5.e-6;//5.e-6;
-	double final_lambda = 25.e-6; //25.e-6;
+	double initial_lambda = 5.e-6;
+	double final_lambda = 25.e-6;
 	initial = initial_lambda;
 	final = final_lambda;
 	double step_lambda = (final-initial)/(const_N_omega-1); // linspace in C: https://stackoverflow.com/questions/60695284/linearly-spaced-array-in-c
@@ -257,18 +235,14 @@ int main()
 	{
 		lambda[i_lambda]= initial + i_lambda*step_lambda; // Wavelength [m]
 		omega[i_lambda] = 2.*pi*c_0/lambda[i_lambda];  // Radial frequency [rad/s]
-							       //printf("lambda = %e; omega = %e\n ", lambda[i_lambda],omega[i_lambda]);
-							       //E_joules[i_lambda] = h_bar/omega[i_lambda];   // Wave energy [J] h_bar;//
-							       //E_ev[i_lambda] = E_joules[i_lambda]/q;        // Wave energy [eV]
-							       //printf("E = %e J; E = %e eV \n",,E_joules[i_lambda],E_ev[i_lambda]);
 	}
 	}
 	
 	if(strcmp(material,"u-SiC")==0) 
 	{
 	//Uniform spectrum:  SAME SPECTRUM AS SiO2
-	double initial_lambda = 5.e-6;//5.e-6;
-	double final_lambda = 25.e-6; //25.e-6;
+	double initial_lambda = 5.e-6;
+	double final_lambda = 25.e-6; 
 	initial = initial_lambda;
 	final = final_lambda;
 	double step_lambda = (final-initial)/(const_N_omega-1); // linspace in C: https://stackoverflow.com/questions/60695284/linearly-spaced-array-in-c
@@ -276,10 +250,6 @@ int main()
 	{
 		lambda[i_lambda]= initial + i_lambda*step_lambda; // Wavelength [m]
 		omega[i_lambda] = 2.*pi*c_0/lambda[i_lambda];  // Radial frequency [rad/s]
-							       //printf("lambda = %e; omega = %e\n ", lambda[i_lambda],omega[i_lambda]);
-							       //E_joules[i_lambda] = h_bar/omega[i_lambda];   // Wave energy [J] h_bar;//
-							       //E_ev[i_lambda] = E_joules[i_lambda]/q;        // Wave energy [eV]
-							       //printf("E = %e J; E = %e eV \n",,E_joules[i_lambda],E_ev[i_lambda]);
 	}
 	}
 	
@@ -287,20 +257,15 @@ int main()
 	else if(strcmp(material,"SiN")==0) //cannot compare strings in C with ==; source: https://ideone.com/BrFA00
 	{
 	//Uniform spectrum: 
-	double initial_omega = 2.e13;//5.e-6;
-	double final_omega = 3.e14; //25.e-6;
+	double initial_omega = 2.e13;
+	double final_omega = 3.e14;
 	initial = initial_omega;
 	final = final_omega;
 	//even though we refer to step_lambda, for SiN we use radial frequency omega
 	double step_omega = (final-initial)/(const_N_omega-1); // linspace in C: https://stackoverflow.com/questions/60695284/linearly-spaced-array-in-c
 	for(int i_omega = 0; i_omega < const_N_omega; i_omega++)
 	{
-		//lambda[i_lambda]= initial + i_lambda*step_lambda; // Wavelength [m]
 		omega[i_omega] = initial + i_omega*step_omega;  // Radial frequency [rad/s]
-							       //printf("lambda = %e; omega = %e\n ", lambda[i_lambda],omega[i_lambda]);
-							       //E_joules[i_lambda] = h_bar/omega[i_lambda];   // Wave energy [J] h_bar;//
-							       //E_ev[i_lambda] = E_joules[i_lambda]/q;        // Wave energy [eV]
-							       //printf("E = %e J; E = %e eV \n",,E_joules[i_lambda],E_ev[i_lambda]);
 	}
 	}
 	
@@ -411,27 +376,17 @@ int main()
 		}
 		
 		
-		//printf("Epsilon  = %e + i %e \n",creal(epsilon),cimag(epsilon));
-
-		//printf("##################### \n Build A = I - k_0^2*G^0*alpha_0 \n##################### \n");
-
 		double k_0=k_0_function(omega_value, epsilon_0, mu_0) ; //wave vector in free space
-						       //printf("k_0 = %e; ",k_0);
 
 		double k=k_function(omega_value, epsilon_ref, epsilon_0, mu_0); //wave vector in reference medium
-						  //printf("k = %e; ",k);
 
-						  //printf("alpha_0 = [ ");
 		for (int i_alpha = 0; i_alpha < tot_sub_vol; i_alpha++)
 		{
 			alpha_0[i_alpha] = delta_V_vector[i_alpha]*(epsilon - epsilon_ref); //Bare polarizability [m^3]
-											    //  printf("%e + i %e ;", creal(alpha_0[i_alpha]), cimag(alpha_0[i_alpha]));
 		}
-		//printf("] \n");
 
 		//################## FREE-SPACE GREEN'S FUNCTION AND INTERACTION A MATRIX ##################### 
 		// Fill terms for G^0: 
-		//printf("Each G_ij^0 is computed considering its analytical solution \n");
 
 		//Definitions for G^0: 
 
@@ -448,22 +403,13 @@ int main()
 			{
 				for (int i_alpha=0; i_alpha<3; i_alpha++)
 				{
-					//r[i][j][i_alpha]=R2[i_alpha] - R1[i_alpha]; // for 1 dipole p/ sphere case // G^0 function matlab code, line 34 
 					r[i][j][i_alpha]= R[i][i_alpha] - R[j][i_alpha] ; //general case 
-											  //printf("%e ; ",r[i][j][i_alpha]);
 					abs_r_ij[i][j][i_alpha] = fabs(r[i][j][i_alpha]);
-					//abs_r_ij[i][j][i_alpha] = fabs(r[i][j][i_alpha]);   // absolute value for double data type
-					//printf("r%d%d = %e and abs(r%d%d) = %e ; ",i,j,r[i][j][i_alpha],i,j,abs_r_ij[i][j][i_alpha]);
-					//printf("\n");
-					//modulo_r_i_j[i][j] += pow(abs_r_ij[i][j][i_alpha],2);
 					modulo_r_i_j[i][j] += pow(abs_r_ij[i][j][i_alpha],2);
 				}
 				modulo_r_i_j[i][j] = sqrt(modulo_r_i_j[i][j]);
 			}
 		}
-
-		//printf("]\n");
-		//printf("Abs r_i_j = %e ; \n",modulo_r_i_j[0][1]); // value used on free space green function solution
 
 		for (int i_i = 0; i_i < tot_sub_vol; i_i++)
 		{ 
@@ -473,11 +419,7 @@ int main()
 				{  
 					unit_r_ij[i_i][i_j][i_alpha] = r[i_i][i_j][i_alpha]/modulo_r_i_j[i_i][i_j]; // ˆr -- unit distance 
 					transpose[i_j][i_i][i_alpha] = r[i_i][i_j][i_alpha]/modulo_r_i_j[i_i][i_j]; // https://www.programiz.com/c-programming/examples/matrix-transpose        
-														    //printf("%d%d: ",i_alpha,i_alpha);//,j_alpha);
 					unit_conj_r_ij[i_i][i_j][i_alpha] = conj(transpose[i_j][i_i][i_alpha]);// r^+ Conjugate transpose unit distance 
-													       //printf("unit= %e ; ", unit_r_ij[i_i][i_j][i_alpha]);
-													       //printf("unit= %e + i%e; conj= %e + i%e; ", creal(unit_r_ij[i_i][i_j][i_alpha]),cimag(unit_r_ij[i_i][i_j][i_alpha]),creal(unit_conj_r_ij[i_i][i_j][i_alpha]),cimag(unit_conj_r_ij[i_i][i_j][i_alpha]));
-													       //printf("\n");  
 				}
 			}
 		}
@@ -486,60 +428,51 @@ int main()
 		{ 
 			for (int i_j = 0; i_j < tot_sub_vol; i_j++)
 			{ 
-				//printf("%d%d:\n",i_i,i_j);
-				//if (i_i!=i_j)
-				//{
 				for (int i_alpha = 0; i_alpha < 3; i_alpha++)
 				{  
 					for (int j_alpha = 0; j_alpha < 3; j_alpha++)
 					{ 
-						//printf("%d%d: ",i_alpha,j_alpha);
-						r_i_j_outer_r_i_j[i_i][i_j][i_alpha][j_alpha] = unit_r_ij[i_i][i_j][i_alpha]*unit_conj_r_ij[i_i][i_j][j_alpha];//*unit_conj_r_ij[i_i][i_j][j_alpha]; // [j_alpha] outer product
-																			       //printf("outer= %e +i%e; ", creal(r_i_j_outer_r_i_j[i_i][i_j][i_alpha][j_alpha]),cimag(r_i_j_outer_r_i_j[i_i][i_j][i_alpha][j_alpha]));    //
+						r_i_j_outer_r_i_j[i_i][i_j][i_alpha][j_alpha] = unit_r_ij[i_i][i_j][i_alpha]*unit_conj_r_ij[i_i][i_j][j_alpha];
+
 					}
-					//printf("\n");  
 				}    
-				//} 
 			}
 		}
 		
 		// ################### MATRICES STRUCTURE LOOPS ###########################
 		// 3N X 3N Matrices structure loops for G^0 and A:
-		//printf("  ----- Build G^0 and A matrices -----\n");
 
 		//G^0_ij when i=j:
-		double (*a_j) = malloc(sizeof *a_j *tot_sub_vol);  //double a_j[tot_sub_vol];
-		double (*part1ii) = malloc(sizeof *part1ii *tot_sub_vol); //double part1ii[tot_sub_vol];
-		double complex (*part2ii) = malloc(sizeof *part2ii *tot_sub_vol); //double complex part2ii[tot_sub_vol]; 
-		double complex (*part2iiexp) = malloc(sizeof *part2iiexp *tot_sub_vol); //double complex part2iiexp[tot_sub_vol]; 
-		double complex (*part3ii) = malloc(sizeof *part3ii *tot_sub_vol); //double complex part3ii[tot_sub_vol];
+		double (*a_j) = malloc(sizeof *a_j *tot_sub_vol); 
+		double (*part1ii) = malloc(sizeof *part1ii *tot_sub_vol); 
+		double complex (*part2ii) = malloc(sizeof *part2ii *tot_sub_vol);
+		double complex (*part2iiexp) = malloc(sizeof *part2iiexp *tot_sub_vol); 
+		double complex (*part3ii) = malloc(sizeof *part3ii *tot_sub_vol); 
 
 		//G^0_ij when i!=j:
-		double complex (*part1ij) = malloc(sizeof *part1ij *tot_sub_vol); //double complex part1ij[tot_sub_vol];
-		double complex (*part1aij) = malloc(sizeof *part1aij *tot_sub_vol); //double complex part1aij[tot_sub_vol];
-		double complex (*part1aijexp) = malloc(sizeof *part1aijexp *tot_sub_vol); //double complex part1aijexp[tot_sub_vol];
-		double complex (*part2ij) = malloc(sizeof *part2ij *tot_sub_vol); //double complex part2ij[tot_sub_vol];
-		double complex (*part3ij) = malloc(sizeof *part3ij *tot_sub_vol); //double complex part3ij[tot_sub_vol];
+		double complex (*part1ij) = malloc(sizeof *part1ij *tot_sub_vol); 
+		double complex (*part1aij) = malloc(sizeof *part1aij *tot_sub_vol);
+		double complex (*part1aijexp) = malloc(sizeof *part1aijexp *tot_sub_vol);
+		double complex (*part2ij) = malloc(sizeof *part2ij *tot_sub_vol); 
+		double complex (*part3ij) = malloc(sizeof *part3ij *tot_sub_vol); 
 
-		double (*eyeG_0)[3] = calloc(3, sizeof(*eyeG_0)); //double eyeG_0[3][3];
-		double (*eyeA)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*eyeA)); //double eyeA[tot_sub_vol][tot_sub_vol][3][3];
+		double (*eyeG_0)[3] = calloc(3, sizeof(*eyeG_0)); 
+		double (*eyeA)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*eyeA)); 
 
 		// Linear system AG=G^0 
-		double complex (*G_0)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_0)); //double complex G_0[tot_sub_vol][tot_sub_vol][3][3]; //[tot_sub_vol][tot_sub_vol][3][3]; [size_mat][size_mat]
-		double complex (*A)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*A)); //double complex A[tot_sub_vol][tot_sub_vol][3][3];
+		double complex (*G_0)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_0)); 
+		double complex (*A)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*A)); 
 
 		// eq. 25 from Lindsay's paper 
 		for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //tot_sub_vol
 		{
 			for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 			{
-				if (ig_0!=jg_0) // if i!=j:
+				if (ig_0!=jg_0)
 				{
 					part1aij[ig_0] = 0.+ k_0*sqrt(epsilon_ref)*modulo_r_i_j[ig_0][jg_0]*I; // com i term 
 					part1aijexp[ig_0]= cexp(k_0*sqrt(epsilon_ref)*modulo_r_i_j[ig_0][jg_0]*I);
-					//printf("exp=%e + i %e \n",creal(part1aijexp[ig_0]),cimag(part1aijexp[ig_0])); // 0.990461 + i*0.13779 
 					part1ij[ig_0] = part1aijexp[ig_0]/(4.*pi*modulo_r_i_j[ig_0][jg_0]);
-					//printf("Part 1: %e + i %e \n",creal(part1ij[ig_0]),cimag(part1ij[ig_0])); // bate com Mathematica e Lindsay
 					denom1 = epsilon_ref*pow(k_0*modulo_r_i_j[ig_0][jg_0],2);
 					denom2 = k_0*sqrt(epsilon_ref)*modulo_r_i_j[ig_0][jg_0];
 					part2ij[ig_0] = (1. - 1./denom1 + 1.*I/denom2 ) ;
@@ -552,20 +485,15 @@ int main()
 							{
 								eyeG_0[i_subG_0][j_subG_0] = 1.;    // 3x3 Identity matrix for G^0:
 								eyeA[ig_0][jg_0][i_subG_0][j_subG_0] = 0.; // 3Nx3N identity matrix for A:
-													   //printf("%e ", eyeA[ig_0][jg_0][i_subG_0][j_subG_0]);
-													   //G_0[ig_0][jg_0][i_subG_0][j_subG_0] = part1ij[ig_0]*((part2ij[ig_0]*eyeG_0[i_subG_0][j_subG_0])-(part3ij[ig_0]*r_i_j_outer_r_i_j[ig_0][jg_0][j_subG_0]));  //*r_i_j_outer_r_i_j[ig_0][jg_0]
+													  
 							}
 							else
 							{
 								eyeG_0[i_subG_0][j_subG_0] = 0.;     // 3x3 Identity matrix for G^0:
 								eyeA[ig_0][jg_0][i_subG_0][j_subG_0] = 0.; // 3Nx3N identity matrix for A: 
-													   //printf("%e ", eyeA[ig_0][jg_0][i_subG_0][j_subG_0]);
-													   //G_0[ig_0][jg_0][i_subG_0][j_subG_0] = part1ij[ig_0]*((part2ij[ig_0]*eyeG_0[i_subG_0][j_subG_0])-(part3ij[ig_0]*r_i_j_outer_r_i_j[ig_0][jg_0][j_subG_0])); //0. ;
 							}
-							G_0[ig_0][jg_0][i_subG_0][j_subG_0] = part1ij[ig_0]*((part2ij[ig_0]*eyeG_0[i_subG_0][j_subG_0])-(part3ij[ig_0]*r_i_j_outer_r_i_j[ig_0][jg_0][i_subG_0][j_subG_0]));  //*r_i_j_outer_r_i_j[ig_0][jg_0]
-																											     //printf("%e + i %e ; ", creal(G_0[ig_0][jg_0][i_subG_0][j_subG_0]),cimag(G_0[ig_0][jg_0][i_subG_0][j_subG_0]));//[i_subG_0][j_subG_0]
+							G_0[ig_0][jg_0][i_subG_0][j_subG_0] = part1ij[ig_0]*((part2ij[ig_0]*eyeG_0[i_subG_0][j_subG_0])-(part3ij[ig_0]*r_i_j_outer_r_i_j[ig_0][jg_0][i_subG_0][j_subG_0]));  
 							A[ig_0][jg_0][i_subG_0][j_subG_0] = eyeA[ig_0][jg_0][i_subG_0][j_subG_0] - pow(k_0,2)*alpha_0[ig_0]*G_0[ig_0][jg_0][i_subG_0][j_subG_0]; 
-							//printf("%e + i %e ; ", creal(A[ig_0][jg_0][i_subG_0][j_subG_0]),cimag(A[ig_0][jg_0][i_subG_0][j_subG_0]));   
 						}    
 					}
 				}    
@@ -578,16 +506,11 @@ int main()
 		for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 		{
 			a_j[ig_0] = a_j_function(delta_V_vector[ig_0], pi);
-			//printf("a_j = %e; ",a_j[ig_0]);
 			part1ii[ig_0] = 1./(3.*delta_V_vector[ig_0]*epsilon_ref*pow(k_0,2));
-			//printf("Cte 1: %e \n",part1ii[ig_0]);
 			part2ii[ig_0] = a_j[ig_0]*k_0*sqrt(epsilon_ref)*I; // com i term 
-									   //printf("Cte 2: %e \n",cimag(part2ii[ig_0]));
-			part2iiexp[ig_0] = cexp(0. + a_j[ig_0]*k_0*sqrt(epsilon_ref)*I); // complex exp: cexp()
-											 //printf("exp=%e + i %e \n",creal(part2iiexp[ig_0]),cimag(part2iiexp[ig_0])); // 0.998027 + i 0.0627906
+			part2iiexp[ig_0] = cexp(0. + a_j[ig_0]*k_0*sqrt(epsilon_ref)*I); 
 											 // part3ii is inside brackets
 			part3ii[ig_0] = part2iiexp[ig_0]*(1-part2ii[ig_0]) - 1. ;
-			//printf("G_%d%d^0 = \n", ig_0+1,jg_0+1);
 			for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
 			{
 				for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //tot_sub_vol
@@ -600,28 +523,22 @@ int main()
 							{
 								eyeG_0[i_subG_0][j_subG_0] = 1.;     // 3x3 Identity matrix for G^0:
 								eyeA[ig_0][jg_0][i_subG_0][j_subG_0] = 1.; // 3Nx3N identity matrix for A:
-													   //printf("%e ", eyeA[ig_0][jg_0][i_subG_0][j_subG_0]);
 							}
 							else
 							{
 								eyeG_0[i_subG_0][j_subG_0] = 0.;     // 3x3 Identity matrix for G^0:
 								eyeA[ig_0][jg_0][i_subG_0][j_subG_0] = 0.; // 3Nx3N identity matrix for A:
-													   //printf("%e ", eyeA[ig_0][jg_0][i_subG_0][j_subG_0]);
 							}
 							G_0[ig_0][jg_0][i_subG_0][j_subG_0] = eyeG_0[i_subG_0][j_subG_0]*part1ii[ig_0]*(2.*part3ii[ig_0]-1.); 
-							//printf("%e + i %e ; ", creal(G_0[ig_0][jg_0][i_subG_0][j_subG_0]),cimag(G_0[ig_0][jg_0][i_subG_0][j_subG_0]));
 							A[ig_0][jg_0][i_subG_0][j_subG_0] = eyeA[ig_0][jg_0][i_subG_0][j_subG_0] - pow(k_0,2)*alpha_0[ig_0]*G_0[ig_0][jg_0][i_subG_0][j_subG_0]; 
-							//printf("%e + i %e ; ", creal(A[ig_0][jg_0][i_subG_0][j_subG_0]),cimag(A[ig_0][jg_0][i_subG_0][j_subG_0]));
 						}
 					} 
 				}   //end jg_0   
-				    //  printf("\n"); 
 			} //end i_subG_0     
 		} //end ig_0 
 
 
 		free(eyeG_0);
-		//free(eyeA);
 		free(r);
 		free(abs_r_ij);
 		free(unit_r_ij);
@@ -641,7 +558,6 @@ int main()
 		free(part3ij);
 
 		memset(modulo_r_i_j, 0, sizeof modulo_r_i_j);
-		//free(modulo_r_i_j);
 
 /*		
 		//printf("##################### \n EXPORT DATA \n##################### \n");
@@ -707,18 +623,14 @@ int main()
 		//printf("##################### \n SOLVE LINEAR SYSTEM AG=G^0 \n##################### \n");
 		//printf("##################### \n LAPACK/LAPACKE ZGELS ROUTINE \n##################### \n");
 		//Description of ZGELS: https://extras.csc.fi/math/nag/mark21/pdf/F08/f08anf.pdf
-		//printf("  ----- Solve linear system AG=G^0 -----\n");
 
 		double complex (*G_sys)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys));
-		//double complex (*G_sys)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_sys)); //double complex G_sys[tot_sub_vol][tot_sub_vol][3][3];
 
 		if(solution =='D')
 		{
 			printf("Direct inversion status: ");
-			//double complex Alapack[lda*n], blapack[ldb*nrhs], work[lwork]; // based on example from https://icl.cs.utk.edu/lapack-forum/viewtopic.php?f=2&t=506&p=1692&hilit=zgels#p1692
-			double complex (*A_direct) = malloc(sizeof *A_direct *lda*n); //double complex Alapack[lda*n];
-			double complex (*b_direct) = malloc(sizeof *b_direct *ldb*nrhs); //double complex blapack[ldb*nrhs];
-			//double complex (*work) = malloc(sizeof *work *lwork); //double complex work[lwork];
+			double complex (*A_direct) = malloc(sizeof *A_direct *lda*n); 
+			double complex (*b_direct) = malloc(sizeof *b_direct *ldb*nrhs);
 
 			ipack=0; 
 			for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
@@ -737,8 +649,6 @@ int main()
 				}        
 			}   
 
-			//printf("  --------- ZGELS -----\n");
-			//double complex G_sys[tot_sub_vol][tot_sub_vol][3][3];
 			gpack=0;
 			// F08ANF (ZGELS) solves linear least-squares problems using a QR or LQ factorization of A
 			info = LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',m,n,nrhs,A_direct,lda,b_direct,ldb); 
@@ -755,20 +665,16 @@ int main()
 						{
 							jg_0_2d = (3*jg_0 + j_subG_0);
 							G_sys[ig_0_2d][jg_0_2d] = b_direct[gpack];
-							//G_sys[ig_0][jg_0][i_subG_0][j_subG_0] = blapack[gpack];
-							//printf("%e + i %e ; ", creal(G[ig_0][jg_0][i_subG_0][j_subG_0]),cimag(G[ig_0][jg_0][i_subG_0][j_subG_0]));
 							gpack=gpack + 1;
 						}    
 					}
-					//printf("\n");
 				}        
 			} 
 
 			free(b_direct); 
-			//free(work);
 			printf("concluded\n");
 		}
-		free(A); //A[3Nx3N] matrix is not used in the iterative solver, Amm[3x3] is used instead.
+		free(A);
 
 		
 		if(solution =='I')
@@ -777,7 +683,6 @@ int main()
 
 			double complex (*G_sys_old)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys_old)); 
 			double complex (*G_sys_new)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys_old)); 
-			//double (*eyeA_2d)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*eyeA_2d)); // DO WE NEED THIS???
 			double complex (*A_2d)[3] = calloc(3, sizeof(*A_2d)); // Amm
 			double complex (*A_iterative) = malloc(sizeof *A_iterative *3*3); // direct inversion when i=m;
 			double complex (*b_iterative) = malloc(sizeof *b_iterative *3*3); //direct inversion when i=m;
@@ -791,10 +696,8 @@ int main()
 			// this reshapes 2 4D matrices to 2 2D matrices
 			// G0 and eyeA are 4D
 			// G_sys_old and eyeA_2d are the respective 2D matrices
-			//matrix_reshape(3, tot_sub_vol, G_sys_old, eyeA_2d, G_0, eyeA);
 			matrix_reshape(3, tot_sub_vol, G_sys_old, G_0);
 
-    	//	print_matrix(3*tot_sub_vol, 3*tot_sub_vol, G_sys_old);
 		
 			// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 			// Calculate system Green's function 
@@ -843,7 +746,6 @@ int main()
 							jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
 
 							G_sys_new[mm_2d][jg_0_2d] = b_iterative[gpack]; // stores G^1_11
-							//G_sys_new[mm][jg_0][i_subG_0][j_subG_0] = b1lapack[gpack]; // stores G^1_11
 
 							gpack=gpack + 1;
 						}  
@@ -875,17 +777,16 @@ int main()
 				} // end jg_0					
 				
 				memset(A_2d, 0, sizeof *A_2d * 3);
-				memset(A_iterative, 0, sizeof *A_iterative *3*3); //double complex Alapack[lda*n];
+				memset(A_iterative, 0, sizeof *A_iterative *3*3);
 				memset(b_iterative, 0, sizeof *b_iterative *3*3);
 								
 				// Next, solve all systems of equations for ii not equal to mm		
 				for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 				{ 
-					//mm_sub_n = 0;  
 					for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
 					{
 						ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
-						for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //tot_sub_vol  ig_0 //lower triangular matrix
+						for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //lower triangular matrix
 						{
 							if(ig_0 != mm)
 							{
@@ -893,16 +794,13 @@ int main()
 								{
 									jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
 									G_sys_prod = 0.;
-									//G_sys_prod[ig_0_2d][jg_0_2d] = 0.;
 									for(int m_sub = 0;  m_sub < 3;  m_sub++)//loop for matricial multiplication
 									{
 										mm_2d = (3*mm + m_sub);
-										G_sys_prod += G_sys_old[ig_0_2d][mm_2d]*G_sys_new[mm_2d][jg_0_2d];// 
-										//G_sys_prod[ig_0_2d][jg_0_2d] += G_sys_old[ig_0_2d][mm_2d]*G_sys_new[mm_2d][jg_0_2d];//
+										G_sys_prod += G_sys_old[ig_0_2d][mm_2d]*G_sys_new[mm_2d][jg_0_2d];
 									}
 
 									G_sys_new[ig_0_2d][jg_0_2d] = G_sys_old[ig_0_2d][jg_0_2d] + pow(k,2)*alpha_0[mm]*G_sys_prod;
-									//G_sys_new[ig_0_2d][jg_0_2d] = G_sys_old[ig_0_2d][jg_0_2d] + pow(k,2)*alpha_0[mm]*G_sys_prod[ig_0_2d][jg_0_2d];		
 
 								} // j_subG_0            				
 							} // if(ig_0 != mm) 
@@ -961,19 +859,17 @@ int main()
 		// ###################  Thermal power dissipated ###################
 		// #################################################################
 
-		double complex (*trans_coeff)[tot_sub_vol] = calloc(tot_sub_vol, sizeof(*trans_coeff)); //double complex trans_coeff[tot_sub_vol][tot_sub_vol];//[3][3]
+		double complex (*trans_coeff)[tot_sub_vol] = calloc(tot_sub_vol, sizeof(*trans_coeff));
 		
 		double complex (*G_sys_cross)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_sys_cross)); 
 		double complex (*transpose_G_sys)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*transpose_G_sys)); 
-		double(*inner_sum) = malloc(sizeof * inner_sum * tot_sub_vol); //double inner_sum[jg_0];
+		double(*inner_sum) = malloc(sizeof * inner_sum * tot_sub_vol);
 
-		//printf("  ----- Spectral transmissivity, spectral conductance, and thermal power dissipated -----\n");
 		int counter = 0;
 		sum_trans_coeff[i_omega] = 0.;    
 
 		for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 		{
-			//printf("Theta(%e,%f) = %e\n",omega_value,T_vector[ig_0],theta[ig_0]);
 			for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //tot_sub_vol
 			{
 				for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
@@ -983,26 +879,18 @@ int main()
 					{
 						jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
 						// Extract one Green's function component: G_sys[ig_0][jg_0][i_subG_0]
-						//transpose_G_sys[jg_0][ig_0][i_subG_0][j_subG_0] = G_sys[ig_0][jg_0][i_subG_0][j_subG_0];
 						transpose_G_sys[jg_0][ig_0][i_subG_0][j_subG_0] = G_sys[ig_0_2d][jg_0_2d];
-						G_sys_cross[ig_0][jg_0][i_subG_0][j_subG_0]= conj(transpose_G_sys[jg_0][ig_0][i_subG_0][j_subG_0]); // G_element'						
-																		    //if (i_subG_0==i_subG_0) //
-																		    //{
-						//G_element[ig_0][jg_0]+=G_sys[ig_0][jg_0][i_subG_0][j_subG_0]*G_sys_cross[ig_0][jg_0][i_subG_0][j_subG_0]; //sum(diag((G_element*(G_element'))
-						G_element[ig_0][jg_0]+=G_sys[ig_0_2d][jg_0_2d]*G_sys_cross[ig_0][jg_0][i_subG_0][j_subG_0]; //sum(diag((G_element*(G_element'))
-																			  //}
+						G_sys_cross[ig_0][jg_0][i_subG_0][j_subG_0]= conj(transpose_G_sys[jg_0][ig_0][i_subG_0][j_subG_0]);
+						G_element[ig_0][jg_0]+=G_sys[ig_0_2d][jg_0_2d]*G_sys_cross[ig_0][jg_0][i_subG_0][j_subG_0]; 
 
 					}    
 				}
 				// Transmissivity coefficient matrix tau(omega) for comparison with Czapla Mathematica output [dimensionless]
-				//Matlab code: trans_coeff= 4*(k_0^4)*delta_V(i)*delta_V(j)*imag(epsilon(i))*imag(epsilon(j))*sum(diag((G_element*(G_element')))) 
 				trans_coeff[ig_0][jg_0] = 4.*pow(k_0,4)*delta_V_vector[ig_0]*delta_V_vector[jg_0]*cimag(epsilon)*cimag(epsilon)*G_element[ig_0][jg_0] ;  
-				//printf("%e ; ",trans_coeff[ig_0][jg_0]); // values match with Lindsay's results
-
 				// Thermal power dissipated calculation, based on the matlab code (Using Tervo's Eq. 26)
 				if (ig_0 != jg_0) 
 				{
-					inner_sum[jg_0] = (theta_function(omega_value, T_vector[jg_0], h_bar, k_b) - theta_function(omega_value, T_vector[ig_0], h_bar, k_b)) * trans_coeff[ig_0][jg_0]; //Q_omega_subvol_function(theta_1,theta_2, trans_coeff[ig_0][jg_0]);
+					inner_sum[jg_0] = (theta_function(omega_value, T_vector[jg_0], h_bar, k_b) - theta_function(omega_value, T_vector[ig_0], h_bar, k_b)) * trans_coeff[ig_0][jg_0];
 				}
 				else {
 					inner_sum[jg_0] = 0;
@@ -1020,7 +908,6 @@ int main()
 
 			} 
 			Q_subvol[ig_0][i_omega] = Q_omega_subvol[ig_0];
-			//printf("Q_subvol_%d_%d= %e \n",ig_0+1,i_omega+1, Q_subvol[ig_0][i_omega]); //matches matlab code
 
 			if(ig_0 < const_N_subvolumes_per_object)// Thermal power dissipated was not verified yet!!!!
 			{
@@ -1032,7 +919,6 @@ int main()
 				bulk=1;
 				Q_omega_thermal_object[bulk][i_omega] += Q_omega_subvol[ig_0];
 			} 
-			//printf("Q_bulk_%d_%d= %e \n",bulk+1, i_omega+1, Q_omega_thermal_object[bulk][i_omega]); //matches matlab code
 
 		}       
 		free(G_sys);
@@ -1059,20 +945,12 @@ int main()
 			}
 		}
 
-		double (*dtheta_dT) = malloc(sizeof *dtheta_dT *N_Tcalc); //double dtheta_dT[N_Tcalc]; // function used to calculate conductance, modified for several temperatures
+		double (*dtheta_dT) = malloc(sizeof *dtheta_dT *N_Tcalc);// function used to calculate conductance, modified for several temperatures
 
 		for (int iTcalc = 0; iTcalc < N_Tcalc; iTcalc++) // EDIT VALUE :: change 1 to N_Tcalc for the temperature loop
 		{
-			// printf("T_calc = %e; \n",Tcalc_vector[iTcalc]);
-			//dtheta_dT[0] = dtheta_dT_function(omega_value,T_calc); 
 			dtheta_dT[iTcalc] = dtheta_dT_function(omega_value,Tcalc_vector[iTcalc], h_bar, k_b); 
-			//printf("dT = %e; \n",dtheta_dT);            
-			//G_12_omega_SGF[i_omega][0] = dtheta_dT[0]*sum_trans_coeff[i_omega];
 			G_12_omega_SGF[i_omega][iTcalc] = dtheta_dT[iTcalc]*sum_trans_coeff[i_omega];
-
-			//G_12_lambda_SGF[i_omega] = dtheta_dT*sum_trans_coeff_lambda[i_omega]; // Spectral conductance (function of frequency) [W/(K*m)]
-
-
 			if(save_spectral_conductance =='Y'){
 				{
 					FILE * spectral_conductance; //append
@@ -1080,7 +958,6 @@ int main()
 					sprintf(dirPathSpectral_cond_FileName, "%s/spectral_conductance_%eK.csv", results_folder, Tcalc_vector[iTcalc]); // path where the file is stored
 					if(i_omega == 0) spectral_conductance =fopen(dirPathSpectral_cond_FileName,"w"); //write
 					else spectral_conductance = fopen(dirPathSpectral_cond_FileName, "a"); //append
-													       //fprintf(spectral_conductance,"%e ; %e\n",omega_value,G_12_omega_SGF[i_omega]); 
 					fprintf(spectral_conductance,"%e ; %e\n",omega_value,G_12_omega_SGF[i_omega][iTcalc]); 
 					fclose(spectral_conductance);
 				}
@@ -1089,16 +966,6 @@ int main()
 		} // END FOR T_calc LOOP
 		free(dtheta_dT);
 
-		/*
-		//double omega_SGF = omega_value;                                         // [rad/s]
-		//double lambda_SGF = lambda[i_omega];                                       // [m]
-		//double omega_eV = E_eV;                                         // [eV]
-		//double Trans_12_omega_SGF;// = (Trans_12_omega);               // Transmissivity coefficient tau(omega) for comparison with Czapla Mathematica output [dimensionless]
-		//double G_12_omega_SGF = dtheta_dT*Trans_12_omega_SGF;                  // Spectral conductance (function of frequency) [W/(K*(rad/s))]
-		//double Trans_12_lambda_SGF = Trans_12_omega_SGF*c_0/(pow(lambda[i_omega],2));  // Transmissivity coefficient, tau(lambda) [1/(m*s)]
-		//double G_12_lambda_SGF = dtheta_dT*Trans_12_lambda_SGF;                // Spectral conductance (function of frequency) [W/(K*m)]
-		//printf("G_12: %e\n",G_12_omega_SGF);
-		*/
 
 		// #################################################################
 		// #############  Clear values for next frequency ##################
@@ -1108,7 +975,6 @@ int main()
 		memset(G_element, 0, sizeof *G_element * tot_sub_vol); //G_element
 		memset(sum_trans_coeff, 0, sizeof sum_trans_coeff);
 		memset(Q_omega_subvol, 0, sizeof* Q_omega_subvol* tot_sub_vol); 
-		//memset(Q_omega_thermal_object,0, sizeof Q_omega_thermal_object * const_N_bulk_objects * const_N_omega); // //double Q_omega_thermal_object[N_bulk_objects][const_N_omega]
 
 	} // END OMEGA VALUE LOOP FOR FREQUENCY RANGE ANALYSIS, loop started in line 481
 
@@ -1116,15 +982,12 @@ int main()
 	free(sum_trans_coeff);
 	free(modulo_r_i_j);
 	free(G_element);
-	//free(modulo_r_i_j);
-	//free(G_element);
 
 	free(alpha_0);
 
-	double (*Total_conductance) = malloc(sizeof *Total_conductance *N_Tcalc); //double Total_conductance[N_Tcalc];
-	double(*Q_tot_thermal_object) = malloc(sizeof * Q_tot_thermal_object * const_N_bulk_objects); //double Q_tot_thermal_object[const_N_bulk_objects];           
-	double (*trapz_Q) = malloc(sizeof *trapz_Q *tot_sub_vol); // Definition for trapezoidal integration. Used in total power dissipated //double Total_conductance[N_Tcalc];
-								  // int i_frequency = 0;
+	double (*Total_conductance) = malloc(sizeof *Total_conductance *N_Tcalc); 
+	double(*Q_tot_thermal_object) = malloc(sizeof * Q_tot_thermal_object * const_N_bulk_objects); 
+	double (*trapz_Q) = malloc(sizeof *trapz_Q *tot_sub_vol); // Definition for trapezoidal integration. Used in total power dissipated
 
 	trapz=0.;
 	if( const_N_omega > 1)
@@ -1136,8 +999,6 @@ int main()
 		// implementation of trapezoidal numerical integration in C // https://stackoverflow.com/questions/25124569/implementation-of-trapezoidal-numerical-integration-in-c
 		double sum_conductance = 0.;
 		double step = 0.;
-		//double sum_Q_subvol =0.;
-		//double sum_Q_bulk =0.;
 		double sum_Q = 0.;
 
 		for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
@@ -1148,8 +1009,6 @@ int main()
 				step = omega[i] - omega[i-1];
 				trapz_Q[ig_0] +=  ((Q_subvol[ig_0][i]+Q_subvol[ig_0][i-1])/2)*step;
 			}
-
-			//printf("Power dissipated per subvolume %d = %e\n", ig_0+1,trapz_Q[ig_0]);
 
 			if(save_power_dissipated =='Y'){
 				{
@@ -1164,8 +1023,6 @@ int main()
 			} // end if save_power_dissipated
 
 		}
-		//Q_tot_thermal_object[0] = (trapz_Q)/(2.*pi);
-		//printf("Q_tot_thermal_object[1] = %e; Q_tot_thermal_object[2] = %e\n", Q_tot_thermal_object[0],Q_tot_thermal_object[1]);
 
 
 
@@ -1186,10 +1043,6 @@ int main()
 
 			}
 			G_12_total_SGF_from_omega = (fabs(trapz)/(2.*pi)); // Total conductance [W/K]
-									   //G_12_total_SGF_from_lambda = fabs(trapz(lambda[i_omega], G_12_lambda_SGF));          // Total conductance [W/K]
-
-									   //printf("Total conductance at temperature %e = %e \n",T_calc,G_12_total_SGF_from_omega);
-									   //Total_conductance[0]=G_12_total_SGF_from_omega;
 			Total_conductance[iTcalc]=G_12_total_SGF_from_omega;
 
 		} // END FOR T_calc LOOP
@@ -1204,15 +1057,12 @@ int main()
 	sprintf(dirPathpos_processing_summary_FileName, "%s/pos_processing_summary.txt",results_folder); // path where the file is stored
 
 	pos_processing_summary =fopen(dirPathpos_processing_summary_FileName,"w"); 
-	fprintf(pos_processing_summary,"Material: %s\n Spectrum range(lambda) = %e--%e m \n Volume of each subvolume = %e \n",material, initial,final,delta_V_1);  // \nThermal power dissipated for thermal object 1= 
-																				   //fopen(dirPathpos_processing_summary_FileName,"a"); // Opens file for appending. (File remains unchanged, file pointer gets moved to end) https://stackoverflow.com/questions/16427664/trying-not-to-overwrite-a-file-in-c/16427698
-																				   //fprintf(pos_processing_summary,"Time counter: %f s\n",time_spent);
+	fprintf(pos_processing_summary,"Material: %s\n Spectrum range(lambda) = %e--%e m \n Volume of each subvolume = %e \n",material, initial,final,delta_V_1); 
 	fclose(pos_processing_summary);
 
 	for (int iTcalc = 0; iTcalc < N_Tcalc; iTcalc++) 
 	{
 		pos_processing_summary =fopen(dirPathpos_processing_summary_FileName,"a"); 
-		//fprintf(pos_processing_summary,"Temperature %eK: Total conductance = %e\n",T_calc, Total_conductance[0]); 
 		fprintf(pos_processing_summary,"Temperature %eK: Total conductance = %e\n",Tcalc_vector[iTcalc], Total_conductance[iTcalc]); 
 		fclose(pos_processing_summary);
 	}
@@ -1223,22 +1073,13 @@ int main()
 
 	clock_t end = clock(); //end timer
 	double time_spent = (double)(end - begin) / CLOCKS_PER_SEC; //calculate time for the code
-								    //printf("Time counter: %f s\n",time_spent);
 
 	fopen(dirPathpos_processing_summary_FileName,"a"); // Opens file for appending. (File remains unchanged, file pointer gets moved to end) https://stackoverflow.com/questions/16427664/trying-not-to-overwrite-a-file-in-c/16427698
 	fprintf(pos_processing_summary,"Time counter: %f s\n",time_spent);
 	fclose(pos_processing_summary);
 
 
-	// Mac shows the usage in bytes and Linux in kilobytes
-	//   if (__linux__)
-	//   {
 	printf("Usage: %ld + %ld = %ld kb\n", baseline, get_mem_usage()-baseline,get_mem_usage());
-	//   }
-	//   else //MAC 
-	//   {
-	//       printf("Usage: %ld + %ld = %ld bytes\n", baseline, get_mem_usage()-baseline,get_mem_usage());
-	//   }
 
 	/*   // Condition used to compute memory_usage for one frequency.
 	     if ( single_analysis =='y')
