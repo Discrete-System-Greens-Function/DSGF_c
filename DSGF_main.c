@@ -33,9 +33,6 @@
 #include "iterative_solver.h"
 #include "indexing_util.h"
 
-// debugging utils
-#include "debugging/debugging_utils.h"
-
 // LAPACKE libraries: https://www.netlib.org/lapack/lapacke.html ; https://extras.csc.fi/math/nag/mark21/pdf/F08/f08anf.pdf
 #include <lapacke.h> 
 #include "lapack_header.h" //header with Lapack definitions

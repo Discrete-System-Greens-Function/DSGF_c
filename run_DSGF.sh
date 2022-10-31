@@ -21,7 +21,7 @@ echo "Compilation in process..."
 
 export OMP_THREADS=4 # use multiple cores during the calculation
 
-icc -O3  -std=c99 DSGF_main.c file_utils.c functions_DSGF.c iterative_solver.c indexing_util.c debugging/debugging_utils.c -o DSGF -mcmodel=medium  -L${MKLROOT}/lib/intel64 -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread -lm -ldl  -I"${MKLROOT}/include" # -openmp 
+icc -O3  -std=c99 DSGF_main.c file_utils.c functions_DSGF.c iterative_solver.c indexing_util.c -o DSGF -mcmodel=medium  -L${MKLROOT}/lib/intel64 -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread -lm -ldl  -I"${MKLROOT}/include" # -openmp 
  
 
 echo "Compilation complete"
