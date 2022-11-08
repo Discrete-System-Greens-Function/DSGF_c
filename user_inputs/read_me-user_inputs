@@ -19,12 +19,9 @@ The user can modify:
 	-T_calc: conductance temperatures
 	-user_inputs: All other simulation modifications the user can make  
 
-	-Options for user inputs in user_inputs.txt:
+	-Options for user inputs in control.txt:
 		material = SiC or SiO2
 		geometry = thin-films or sphere
-		discretization_thin_film = 2_thin_films_Lx02um_Ly1um_Lz200nm_d150nm_N640_discretization   --- only for thin films. This discretization is generated using the "discretization/Thin_film_discretization_SCRIPT.m" matlab code.
-		d = 150.e-9
-		radius = 50.e-9			--- only for spheres
 		Lx = 200.e-9			--- only for thin films
 		Ly = 1e-6			--- only for thin films
 		Lz = 200e-9			--- only for thin films
@@ -32,10 +29,23 @@ The user can modify:
 		T2 = 300.
 		solution = D for direct OR I for iterative
 		single_spectrum_analysis = N
-		save_A_matrix = N
-		save_G0_matrix = N
-		save_SGF_matrix = N
 		save_spectral_conductance = Y
 		save_spectral_transmissivity = N
 		save_power_dissipated = Y
 		multiple_conductance_temperatures = N    //not implemented yet
+
+	- there are geometry specific inputs files under user_inputs/Geometry
+	- options in user_inputs/Geometry/sphere.txt for spheres	
+		d = 150.e-9			--- distance between the bulk objects
+		radius = 50.e-9			--- radius of the bulk objects
+		T1 = 300			--- Temperature for bulk object 1
+		T2 = 400			--- Temperature for bulk object 2
+
+	- options in user_inputs/Geometry/thin_films.txt
+
+		d = 100.e-9			--- distance between the bulk objects
+		Lx = 400.e-9
+		Ly = 7.e-6
+		Lz = 50.e-9
+		T1 = 300.			--- Temperature for bulk object 1
+		T2 = 400.			--- Temperature for bulk object 2
