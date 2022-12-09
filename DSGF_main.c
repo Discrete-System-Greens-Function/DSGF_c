@@ -63,16 +63,27 @@ int main()
 
 	long baseline = get_mem_usage(); // measure baseline memory usage
 	clock_t begin = clock();  /* set timer here, do your time-consuming job */
-		
-	read_user_control(geometry, material, &solution, &single_spectrum_analysis, &save_spectral_conductance, &save_spectral_transmissivity, &save_power_dissipated);
+	
+	int N_subvolumes_per_object, N_bulk_objects, N_omega;
+
+	read_user_control(geometry, material, &solution, &single_spectrum_analysis, &save_spectral_conductance, &save_spectral_transmissivity, &save_power_dissipated, &N_bulk_objects, &N_omega, &N_subvolumes_per_object);
 
 	read_calculation_temperatures(N_Tcalc, Tcalc_vector);
-
+/*
 	int const const_N_subvolumes_per_object = read_int_from_file(N_subvolumes_per_object_file);
 
 	int const const_N_bulk_objects = read_int_from_file(N_bulk_objects_file);
 
 	int const const_N_omega = read_int_from_file(N_omega_file);
+*/
+	int const const_N_subvolumes_per_object = N_subvolumes_per_object;
+
+	int const const_N_bulk_objects = N_bulk_objects;
+
+	int const const_N_omega = N_omega;
+
+	printf("%d - %d - %d\n", N_subvolumes_per_object, N_bulk_objects, N_omega);
+	printf("%d - %d - %d\n", const_N_subvolumes_per_object, const_N_bulk_objects, const_N_omega);
 
 	size_t tot_sub_vol = const_N_subvolumes_per_object*const_N_bulk_objects; // Assign tot_sub_vol: Computes the total number of subvolumes in the system. tot_sub_vol is defined this way because it must be a non-variable parameter due to the computations perfomed in the code. Previously, it was defined as #define tot_sub_vol const_N_subvolumes_per_object*const_N_bulk_objects
 
