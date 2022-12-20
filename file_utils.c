@@ -13,15 +13,15 @@ void read_user_control(char *geometry,char *material, char *solution, char *sing
     char buffer[256]; 
     
     fscanf(import_control_inputs,"%s = %s\n",buffer, geometry);	
+    fscanf(import_control_inputs,"%s = %d", buffer, number_subvolumes_per_object);
+    fscanf(import_control_inputs,"%s = %d", buffer, number_bulk_objects);
     fscanf(import_control_inputs,"%s = %s\n",buffer, material);
+    fscanf(import_control_inputs,"%s = %d", buffer, number_omega);
     fscanf(import_control_inputs,"%s = %c\n",buffer, solution);
     fscanf(import_control_inputs,"%s = %c\n",buffer, single_spectrum_analysis);
     fscanf(import_control_inputs,"%s = %c\n",buffer, save_spectral_conductance);
     fscanf(import_control_inputs,"%s = %c",buffer, save_spectral_transmissivity); 
     fscanf(import_control_inputs,"%s = %c\n",buffer, save_power_dissipated);
-    fscanf(import_control_inputs,"%s = %d", buffer, number_bulk_objects);
-    fscanf(import_control_inputs,"%s = %d", buffer, number_omega);
-    fscanf(import_control_inputs,"%s = %d", buffer, number_subvolumes_per_object);
     fclose(import_control_inputs);
 }
 
