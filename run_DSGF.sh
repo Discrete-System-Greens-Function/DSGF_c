@@ -21,7 +21,7 @@ echo "Compilation in process..."
 
 export OMP_THREADS=4 # use multiple cores during the calculation
 
-icc -O3  -std=c99 DSGF_main.c file_utils.c functions_DSGF.c iterative_solver.c indexing_util.c -o DSGF -mcmodel=medium  -L${MKLROOT}/lib/intel64 -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread -lm -ldl  -I"${MKLROOT}/include" # -openmp 
+icc -O3  -std=c99 -I include/ src/array_functions.c src/DSGF_main.c src/file_utils.c src/functions_DSGF.c src/iterative_solver.c -o DSGF -mcmodel=medium  -L${MKLROOT}/lib/intel64 -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread -lm -ldl  -I"${MKLROOT}/include" # -openmp 
  
 
 echo "Compilation complete"
@@ -35,20 +35,4 @@ time ./DSGF  #time function displays the real, user and system time for running 
 
 # OpenMP: https://cvw.cac.cornell.edu/OpenMP/default
 # Intel advisor: https://www.intel.com/content/www/us/en/develop/documentation/get-started-with-advisor/top/prototype-threading-designs.html#prototype-threading-designs
-
-# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#old and slow compilation:
-
-#gcc -O3 ../lapack-3.10.0/LAPACKE/include -c -std=c99 dsgf.c -o dsgf_LAPACKE_9N2.o -mcmodel=medium # sgf-flat-surfaces-lapacke-linux.c  sgf-lapacke_original.c or sgf-lapacke-linux.c sgf-sphere-lapacke-linux.c sgf-flat-surfaces-lapacke-linux_v2.c
-
-#gfortran -O2 -frecursive -mcmodel=medium -o dsgf_LAPACKE_9N2 dsgf_LAPACKE_9N2.o ../lapack-3.10.0/liblapacke.a ../lapack-3.10.0/liblapack.a ../lapack-3.10.0/librefblas.a
-
-#./dsgf_LAPACKE_9N2
-# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-#https://community.intel.com/t5/Intel-Fortran-Compiler/Fortran-additional-relocation-overflows-error-while-reading-big/m-p/1162453 
-#https://community.intel.com/t5/Intel-Fortran-Compiler/relocation-truncated-to-fit-R-X86-64-PC32/td-p/762814
-#-mcmodel=medium
-
-#https://stackoverflow.com/questions/12916176/gfortran-for-dummies-what-does-mcmodel-medium-do-exactly  do not use -mcmodel=large
 

@@ -5,3 +5,7 @@ DSGF_debug
 tags
 tags.lock
 results/
+.ycm_extra_conf.py
+debug
+debug.sh
+dsgf_debug.sh
