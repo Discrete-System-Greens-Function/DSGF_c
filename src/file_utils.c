@@ -134,6 +134,35 @@ void write_to_csv_double_imag(char file_name[], int rows, int cols, double compl
 
 }
 
+void write_to_csv_double_matrix(char file_name[], int rows, int cols, double matrix[rows][cols]){
+	FILE * CSV_file = fopen(file_name, "w");
+	
+	for (int i = 0; i < rows; i++){
+		for (int j = 0; j < cols; j++){
+			// write the number
+			fprintf(CSV_file, "%e", matrix[i][j]);
+
+			// write a comma if its not the last number
+			if (j < cols-1) fprintf(CSV_file, ",");
+		}
+		// start a new line
+		fprintf(CSV_file, "\n");
+	}
+
+	fclose(CSV_file);
+}
+
+void write_to_csv_double_array(char file_name[], int length, double array[]){
+	FILE * CSV_file = fopen(file_name, "w");
+
+	for (int i = 0; i < length; i++){
+		fprintf(CSV_file, "%e\n", array[i]);
+	}
+
+	fclose(CSV_file);
+
+}
+
 void populate_subvol_struct(char file_name[], int array_length, subvol shape[array_length]){
 
 	int i_import = 0;

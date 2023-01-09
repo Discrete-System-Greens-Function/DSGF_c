@@ -19,6 +19,10 @@ char* set_up_results(char material[], char geometry[], int tot_sub_vol, double d
 
 void write_to_csv_double_imag(char file_name[], int rows, int cols, double complex matrix[rows][cols]); 
 
+void write_to_csv_double_matrix(char file_name[], int rows, int cols, double matrix[rows][cols]);
+
+void write_to_csv_double_array(char file_name[], int length, double array[]);
+
 void populate_subvol_struct(char file_name[], int array_length, subvol shape[array_length]);
 
 #endif
