@@ -53,9 +53,9 @@ show_titles = 1;
 d = 100e-9;  % Distance between the two films [m]
 
 % Thin film #1
-Lx_1 = 400e-9;         % Length of film #1   -- Previously tested: 200e-9, 400e-9, 800e-9
-Ly_1 = 1e-6;           % Width of film #1
-Lz_1 = 50e-9;         % Thickness of film #1 -- Previously tested: 200e-9
+Lx_1 = 500e-9;         % Length of film #1   -- Previously tested: 200e-9, 400e-9, 800e-9
+Ly_1 = 0.2e-6;           % Width of film #1
+Lz_1 = 20e-9;         % Thickness of film #1 -- Previously tested: 200e-9
 origin_1 = [0,0,0];    % Point of back, left, bottom of cube [x,y,z]
 cord_1 = 'min';          % String of coordinate along which direction mesh is to be refined 
 mesh_1 = 2;            % Number of subvolumes across the dimension given in the input 'cord' -- Previously tested:4, 5

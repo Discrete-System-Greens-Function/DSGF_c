@@ -3,7 +3,7 @@
 // Near-field radiative heat transfer framework between thermal objects 
 // Developed by RETL group at the University of Utah, USA
 
-// LAST UPDATE: SEPTEMBER 19, 2022
+// LAST UPDATE: January 09, 2023
 // 
 // In this version:
 //	- The following .txt files remove recompile the code need for user modifications:
@@ -82,8 +82,8 @@ int main()
 
 	int const const_N_omega = N_omega;
 
-	printf("%d - %d - %d\n", N_subvolumes_per_object, N_bulk_objects, N_omega);
-	printf("%d - %d - %d\n", const_N_subvolumes_per_object, const_N_bulk_objects, const_N_omega);
+	//printf("%d - %d - %d\n", N_subvolumes_per_object, N_bulk_objects, N_omega);
+	//printf("%d - %d - %d\n", const_N_subvolumes_per_object, const_N_bulk_objects, const_N_omega);
 
 	size_t tot_sub_vol = const_N_subvolumes_per_object*const_N_bulk_objects; // Assign tot_sub_vol: Computes the total number of subvolumes in the system. tot_sub_vol is defined this way because it must be a non-variable parameter due to the computations perfomed in the code. Previously, it was defined as #define tot_sub_vol const_N_subvolumes_per_object*const_N_bulk_objects
 
@@ -213,6 +213,37 @@ int main()
 			T_vector[i_vec] = T2;
 		}
 	}  
+	
+	if(save_power_dissipated =='Y'){
+		//EXPORT R
+		for (int i_subvol=0; i_subvol<tot_sub_vol;i_subvol++) //tot_sub_vol
+		{
+			{
+					FILE * vector_subvolumes_lattice; //append
+					char dirPathVector_subvolumes_lattice_FileName[260];
+					sprintf(dirPathVector_subvolumes_lattice_FileName, "%s/vector_subvolumes_lattice.csv",results_folder); // path where the file is stored
+					if(i_subvol == 0) vector_subvolumes_lattice =fopen(dirPathVector_subvolumes_lattice_FileName,"w"); //write
+					else vector_subvolumes_lattice = fopen(dirPathVector_subvolumes_lattice_FileName, "a"); //append
+					fprintf(vector_subvolumes_lattice,"%e,%e,%e \n",R[i_subvol][0],R[i_subvol][1],R[i_subvol][2]); 
+					fclose(vector_subvolumes_lattice);
+				}
+		} 
+		//EXPORT delta_V_vector
+		for (int i_subvol=0; i_subvol<tot_sub_vol; i_subvol++)
+		{
+				{
+					FILE * vector_subvolumes_volume; //append
+					char dirPathVector_subvolumes_volume_FileName[260];
+					sprintf(dirPathVector_subvolumes_volume_FileName, "%s/vector_subvolumes_volume.csv",results_folder); // path where the file is stored
+					if(i_subvol == 0) vector_subvolumes_volume =fopen(dirPathVector_subvolumes_volume_FileName,"w"); //write
+					else vector_subvolumes_volume = fopen(dirPathVector_subvolumes_volume_FileName, "a"); //append
+					fprintf(vector_subvolumes_volume,"%e\n",delta_V_vector[i_subvol]); 
+					fclose(vector_subvolumes_volume);
+				}
+		}		
+	} // end if save_power_dissipated
+	
+	
 
 	double initial,final;
 	
@@ -1065,13 +1096,13 @@ int main()
 	sprintf(dirPathpos_processing_summary_FileName, "%s/pos_processing_summary.txt",results_folder); // path where the file is stored
 
 	pos_processing_summary =fopen(dirPathpos_processing_summary_FileName,"w"); 
-	fprintf(pos_processing_summary,"Material: %s\n Spectrum range(lambda) = %e--%e m \n Volume of each subvolume = %e \n",material, initial,final,delta_V_1); 
+	fprintf(pos_processing_summary,"Material: %s\nSpectrum range (in wavelength) = %e--%e m \n",material, initial,final); 
 	fclose(pos_processing_summary);
 
 	for (int iTcalc = 0; iTcalc < N_Tcalc; iTcalc++) 
 	{
 		pos_processing_summary =fopen(dirPathpos_processing_summary_FileName,"a"); 
-		fprintf(pos_processing_summary,"Temperature %eK: Total conductance = %e\n",Tcalc_vector[iTcalc], Total_conductance[iTcalc]); 
+		fprintf(pos_processing_summary,"Total conductance at %eK = %e\n",Tcalc_vector[iTcalc], Total_conductance[iTcalc]); 
 		fclose(pos_processing_summary);
 	}
 
