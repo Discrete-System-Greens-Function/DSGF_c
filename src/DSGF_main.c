@@ -31,6 +31,7 @@
 #include "functions_DSGF.h" // Definitions of functions used in DSGF
 #include "file_utils.h" // header with definitions of read_user_inputs and read_calculation_temperatures functions
 #include "iterative_solver.h"
+#include "array_functions.h"
 
 #include "time.h"
 
@@ -70,21 +71,12 @@ int main()
 	read_user_control(geometry, material, &solution, &single_spectrum_analysis, &save_spectral_conductance, &save_spectral_transmissivity, &save_power_dissipated, &N_bulk_objects, &N_omega, &N_subvolumes_per_object);
 
 	read_calculation_temperatures(N_Tcalc, Tcalc_vector);
-	/*
-	   int const const_N_subvolumes_per_object = read_int_from_file(N_subvolumes_per_object_file);
 
-	   int const const_N_bulk_objects = read_int_from_file(N_bulk_objects_file);
-
-	   int const const_N_omega = read_int_from_file(N_omega_file);
-	   */
 	int const const_N_subvolumes_per_object = N_subvolumes_per_object;
 
 	int const const_N_bulk_objects = N_bulk_objects;
 
 	int const const_N_omega = N_omega;
-
-	//printf("%d - %d - %d\n", N_subvolumes_per_object, N_bulk_objects, N_omega);
-	//printf("%d - %d - %d\n", const_N_subvolumes_per_object, const_N_bulk_objects, const_N_omega);
 
 	size_t tot_sub_vol = const_N_subvolumes_per_object*const_N_bulk_objects; // Assign tot_sub_vol: Computes the total number of subvolumes in the system. tot_sub_vol is defined this way because it must be a non-variable parameter due to the computations perfomed in the code. Previously, it was defined as #define tot_sub_vol const_N_subvolumes_per_object*const_N_bulk_objects
 
@@ -250,14 +242,11 @@ int main()
 	if(strcmp(material,"SiO2")==0 || strcmp(material,"SiC")==0 || strcmp(material,"u-SiC")==0) 
 	{
 		//Uniform spectrum
-		double initial_lambda = 5.e-6;
-		double final_lambda = 25.e-6;
-		initial = initial_lambda;
-		final = final_lambda;
-		double step_lambda = (final-initial)/(const_N_omega-1); // linspace in C: https://stackoverflow.com/questions/60695284/linearly-spaced-array-in-c
+		initial = 5.e-6;
+		final = 25.e-6;
+		double_linspace(initial, final, const_N_omega, lambda);
 		for(int i_lambda = 0; i_lambda < const_N_omega; i_lambda++)
 		{
-			lambda[i_lambda]= initial + i_lambda*step_lambda; // Wavelength [m]
 			omega[i_lambda] = 2.*pi*c_0/lambda[i_lambda];  // Radial frequency [rad/s]
 		}
 	}	
@@ -265,16 +254,9 @@ int main()
 	else if(strcmp(material,"SiN")==0) //cannot compare strings in C with ==; source: https://ideone.com/BrFA00
 	{
 		//Uniform spectrum: 
-		double initial_omega = 2.e13;
-		double final_omega = 3.e14;
-		initial = initial_omega;
-		final = final_omega;
-		//even though we refer to step_lambda, for SiN we use radial frequency omega
-		double step_omega = (final-initial)/(const_N_omega-1); // linspace in C: https://stackoverflow.com/questions/60695284/linearly-spaced-array-in-c
-		for(int i_omega = 0; i_omega < const_N_omega; i_omega++)
-		{
-			omega[i_omega] = initial + i_omega*step_omega;  // Radial frequency [rad/s]
-		}
+		initial = 2.e13;
+		final = 3.e14;
+		double_linspace(initial, final, const_N_omega, omega);
 	}
 
 
