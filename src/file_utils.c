@@ -173,3 +173,22 @@ void populate_subvol_struct(char file_name[], int array_length, subvol shape[arr
 	}
 	fclose(import_discretization);
 }
+
+
+void create_pos_processing(char file_name[], char material[], double initial, double end, double time_spent, double Tcalc_vector[], double Total_conductance[], int N_Tcalc){
+	
+	FILE * pos_processing_summary; // call the main outputs' file,  
+
+	pos_processing_summary =fopen(file_name,"w");
+
+	fprintf(pos_processing_summary,"Material: %s\nSpectrum range (in wavelength) = %e--%e m \n",material, initial, end); 
+
+	for (int i = 0; i < N_Tcalc; i++) 
+	{
+		fprintf(pos_processing_summary,"Total conductance at %eK = %e\n",Tcalc_vector[i], Total_conductance[i]); 
+	}
+
+	fprintf(pos_processing_summary,"Time counter: %f s\n",time_spent);
+	
+	fclose(pos_processing_summary);
+}

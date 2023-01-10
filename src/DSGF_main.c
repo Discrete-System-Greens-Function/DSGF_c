@@ -41,8 +41,6 @@
 
 //#include <omp.h> // library for OpenMP
 
-FILE * pos_processing_summary; // call the main outputs' file,  
-
 // #################################################################
 // ################### START OF THE CODE ###########################
 // #################################################################
@@ -956,31 +954,16 @@ int main()
 
 	printf("\n");
 
-
 	sprintf(dirPathpos_processing_summary_FileName, "%s/pos_processing_summary.txt",results_folder); // path where the file is stored
-
-	pos_processing_summary =fopen(dirPathpos_processing_summary_FileName,"w"); 
-	fprintf(pos_processing_summary,"Material: %s\nSpectrum range (in wavelength) = %e--%e m \n",material, initial,final); 
-	fclose(pos_processing_summary);
-
-	for (int iTcalc = 0; iTcalc < N_Tcalc; iTcalc++) 
-	{
-		pos_processing_summary =fopen(dirPathpos_processing_summary_FileName,"a"); 
-		fprintf(pos_processing_summary,"Total conductance at %eK = %e\n",Tcalc_vector[iTcalc], Total_conductance[iTcalc]); 
-		fclose(pos_processing_summary);
-	}
-
-	free(Q_tot_thermal_object);
-	free(Total_conductance); 
-
 
 	clock_t end = clock(); //end timer
 	double time_spent = (double)(end - begin) / CLOCKS_PER_SEC; //calculate time for the code
+	
+	create_pos_processing(dirPathpos_processing_summary_FileName, material, initial, final, time_spent, Tcalc_vector, Total_conductance, N_Tcalc);
 
-	fopen(dirPathpos_processing_summary_FileName,"a"); // Opens file for appending. (File remains unchanged, file pointer gets moved to end) https://stackoverflow.com/questions/16427664/trying-not-to-overwrite-a-file-in-c/16427698
-	fprintf(pos_processing_summary,"Time counter: %f s\n",time_spent);
-	fclose(pos_processing_summary);
 
+	free(Q_tot_thermal_object);
+	free(Total_conductance); 
 
 	printf("Usage: %ld + %ld = %ld kb\n", baseline, get_mem_usage()-baseline,get_mem_usage());
 
