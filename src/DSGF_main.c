@@ -51,7 +51,7 @@ int main()
 {
 
 	// ----------- CONSTANTS ------------------
-	
+
 	const double pi = 3.14159265359;         // pi number   
 	const double q = 1.602176634e-19;        // number of Joules per eV
 	const double h_bar = 1.054571817e-34;    // Planck's constant [J*s]
@@ -64,19 +64,19 @@ int main()
 
 	long baseline = get_mem_usage(); // measure baseline memory usage
 	clock_t begin = clock();  /* set timer here, do your time-consuming job */
-	
+
 	int N_subvolumes_per_object, N_bulk_objects, N_omega;
 
 	read_user_control(geometry, material, &solution, &single_spectrum_analysis, &save_spectral_conductance, &save_spectral_transmissivity, &save_power_dissipated, &N_bulk_objects, &N_omega, &N_subvolumes_per_object);
 
 	read_calculation_temperatures(N_Tcalc, Tcalc_vector);
-/*
-	int const const_N_subvolumes_per_object = read_int_from_file(N_subvolumes_per_object_file);
+	/*
+	   int const const_N_subvolumes_per_object = read_int_from_file(N_subvolumes_per_object_file);
 
-	int const const_N_bulk_objects = read_int_from_file(N_bulk_objects_file);
+	   int const const_N_bulk_objects = read_int_from_file(N_bulk_objects_file);
 
-	int const const_N_omega = read_int_from_file(N_omega_file);
-*/
+	   int const const_N_omega = read_int_from_file(N_omega_file);
+	   */
 	int const const_N_subvolumes_per_object = N_subvolumes_per_object;
 
 	int const const_N_bulk_objects = N_bulk_objects;
@@ -119,7 +119,7 @@ int main()
 	// ######### Properties for thermal objects ###########
 	printf("Simulation for a total of %d dipoles in %d thermal objects\n",tot_sub_vol,const_N_bulk_objects);
 
-	
+
 	// Import data from txt file into C program: https://stackoverflow.com/questions/22745457/import-data-from-txt-file-into-c-program ; https://stackoverflow.com/questions/49563003/importing-data-from-txt-file-into-c-program ; https://www.cs.utah.edu/~germain/PPS/Topics/C_Language/file_IO.html
 	FILE *import_discretization;  // https://stackoverflow.com/questions/22745457/import-data-from-txt-file-into-c-program
 	int i_import = 0;
@@ -135,7 +135,7 @@ int main()
 		vol2 = vol_sphere(radius2, pi); // calls function that calculates the volume for the sphere 2
 		delta_V_1 = vol1/const_N_subvolumes_per_object; // defines the subvolumes' volume for sphere 1
 		delta_V_2 = vol2/const_N_subvolumes_per_object; // defines the subvolumes' volume for sphere 2
-	
+
 		sprintf(dirPathFileNameDISCRETIZATION, "discretizations/sphere/sphere_subvol_%d.txt",const_N_subvolumes_per_object); // path where the file is stored
 		import_discretization = fopen(dirPathFileNameDISCRETIZATION, "r");
 		while (3 == fscanf(import_discretization, "%e %e %e", &shape_file[i_import].x, &shape_file[i_import].y, &shape_file[i_import].z))
@@ -166,12 +166,12 @@ int main()
 	if(strcmp(geometry,"thin-films")==0)
 	{
 		read_geometry_thin_films(&d, &Lx, &Ly, &Lz, &T1, &T2);
-		
+
 		vol1 = Lx*Ly*Lz; // calculates the volume for membrane 1
 		vol2 = vol1;     // defines the volume of membrane 2 = membrane 1
 		delta_V_1 = vol1/const_N_subvolumes_per_object; // defines the subvolumes' volume for membrane 1
 		delta_V_2 = vol2/const_N_subvolumes_per_object;  // defines the subvolumes' volume for membrane 1
-		
+
 		int Lx_int, Ly_int, Lz_int, d_int;
 		Lx_int = Lx*pow(10,9); 
 		Ly_int = Ly*pow(10,9); 
@@ -196,10 +196,10 @@ int main()
 	fclose(import_discretization);
 
 	printf("d = %e m \n",d);
-	
+
 	char *results_folder = set_up_results(material, geometry, tot_sub_vol, d); // Folders for results 
 
-	
+
 	for (int i_vec=0; i_vec<tot_sub_vol; i_vec++)
 	{
 		if (i_vec < const_N_subvolumes_per_object) // 2-body case
@@ -213,72 +213,72 @@ int main()
 			T_vector[i_vec] = T2;
 		}
 	}  
-	
+
 	if(save_power_dissipated =='Y'){
 		//EXPORT R
 		for (int i_subvol=0; i_subvol<tot_sub_vol;i_subvol++) //tot_sub_vol
 		{
 			{
-					FILE * vector_subvolumes_lattice; //append
-					char dirPathVector_subvolumes_lattice_FileName[260];
-					sprintf(dirPathVector_subvolumes_lattice_FileName, "%s/vector_subvolumes_lattice.csv",results_folder); // path where the file is stored
-					if(i_subvol == 0) vector_subvolumes_lattice =fopen(dirPathVector_subvolumes_lattice_FileName,"w"); //write
-					else vector_subvolumes_lattice = fopen(dirPathVector_subvolumes_lattice_FileName, "a"); //append
-					fprintf(vector_subvolumes_lattice,"%e,%e,%e \n",R[i_subvol][0],R[i_subvol][1],R[i_subvol][2]); 
-					fclose(vector_subvolumes_lattice);
-				}
+				FILE * vector_subvolumes_lattice; //append
+				char dirPathVector_subvolumes_lattice_FileName[260];
+				sprintf(dirPathVector_subvolumes_lattice_FileName, "%s/vector_subvolumes_lattice.csv",results_folder); // path where the file is stored
+				if(i_subvol == 0) vector_subvolumes_lattice =fopen(dirPathVector_subvolumes_lattice_FileName,"w"); //write
+				else vector_subvolumes_lattice = fopen(dirPathVector_subvolumes_lattice_FileName, "a"); //append
+				fprintf(vector_subvolumes_lattice,"%e,%e,%e \n",R[i_subvol][0],R[i_subvol][1],R[i_subvol][2]); 
+				fclose(vector_subvolumes_lattice);
+			}
 		} 
 		//EXPORT delta_V_vector
 		for (int i_subvol=0; i_subvol<tot_sub_vol; i_subvol++)
 		{
-				{
-					FILE * vector_subvolumes_volume; //append
-					char dirPathVector_subvolumes_volume_FileName[260];
-					sprintf(dirPathVector_subvolumes_volume_FileName, "%s/vector_subvolumes_volume.csv",results_folder); // path where the file is stored
-					if(i_subvol == 0) vector_subvolumes_volume =fopen(dirPathVector_subvolumes_volume_FileName,"w"); //write
-					else vector_subvolumes_volume = fopen(dirPathVector_subvolumes_volume_FileName, "a"); //append
-					fprintf(vector_subvolumes_volume,"%e\n",delta_V_vector[i_subvol]); 
-					fclose(vector_subvolumes_volume);
-				}
+			{
+				FILE * vector_subvolumes_volume; //append
+				char dirPathVector_subvolumes_volume_FileName[260];
+				sprintf(dirPathVector_subvolumes_volume_FileName, "%s/vector_subvolumes_volume.csv",results_folder); // path where the file is stored
+				if(i_subvol == 0) vector_subvolumes_volume =fopen(dirPathVector_subvolumes_volume_FileName,"w"); //write
+				else vector_subvolumes_volume = fopen(dirPathVector_subvolumes_volume_FileName, "a"); //append
+				fprintf(vector_subvolumes_volume,"%e\n",delta_V_vector[i_subvol]); 
+				fclose(vector_subvolumes_volume);
+			}
 		}		
 	} // end if save_power_dissipated
-	
-	
+
+
 
 	double initial,final;
-	
+
 	if(strcmp(material,"SiO2")==0 || strcmp(material,"SiC")==0 || strcmp(material,"u-SiC")==0) 
 	{
-	//Uniform spectrum
-	double initial_lambda = 5.e-6;
-	double final_lambda = 25.e-6;
-	initial = initial_lambda;
-	final = final_lambda;
-	double step_lambda = (final-initial)/(const_N_omega-1); // linspace in C: https://stackoverflow.com/questions/60695284/linearly-spaced-array-in-c
-	for(int i_lambda = 0; i_lambda < const_N_omega; i_lambda++)
-	{
-		lambda[i_lambda]= initial + i_lambda*step_lambda; // Wavelength [m]
-		omega[i_lambda] = 2.*pi*c_0/lambda[i_lambda];  // Radial frequency [rad/s]
-	}
+		//Uniform spectrum
+		double initial_lambda = 5.e-6;
+		double final_lambda = 25.e-6;
+		initial = initial_lambda;
+		final = final_lambda;
+		double step_lambda = (final-initial)/(const_N_omega-1); // linspace in C: https://stackoverflow.com/questions/60695284/linearly-spaced-array-in-c
+		for(int i_lambda = 0; i_lambda < const_N_omega; i_lambda++)
+		{
+			lambda[i_lambda]= initial + i_lambda*step_lambda; // Wavelength [m]
+			omega[i_lambda] = 2.*pi*c_0/lambda[i_lambda];  // Radial frequency [rad/s]
+		}
 	}	
-	
+
 	else if(strcmp(material,"SiN")==0) //cannot compare strings in C with ==; source: https://ideone.com/BrFA00
 	{
-	//Uniform spectrum: 
-	double initial_omega = 2.e13;
-	double final_omega = 3.e14;
-	initial = initial_omega;
-	final = final_omega;
-	//even though we refer to step_lambda, for SiN we use radial frequency omega
-	double step_omega = (final-initial)/(const_N_omega-1); // linspace in C: https://stackoverflow.com/questions/60695284/linearly-spaced-array-in-c
-	for(int i_omega = 0; i_omega < const_N_omega; i_omega++)
-	{
-		omega[i_omega] = initial + i_omega*step_omega;  // Radial frequency [rad/s]
+		//Uniform spectrum: 
+		double initial_omega = 2.e13;
+		double final_omega = 3.e14;
+		initial = initial_omega;
+		final = final_omega;
+		//even though we refer to step_lambda, for SiN we use radial frequency omega
+		double step_omega = (final-initial)/(const_N_omega-1); // linspace in C: https://stackoverflow.com/questions/60695284/linearly-spaced-array-in-c
+		for(int i_omega = 0; i_omega < const_N_omega; i_omega++)
+		{
+			omega[i_omega] = initial + i_omega*step_omega;  // Radial frequency [rad/s]
+		}
 	}
-	}
-	
 
-	
+
+
 	// #################################################################
 	// ################## FREQUENCY RANGE ANALYSIS #####################
 	// #################################################################
@@ -348,7 +348,7 @@ int main()
 			double omega_LO = 956*to_rad_s;		//[rad/s]
 			epsilon = epsilon_inf*(pow(omega_value,2)-pow(omega_LO,2)+I*Gamma*omega_value)/(pow(omega_value,2)-pow(omega_TO,2)+I*Gamma*omega_value) ; // omega_TO omega_LO Gamma epsilon_inf
 		}
-		
+
 		else if(strcmp(material,"SiN")==0) 
 		{  
 			// Dielectric function for SiN -  Lorentz oscillator model:
@@ -361,7 +361,7 @@ int main()
 			double alpha[] = {0.0001, 0.3427, 0.0006, 0.0002, 0.0080};
 			double omega_T_converted, Gamma_converted;
 			double complex delta_epsilon, num_1, denom_1,Gamma_prime,num_2, denom_2;
-		
+
 			double complex summation = 0. + 0.*I;
 			for(int i_epsilon = 0; i_epsilon < M; i_epsilon++)
 			{				
@@ -369,21 +369,21 @@ int main()
 				Gamma_converted =Gamma[i_epsilon]*(2*pi)*(1.e12);
 				num_1 = pow(omega_T_converted,2)- pow(omega_value,2);
 				denom_1 = omega_value*Gamma_converted;
-    				
-    				Gamma_prime = Gamma_converted*cexp(-alpha[i_epsilon]*pow(num_1/denom_1,2));
-    								
+
+				Gamma_prime = Gamma_converted*cexp(-alpha[i_epsilon]*pow(num_1/denom_1,2));
+
 				delta_epsilon = epsilon_j[i_epsilon] - epsilon_j[i_epsilon+1]; 
-				
+
 				num_2 = delta_epsilon*pow(omega_T_converted,2);
 				denom_2 = pow(omega_T_converted,2) - pow(omega_value,2) - omega_value*Gamma_prime*I;
 				summation += num_2/denom_2;
-				
+
 			}
 			epsilon = epsilon_inf + summation;
 
 		}
-		
-		
+
+
 		double k_0=k_0_function(omega_value, epsilon_0, mu_0) ; //wave vector in free space
 
 		double k=k_function(omega_value, epsilon_ref, epsilon_0, mu_0); //wave vector in reference medium
@@ -446,7 +446,7 @@ int main()
 				}    
 			}
 		}
-		
+
 		// ################### MATRICES STRUCTURE LOOPS ###########################
 		// 3N X 3N Matrices structure loops for G^0 and A:
 
@@ -493,7 +493,7 @@ int main()
 							{
 								eyeG_0[i_subG_0][j_subG_0] = 1.;    // 3x3 Identity matrix for G^0:
 								eyeA[ig_0][jg_0][i_subG_0][j_subG_0] = 0.; // 3Nx3N identity matrix for A:
-													  
+
 							}
 							else
 							{
@@ -517,7 +517,7 @@ int main()
 			part1ii[ig_0] = 1./(3.*delta_V_vector[ig_0]*epsilon_ref*pow(k_0,2));
 			part2ii[ig_0] = a_j[ig_0]*k_0*sqrt(epsilon_ref)*I; // com i term 
 			part2iiexp[ig_0] = cexp(0. + a_j[ig_0]*k_0*sqrt(epsilon_ref)*I); 
-											 // part3ii is inside brackets
+			// part3ii is inside brackets
 			part3ii[ig_0] = part2iiexp[ig_0]*(1-part2ii[ig_0]) - 1. ;
 			for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
 			{
@@ -566,7 +566,7 @@ int main()
 		free(part3ij);
 
 		memset(modulo_r_i_j, 0, sizeof modulo_r_i_j);
-	
+
 		//printf("##################### \n SOLVE LINEAR SYSTEM AG=G^0 \n##################### \n");
 		//printf("##################### \n LAPACK/LAPACKE ZGELS ROUTINE \n##################### \n");
 		//Description of ZGELS: https://extras.csc.fi/math/nag/mark21/pdf/F08/f08anf.pdf
@@ -600,7 +600,7 @@ int main()
 			// F08ANF (ZGELS) solves linear least-squares problems using a QR or LQ factorization of A
 			info = LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',m,n,nrhs,A_direct,lda,b_direct,ldb); 
 			free(A_direct); 
-			
+
 			for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 			{
 				for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
@@ -623,7 +623,7 @@ int main()
 		}
 		free(A);
 
-		
+
 		if(solution =='I')
 		{ 
 			printf("Iterative status:\n m= ");
@@ -633,53 +633,53 @@ int main()
 			double complex (*A_2d)[3] = calloc(3, sizeof(*A_2d)); // Amm
 			double complex (*A_iterative) = malloc(sizeof *A_iterative *3*3); // direct inversion when i=m;
 			double complex (*b_iterative) = malloc(sizeof *b_iterative *3*3); //direct inversion when i=m;
-   					
+
 			double eye_iter[3][3] = {{1., 0., 0.}, {0., 1., 0.}, {0., 0., 1.}}; // 3-by-3 unit matrix used in iterative solver
-						
+
 			// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 			// Calculate background medium Green's function 
 			// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%     
-			
+
 			// this reshapes 2 4D matrices to 2 2D matrices
 			// G0 and eyeA are 4D
 			// G_sys_old and eyeA_2d are the respective 2D matrices
 			matrix_reshape(3, tot_sub_vol, G_sys_old, G_0);
 
-		
+
 			// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 			// Calculate system Green's function 
 			// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-			
+
 			// First, solve ii = mm system of equations.
 			for (int mm = 0; mm < tot_sub_vol; mm++) //tot_sub_vol
 			{
 				printf("%d - ",mm+1);
 				mm_2d =0;
-        
+
 				epsilon_s = (epsilon - epsilon_ref); // Scattering dielectric function
-				
+
 				A2d_solver(epsilon_s, mm, tot_sub_vol, eye_iter, delta_V_vector[mm], G_sys_old, A_2d, k);	
 				/*
 				// %%%%%%%%%%%%%%%%%% Manual inversion of Amm %%%%%%%%%%%%%%%%%%%% 
-					det =  (Amm[0][0] * (Amm[1][1] * Amm[2][2] - Amm[2][1] * Amm[1][2])) - (Amm[0][1] * (Amm[1][0] * Amm[2][2] - Amm[1][2] * Amm[2][0])) + (Amm[0][2] * (Amm[1][0] * Amm[2][1] - Amm[1][1] * Amm[2][0]));
+				det =  (Amm[0][0] * (Amm[1][1] * Amm[2][2] - Amm[2][1] * Amm[1][2])) - (Amm[0][1] * (Amm[1][0] * Amm[2][2] - Amm[1][2] * Amm[2][0])) + (Amm[0][2] * (Amm[1][0] * Amm[2][1] - Amm[1][1] * Amm[2][0]));
 
- 					// computes the inverse of Amm
-					Amm_inv[0][0] = (Amm[1][1] * Amm[2][2] - Amm[2][1] * Amm[1][2]) / det;
-					Amm_inv[0][1] = (Amm[0][2] * Amm[2][1] - Amm[0][1] * Amm[2][2]) / det;
-					Amm_inv[0][2] = (Amm[0][1] * Amm[1][2] - Amm[0][2] * Amm[1][1]) / det;
-					Amm_inv[1][0] = (Amm[1][2] * Amm[2][0] - Amm[1][0] * Amm[2][2]) / det;
-					Amm_inv[1][1] = (Amm[0][0] * Amm[2][2] - Amm[0][2] * Amm[2][0]) / det;
-					Amm_inv[1][2] = (Amm[1][0] * Amm[0][2] - Amm[0][0] * Amm[1][2]) / det;
-					Amm_inv[2][0] = (Amm[1][0] * Amm[2][1] - Amm[2][0] * Amm[1][1]) / det;
-					Amm_inv[2][1] = (Amm[2][0] * Amm[0][1] - Amm[0][0] * Amm[2][1]) / det;
-					Amm_inv[2][2] = (Amm[0][0] * Amm[1][1] - Amm[1][0] * Amm[0][1]) / det;
+				// computes the inverse of Amm
+				Amm_inv[0][0] = (Amm[1][1] * Amm[2][2] - Amm[2][1] * Amm[1][2]) / det;
+				Amm_inv[0][1] = (Amm[0][2] * Amm[2][1] - Amm[0][1] * Amm[2][2]) / det;
+				Amm_inv[0][2] = (Amm[0][1] * Amm[1][2] - Amm[0][2] * Amm[1][1]) / det;
+				Amm_inv[1][0] = (Amm[1][2] * Amm[2][0] - Amm[1][0] * Amm[2][2]) / det;
+				Amm_inv[1][1] = (Amm[0][0] * Amm[2][2] - Amm[0][2] * Amm[2][0]) / det;
+				Amm_inv[1][2] = (Amm[1][0] * Amm[0][2] - Amm[0][0] * Amm[1][2]) / det;
+				Amm_inv[2][0] = (Amm[1][0] * Amm[2][1] - Amm[2][0] * Amm[1][1]) / det;
+				Amm_inv[2][1] = (Amm[2][0] * Amm[0][1] - Amm[0][0] * Amm[2][1]) / det;
+				Amm_inv[2][2] = (Amm[0][0] * Amm[1][1] - Amm[1][0] * Amm[0][1]) / det;
 				// %%%%%%%%%%%%%%%%%% end Manual inversion of Amm %%%%%%%%%%%%%%%%%%	
 				*/	
-								
+
 				for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) // Only loop through remaining perturbations
 				{
 
-					 A_b_iterative_populator(tot_sub_vol, A_iterative, b_iterative, A_2d, G_sys_old, mm, jg_0);
+					A_b_iterative_populator(tot_sub_vol, A_iterative, b_iterative, A_2d, G_sys_old, mm, jg_0);
 
 					// %%%%%%%%%%% G_new using Linear inversion using LAPACK %%%%%%%%%%%%%%%%%
 					info = LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',3,3,3,A_iterative,3,b_iterative,3); 
@@ -698,35 +698,35 @@ int main()
 						}  
 					}
 					// %%%%%%%%%%% End G_new using linear inversion using LAPACK %%%%%%%%%%%%%%%%%
-					
+
 
 					/*				
 					// %%%%%%%%%%%%%%%%%% G_new using manual inversion of Amm %%%%%%%%%%%%%%%%%%%% 
-										
+
 					for (int mm_sub = 0; mm_sub < 3; mm_sub++) // 3D coordinate positions
 					{
-						mm_2d = (3*mm + mm_sub);
-						for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
-						{
-							jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
-							G_sys_new[mm_2d][jg_0_2d] = 0;
-							for(int k_sub = 0; k_sub < 3; k_sub++)
-							{
-								k_sub_2d = (3*mm + k_sub); 
-								G_sys_new[mm_2d][jg_0_2d] += Amm_inv[mm_sub][k_sub]*G_sys_old[k_sub_2d][jg_0_2d]; // stores G^1_11	
-							}	
-						}  
+					mm_2d = (3*mm + mm_sub);
+					for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
+					{
+					jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
+					G_sys_new[mm_2d][jg_0_2d] = 0;
+					for(int k_sub = 0; k_sub < 3; k_sub++)
+					{
+					k_sub_2d = (3*mm + k_sub); 
+					G_sys_new[mm_2d][jg_0_2d] += Amm_inv[mm_sub][k_sub]*G_sys_old[k_sub_2d][jg_0_2d]; // stores G^1_11	
+					}	
+					}  
 					}
 					// %%%%%%%%%%%%%%%%%% end G_new using manual inversion of Amm %%%%%%%%%%%%%%%%%%%% 
 					*/
 
 
 				} // end jg_0					
-				
+
 				memset(A_2d, 0, sizeof *A_2d * 3);
 				memset(A_iterative, 0, sizeof *A_iterative *3*3);
 				memset(b_iterative, 0, sizeof *b_iterative *3*3);
-								
+
 				// Next, solve all systems of equations for ii not equal to mm		
 				for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 				{ 
@@ -754,34 +754,34 @@ int main()
 						} // jg_0   	
 					}// i_subG_0   	                	
 				} // ig_0    
-								
+
 				memcpy(G_sys_old,G_sys_new,3*tot_sub_vol*3*tot_sub_vol*sizeof(double complex)); // Update G_old = G_new for next iteration.
-				
+
 
 			}//end mm loop 
-			
+
 			printf("Final solution:\n");
 
 			free(A_iterative); 
 			free(b_iterative);
 			free(A_2d);
 			free(G_sys_old);
-			
+
 			memcpy(G_sys,G_sys_new,3*tot_sub_vol*3*tot_sub_vol*sizeof(double complex)); //Populate G_sys with G_new 
 			free(G_sys_new);	   
 
 		}
 
 		free(G_0);
-		
-		
+
+
 		// #################################################################
 		//  Spectral and total conductance between bulk objects at temp. T
 		// ###################  Thermal power dissipated ###################
 		// #################################################################
 
 		double complex (*trans_coeff)[tot_sub_vol] = calloc(tot_sub_vol, sizeof(*trans_coeff));
-		
+
 		double complex (*G_sys_cross)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_sys_cross)); 
 		double complex (*transpose_G_sys)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*transpose_G_sys)); 
 		double(*inner_sum) = malloc(sizeof * inner_sum * tot_sub_vol);
