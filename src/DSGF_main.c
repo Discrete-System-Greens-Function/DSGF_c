@@ -76,7 +76,7 @@ int main()
 
 	int const const_N_omega = N_omega;
 
-	size_t tot_sub_vol = const_N_subvolumes_per_object*const_N_bulk_objects; // Assign tot_sub_vol: Computes the total number of subvolumes in the system. tot_sub_vol is defined this way because it must be a non-variable parameter due to the computations perfomed in the code. Previously, it was defined as #define tot_sub_vol const_N_subvolumes_per_object*const_N_bulk_objects
+	int tot_sub_vol = const_N_subvolumes_per_object*const_N_bulk_objects; // Assign tot_sub_vol: Computes the total number of subvolumes in the system. tot_sub_vol is defined this way because it must be a non-variable parameter due to the computations perfomed in the code. Previously, it was defined as #define tot_sub_vol const_N_subvolumes_per_object*const_N_bulk_objects
 
 
 	// ####################################    
@@ -103,9 +103,6 @@ int main()
 
 	// ######### Properties for thermal objects ###########
 	printf("Simulation for a total of %d dipoles in %d thermal objects\n",tot_sub_vol,const_N_bulk_objects);
-
-
-	// Import data from txt file into C program: https://stackoverflow.com/questions/22745457/import-data-from-txt-file-into-c-program ; https://stackoverflow.com/questions/49563003/importing-data-from-txt-file-into-c-program ; https://www.cs.utah.edu/~germain/PPS/Topics/C_Language/file_IO.html
 
 	char dirPathFileNameDISCRETIZATION[260]; // https://stackoverflow.com/questions/46612504/creating-directories-and-files-using-a-loop-in-c 
 
@@ -160,13 +157,7 @@ int main()
 		Ly_int = Ly*pow(10,9); 
 		Lz_int = Lz*pow(10,9); 
 		d_int = d*pow(10,9); 
-		sprintf(dirPathFileNameDISCRETIZATION, "discretizations/thin-film/%d_thin_films_Lx%dnm_Ly%dnm_Lz%dnm_d%dnm_N%d_discretization.txt",const_N_bulk_objects,  Lx_int, Ly_int, Lz_int, d_int, tot_sub_vol);
-		//import_discretization = fopen(dirPathFileNameDISCRETIZATION, "r");
-		//while (3 == fscanf(import_discretization, "%e %e %e", &shape_filetf[i_import].x, &shape_filetf[i_import].y, &shape_filetf[i_import].z))
-		//{   
-		//	i_import++;
-		//}
-		
+		sprintf(dirPathFileNameDISCRETIZATION, "discretizations/thin-film/%d_thin_films_Lx%dnm_Ly%dnm_Lz%dnm_d%dnm_N%d_discretization.txt",const_N_bulk_objects,  Lx_int, Ly_int, Lz_int, d_int, tot_sub_vol);	
 		populate_subvol_struct(dirPathFileNameDISCRETIZATION, tot_sub_vol, shape_filetf);
 
 		for (int i_subvol=0; i_subvol<tot_sub_vol;i_subvol++) //tot_sub_vol
