@@ -99,7 +99,6 @@ int main()
 	double (*R)[3] = calloc(tot_sub_vol, sizeof(*R)); // center of subvolumes for thermal objects: info imported from a .txt file
 
 	// radial frequency [rad/s]
-	double (*x_omega) = malloc(sizeof *x_omega *const_N_omega); 
 	double (*lambda) = malloc(sizeof *lambda *const_N_omega); 
 	double (*omega) = malloc(sizeof *omega *const_N_omega); 
 
@@ -178,7 +177,7 @@ int main()
 		Ly_int = Ly*pow(10,9); 
 		Lz_int = Lz*pow(10,9); 
 		d_int = d*pow(10,9); 
-		sprintf(dirPathFileNameDISCRETIZATION, "discretizations/%d_thin_films_Lx%dnm_Ly%dnm_Lz%dnm_d%dnm_N%d_discretization.txt",const_N_bulk_objects,  Lx_int, Ly_int, Lz_int, d_int, tot_sub_vol);
+		sprintf(dirPathFileNameDISCRETIZATION, "discretizations/thin-film/%d_thin_films_Lx%dnm_Ly%dnm_Lz%dnm_d%dnm_N%d_discretization.txt",const_N_bulk_objects,  Lx_int, Ly_int, Lz_int, d_int, tot_sub_vol);
 		import_discretization = fopen(dirPathFileNameDISCRETIZATION, "r");
 		while (3 == fscanf(import_discretization, "%e %e %e", &shape_filetf[i_import].x, &shape_filetf[i_import].y, &shape_filetf[i_import].z))
 		{   
@@ -1141,7 +1140,6 @@ int main()
 	     }
 	     */ 
 
-	free(x_omega);
 	free(lambda);
 	free(omega);
 	free(delta_V_vector);
