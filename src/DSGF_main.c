@@ -247,7 +247,7 @@ int main()
 
 	double initial,final;
 	
-	if(strcmp(material,"SiO2")==0) 
+	if(strcmp(material,"SiO2")==0 || strcmp(material,"SiC")==0 || strcmp(material,"u-SiC")==0) 
 	{
 	//Uniform spectrum
 	double initial_lambda = 5.e-6;
@@ -260,38 +260,7 @@ int main()
 		lambda[i_lambda]= initial + i_lambda*step_lambda; // Wavelength [m]
 		omega[i_lambda] = 2.*pi*c_0/lambda[i_lambda];  // Radial frequency [rad/s]
 	}
-	}
-	
-	if(strcmp(material,"SiC")==0) 
-	{
-	//Uniform spectrum: SAME SPECTRUM AS SiO2
-	double initial_lambda = 5.e-6;
-	double final_lambda = 25.e-6;
-	initial = initial_lambda;
-	final = final_lambda;
-	double step_lambda = (final-initial)/(const_N_omega-1); // linspace in C: https://stackoverflow.com/questions/60695284/linearly-spaced-array-in-c
-	for(int i_lambda = 0; i_lambda < const_N_omega; i_lambda++)
-	{
-		lambda[i_lambda]= initial + i_lambda*step_lambda; // Wavelength [m]
-		omega[i_lambda] = 2.*pi*c_0/lambda[i_lambda];  // Radial frequency [rad/s]
-	}
-	}
-	
-	if(strcmp(material,"u-SiC")==0) 
-	{
-	//Uniform spectrum:  SAME SPECTRUM AS SiO2
-	double initial_lambda = 5.e-6;
-	double final_lambda = 25.e-6; 
-	initial = initial_lambda;
-	final = final_lambda;
-	double step_lambda = (final-initial)/(const_N_omega-1); // linspace in C: https://stackoverflow.com/questions/60695284/linearly-spaced-array-in-c
-	for(int i_lambda = 0; i_lambda < const_N_omega; i_lambda++)
-	{
-		lambda[i_lambda]= initial + i_lambda*step_lambda; // Wavelength [m]
-		omega[i_lambda] = 2.*pi*c_0/lambda[i_lambda];  // Radial frequency [rad/s]
-	}
-	}
-	
+	}	
 	
 	else if(strcmp(material,"SiN")==0) //cannot compare strings in C with ==; source: https://ideone.com/BrFA00
 	{
@@ -597,68 +566,7 @@ int main()
 		free(part3ij);
 
 		memset(modulo_r_i_j, 0, sizeof modulo_r_i_j);
-
-/*		
-		//printf("##################### \n EXPORT DATA \n##################### \n");
-		//char text[1024];
-		//mkdir(array[i_omega], 0700);  // Create directory: https://stackoverflow.com/questions/7430248/creating-a-new-directory-in-c
-
-		if(save_A_matrix =='Y'|save_G0_matrix =='Y'|save_SGF_matrix =='Y'){
-			sprintf(matrices_folder, "%s/matrices_folder", results_folder); // How to store words in an array in C? https://www.geeksforgeeks.org/how-to-store-words-in-an-array-in-c/
-			create_folder(matrices_folder);
-
-			// Folder of frequencies
-			sprintf(frequency_folder, "%s/omega_%d", matrices_folder,i_omega+1); // How to store words in an array in C? https://www.geeksforgeeks.org/how-to-store-words-in-an-array-in-c/
-			create_folder(frequency_folder);
-
-
-			//printf("----- Export data -----\n");
-			if(save_A_matrix =='Y'){
-				FILE * Amatrix; // A matrix .csv file
-				char dirPathAFileName[260]; // https://stackoverflow.com/questions/46612504/creating-directories-and-files-using-a-loop-in-c
-				sprintf(dirPathAFileName, "%s/%s", frequency_folder, "A_matrix.csv"); // path where the file is stored
-				Amatrix = fopen(dirPathAFileName,"w");//array[i_omega]"/A_matrix.txt" // EN: https://www.tutorialspoint.com/c_standard_library/c_function_fopen.htm
-				for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
-				{
-					for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
-					{
-						for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //tot_sub_vol
-						{
-							for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions
-							{
-								fprintf(Amatrix,"%e + i %e \t ", creal(A[ig_0][jg_0][i_subG_0][j_subG_0]),cimag(A[ig_0][jg_0][i_subG_0][j_subG_0])); // PS: note that the function is fprintf not printf    
-							}    
-						}
-						fprintf(Amatrix,"\n"); 
-					}        
-				}
-				fclose(Amatrix);
-			}
-			if(save_G0_matrix =='Y'){
-				FILE * G0matrix; // G^0 matrix .csv file
-				char dirPathG0FileName[260];
-				sprintf(dirPathG0FileName, "%s/%s", frequency_folder,"G0_matrix.csv"); // path where the file is stored
-				G0matrix =fopen(dirPathG0FileName,"w"); // PT: https://terminalroot.com.br/2014/12/linguagem-c-utilizando-as-funcoes-fopen.html
-				for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
-				{
-					for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
-					{
-						for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //tot_sub_vol
-						{
-							for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
-							{
-								fprintf(G0matrix,"%e + i %e \t ", creal(G_0[ig_0][jg_0][i_subG_0][j_subG_0]),cimag(G_0[ig_0][jg_0][i_subG_0][j_subG_0]));
-							}    
-						}
-						fprintf(G0matrix,"\n");
-					}        
-				} 
-				fclose(G0matrix); 
-			}  
-
-		} //end if export data 
-*/
-		
+	
 		//printf("##################### \n SOLVE LINEAR SYSTEM AG=G^0 \n##################### \n");
 		//printf("##################### \n LAPACK/LAPACKE ZGELS ROUTINE \n##################### \n");
 		//Description of ZGELS: https://extras.csc.fi/math/nag/mark21/pdf/F08/f08anf.pdf
@@ -866,32 +774,6 @@ int main()
 
 		free(G_0);
 		
-		/*
-		if(save_SGF_matrix =='Y'){   
-			printf("  --------- Export G_sys -----\n");
-
-			FILE * G_sys_matrix; // G matrix .csv file
-			char dirPathG_sys_FileName[260];
-			sprintf(dirPathG_sys_FileName, "%s/%s", frequency_folder,"G_sys_matrix.csv"); // path where the file is stored
-			G_sys_matrix =fopen(dirPathG_sys_FileName,"w"); // PT: https://terminalroot.com.br/2014/12/linguagem-c-utilizando-as-funcoes-fopen.html
-			for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
-			{
-				for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
-				{
-					for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //tot_sub_vol
-					{
-						for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
-						{
-							fprintf(G_sys_matrix,"%e + i %e \t ", creal(G_sys[ig_0][jg_0][i_subG_0][j_subG_0]),cimag(G_sys[ig_0][jg_0][i_subG_0][j_subG_0]));    
-						}    
-					}
-					fprintf(G_sys_matrix,"\n");
-				}        
-			} 
-			fclose(G_sys_matrix); 
-
-		}
-		*/
 		
 		// #################################################################
 		//  Spectral and total conductance between bulk objects at temp. T
@@ -1119,26 +1001,6 @@ int main()
 
 
 	printf("Usage: %ld + %ld = %ld kb\n", baseline, get_mem_usage()-baseline,get_mem_usage());
-
-	/*   // Condition used to compute memory_usage for one frequency.
-	     if ( single_analysis =='y')
-	     {
-	     char memory_folder[100];
-	     sprintf(memory_folder, "memory_usage"); // How to store words in an array in C? https://www.geeksforgeeks.org/how-to-store-words-in-an-array-in-c/
-
-	     if (stat(memory_folder, &st) == -1) // This condition does not allow that new folders with the same name are created 
-	     {
-	     mkdir(memory_folder, 0700); // Create directory for the frequency that is analyzed
-	     }
-
-	     FILE * memory_usage; // 
-	     char dirPathMem_FileName[260];
-	     sprintf(dirPathMem_FileName, "%s/memory_usage_%s.csv",memory_folder,folder_subvol); // path where the file is stored
-	     memory_usage =fopen(dirPathMem_FileName,"w"); 
-	     fprintf(memory_usage,"%ld",get_mem_usage());      
-	     fclose(memory_usage);
-	     }
-	     */ 
 
 	free(lambda);
 	free(omega);
