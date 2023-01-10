@@ -78,14 +78,9 @@ int main()
 
 	size_t tot_sub_vol = const_N_subvolumes_per_object*const_N_bulk_objects; // Assign tot_sub_vol: Computes the total number of subvolumes in the system. tot_sub_vol is defined this way because it must be a non-variable parameter due to the computations perfomed in the code. Previously, it was defined as #define tot_sub_vol const_N_subvolumes_per_object*const_N_bulk_objects
 
-	subvol shape_file[const_N_subvolumes_per_object];
-	subvol shape_filetf[tot_sub_vol];
 
 	// ####################################    
 	// #### Dynamic memory allocation: ####    
-	// Links: https://stackoverflow.com/questions/13534966/how-to-dynamically-allocate-a-contiguous-block-of-memory-for-a-2d-array https://stackoverflow.com/questions/39108092/allocating-contiguous-memory-for-a-3d-array-in-c
-
-
 	double (*R)[3] = calloc(tot_sub_vol, sizeof(*R)); // center of subvolumes for thermal objects: info imported from a .txt file
 
 	// radial frequency [rad/s]
@@ -111,8 +106,6 @@ int main()
 
 
 	// Import data from txt file into C program: https://stackoverflow.com/questions/22745457/import-data-from-txt-file-into-c-program ; https://stackoverflow.com/questions/49563003/importing-data-from-txt-file-into-c-program ; https://www.cs.utah.edu/~germain/PPS/Topics/C_Language/file_IO.html
-	FILE *import_discretization;  // https://stackoverflow.com/questions/22745457/import-data-from-txt-file-into-c-program
-	int i_import = 0;
 
 	char dirPathFileNameDISCRETIZATION[260]; // https://stackoverflow.com/questions/46612504/creating-directories-and-files-using-a-loop-in-c 
 
@@ -126,12 +119,11 @@ int main()
 		delta_V_1 = vol1/const_N_subvolumes_per_object; // defines the subvolumes' volume for sphere 1
 		delta_V_2 = vol2/const_N_subvolumes_per_object; // defines the subvolumes' volume for sphere 2
 
+		subvol shape_file[const_N_subvolumes_per_object];
+
 		sprintf(dirPathFileNameDISCRETIZATION, "discretizations/sphere/sphere_subvol_%d.txt",const_N_subvolumes_per_object); // path where the file is stored
-		import_discretization = fopen(dirPathFileNameDISCRETIZATION, "r");
-		while (3 == fscanf(import_discretization, "%e %e %e", &shape_file[i_import].x, &shape_file[i_import].y, &shape_file[i_import].z))
-		{   
-			i_import++;
-		}
+		populate_subvol_struct(dirPathFileNameDISCRETIZATION, const_N_subvolumes_per_object, shape_file);	
+
 		double origin1[3] = {radius1,radius1,radius1};
 		double origin2[3]= {origin1[0]+radius1+d+radius2,origin1[1]+radius2-radius1,origin1[2]+radius2-radius1};
 		for (int i_subvol=0; i_subvol<tot_sub_vol;i_subvol++) //tot_sub_vol
@@ -152,7 +144,6 @@ int main()
 		}   
 	}   
 
-
 	if(strcmp(geometry,"thin-films")==0)
 	{
 		read_geometry_thin_films(&d, &Lx, &Ly, &Lz, &T1, &T2);
@@ -162,17 +153,22 @@ int main()
 		delta_V_1 = vol1/const_N_subvolumes_per_object; // defines the subvolumes' volume for membrane 1
 		delta_V_2 = vol2/const_N_subvolumes_per_object;  // defines the subvolumes' volume for membrane 1
 
+		subvol shape_filetf[tot_sub_vol];
+	
 		int Lx_int, Ly_int, Lz_int, d_int;
 		Lx_int = Lx*pow(10,9); 
 		Ly_int = Ly*pow(10,9); 
 		Lz_int = Lz*pow(10,9); 
 		d_int = d*pow(10,9); 
 		sprintf(dirPathFileNameDISCRETIZATION, "discretizations/thin-film/%d_thin_films_Lx%dnm_Ly%dnm_Lz%dnm_d%dnm_N%d_discretization.txt",const_N_bulk_objects,  Lx_int, Ly_int, Lz_int, d_int, tot_sub_vol);
-		import_discretization = fopen(dirPathFileNameDISCRETIZATION, "r");
-		while (3 == fscanf(import_discretization, "%e %e %e", &shape_filetf[i_import].x, &shape_filetf[i_import].y, &shape_filetf[i_import].z))
-		{   
-			i_import++;
-		}
+		//import_discretization = fopen(dirPathFileNameDISCRETIZATION, "r");
+		//while (3 == fscanf(import_discretization, "%e %e %e", &shape_filetf[i_import].x, &shape_filetf[i_import].y, &shape_filetf[i_import].z))
+		//{   
+		//	i_import++;
+		//}
+		
+		populate_subvol_struct(dirPathFileNameDISCRETIZATION, tot_sub_vol, shape_filetf);
+
 		for (int i_subvol=0; i_subvol<tot_sub_vol;i_subvol++) //tot_sub_vol
 		{
 			R[i_subvol][0] = shape_filetf[i_subvol].x ;
@@ -180,10 +176,6 @@ int main()
 			R[i_subvol][2] = shape_filetf[i_subvol].z ;
 		} 
 	}
-
-
-
-	fclose(import_discretization);
 
 	printf("d = %e m \n",d);
 
@@ -232,7 +224,6 @@ int main()
 			}
 		}		
 	} // end if save_power_dissipated
-
 
 
 	double initial,final;
