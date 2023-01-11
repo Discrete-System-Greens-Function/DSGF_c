@@ -37,6 +37,10 @@
 
 #include "geometry/sphere.h"
 #include "geometry/thin_film.h"
+#include "material/SiO2.h"
+#include "material/SiC.h"
+#include "material/u_SiC.h"
+#include "material/SiN.h"
 
 // LAPACKE libraries: https://www.netlib.org/lapack/lapacke.html ; https://extras.csc.fi/math/nag/mark21/pdf/F08/f08anf.pdf
 #include <lapacke.h> 
@@ -246,87 +250,22 @@ int main()
 		printf("%d) omega = %e. ", i_omega+1,omega_value);
 
 		if(strcmp(material,"SiO2")==0) //cannot compare strings in C with ==; source: https://ideone.com/BrFA00
-		{ 
-			// Precision of this code is defined on the dielectric function, with 5 digits of precision.
-			// Dielectric function for SiO2
-			// Defined in Czapla and Narayanaswamy, JQSRT, 2019. DOI: https://doi.org/10.1016/j.jqsrt.2019.01.020 
-			double epsilon_inf = 2.03843;
-			double h_bar_omega_0[] = {0.05624, 0.09952, 0.13355};    // [eV]
-			double S[] = {0.93752, 0.05050, 0.60642};                // [-]
-			double Gamma[] = {0.09906, 0.05511,0.05246};
-			double omega_0[3]; 
-			double epsilon_term1[3];
-			double epsilon_term2[3];
-			double complex epsilon_num;
-			double epsilon_denom; 
-			epsilon = epsilon_inf + 0.*I ;
-			for(int i_epsilon = 0; i_epsilon < 3; i_epsilon++)
-			{
-				omega_0[i_epsilon] = h_bar_omega_0[i_epsilon]*q/h_bar;
-				epsilon_term1[i_epsilon] = pow(omega_value/omega_0[i_epsilon],2);
-				epsilon_term2[i_epsilon] = Gamma[i_epsilon]*omega_value/omega_0[i_epsilon];
-				epsilon_num = 0. + 0.*I;
-				epsilon_num = S[i_epsilon]*(1-epsilon_term1[i_epsilon]) + S[i_epsilon]*epsilon_term2[i_epsilon]*I;
-				epsilon_denom=0.;
-				epsilon_denom = pow(1. - epsilon_term1[i_epsilon],2) + pow(epsilon_term2[i_epsilon],2); 
-				epsilon += epsilon_num/epsilon_denom ;  
-			}
+		{
+			epsilon = calculate_epsilon_SiO2(q, omega_value, h_bar);
 		}
 
 		else if(strcmp(material,"SiC")==0) 
 		{  
-			// Dielectric function for SiC -  Lorentz oscillator model:
-			// Defined in Francoeur et al., PRB, 2011. DOI: https://doi.org/10.1103/PhysRevB.84.075436           
-			double epsilon_inf = 6.7;              // [-]
-			double Gamma = 8.966e11; 		//[1/s]  Drude relaxation time
-			double omega_TO = 1.494e14;		//[rad/s]		
-			double omega_LO = 1.825e14;		//[rad/s]
-			epsilon = epsilon_inf*(pow(omega_value,2)-pow(omega_LO,2)+I*Gamma*omega_value)/(pow(omega_value,2)-pow(omega_TO,2)+I*Gamma*omega_value) ; // omega_TO omega_LO Gamma epsilon_inf
+			epsilon = calculate_epsilon_SiC(omega_value);
 		}
 		else if(strcmp(material,"u-SiC")==0) 
 		{  
-			// Dielectric function for u-SiC -  Lorentz oscillator model:
-			// Defined in St-Gelais et al., Nature nanotechnology, 2016. DOI: https://doi.org/10.1038/nnano.2016.20    
-			double to_rad_s = 100*2*pi*c_0;       
-			double epsilon_inf = 8;              // [-]
-			double Gamma = 20*to_rad_s; 		//[1/s]  Drude relaxation time
-			double omega_TO = 789*to_rad_s;		//[rad/s]		
-			double omega_LO = 956*to_rad_s;		//[rad/s]
-			epsilon = epsilon_inf*(pow(omega_value,2)-pow(omega_LO,2)+I*Gamma*omega_value)/(pow(omega_value,2)-pow(omega_TO,2)+I*Gamma*omega_value) ; // omega_TO omega_LO Gamma epsilon_inf
+			epsilon = calculate_epsilon_u_SiC(omega_value, pi, c_0);
 		}
 
 		else if(strcmp(material,"SiN")==0) 
 		{  
-			// Dielectric function for SiN -  Lorentz oscillator model:
-			// Defined in Cataldo et al, Optics letters 2012. DOI: https://doi.org/10.1364/OL.37.004200
-			int M=5;
-			double complex epsilon_j[] = {7.582+ 0*I, 6.754+0.3759*I, 6.601+ 0.0041*I, 5.430+0.1179*I, 4.601+0.2073*I, 4.562 + 0.0124*I};
-			double complex epsilon_inf = epsilon_j[5];
-			double omega_T[] = {13.913, 15.053, 24.521, 26.440, 31.724};
-			double Gamma[] = {5.810, 6.436, 2.751, 3.482, 5.948};
-			double alpha[] = {0.0001, 0.3427, 0.0006, 0.0002, 0.0080};
-			double omega_T_converted, Gamma_converted;
-			double complex delta_epsilon, num_1, denom_1,Gamma_prime,num_2, denom_2;
-
-			double complex summation = 0. + 0.*I;
-			for(int i_epsilon = 0; i_epsilon < M; i_epsilon++)
-			{				
-				omega_T_converted = omega_T[i_epsilon]*(2*pi)*(1.e12);
-				Gamma_converted =Gamma[i_epsilon]*(2*pi)*(1.e12);
-				num_1 = pow(omega_T_converted,2)- pow(omega_value,2);
-				denom_1 = omega_value*Gamma_converted;
-
-				Gamma_prime = Gamma_converted*cexp(-alpha[i_epsilon]*pow(num_1/denom_1,2));
-
-				delta_epsilon = epsilon_j[i_epsilon] - epsilon_j[i_epsilon+1]; 
-
-				num_2 = delta_epsilon*pow(omega_T_converted,2);
-				denom_2 = pow(omega_T_converted,2) - pow(omega_value,2) - omega_value*Gamma_prime*I;
-				summation += num_2/denom_2;
-
-			}
-			epsilon = epsilon_inf + summation;
-
+			epsilon = calculate_epsilon_SiN(omega_value, pi);
 		}
 
 
