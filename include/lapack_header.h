@@ -1,3 +1,6 @@
+#ifndef LAPACK_HEADER_H
+#define LAPACK_HEADER_H
+
 // LAPACK
 //Description of ZGELS: https://extras.csc.fi/math/nag/mark21/pdf/F08/f08anf.pdf
 #define matsize 3*tot_sub_vol // the matrices have 3*tot_sub_vol rows and 3*tot_sub_vol columns
@@ -11,3 +14,5 @@
 int info;
 //double complex Alapack[lda*n], blapack[ldb*nrhs], work[lwork]; // based on example from https://icl.cs.utk.edu/lapack-forum/viewtopic.php?f=2&t=506&p=1692&hilit=zgels#p1692
 
+
+#endif /* LAPACK_HEADER_H */
