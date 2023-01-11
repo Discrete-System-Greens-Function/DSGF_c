@@ -35,6 +35,9 @@
 
 #include "time.h"
 
+#include "geometry/sphere.h"
+#include "geometry/thin_film.h"
+
 // LAPACKE libraries: https://www.netlib.org/lapack/lapacke.html ; https://extras.csc.fi/math/nag/mark21/pdf/F08/f08anf.pdf
 #include <lapacke.h> 
 #include "lapack_header.h" //header with Lapack definitions
@@ -123,22 +126,8 @@ int main()
 
 		double origin1[3] = {radius1,radius1,radius1};
 		double origin2[3]= {origin1[0]+radius1+d+radius2,origin1[1]+radius2-radius1,origin1[2]+radius2-radius1};
-		for (int i_subvol=0; i_subvol<tot_sub_vol;i_subvol++) //tot_sub_vol
-		{
-			if(i_subvol<const_N_subvolumes_per_object)
-			{
-				R[i_subvol][0] = shape_file[i_subvol].x *pow(delta_V_1,1./3) + origin1[0];
-				R[i_subvol][1] = shape_file[i_subvol].y *pow(delta_V_1,1./3) + origin1[1];
-				R[i_subvol][2] = shape_file[i_subvol].z *pow(delta_V_1,1./3) + origin1[2];
-			}
-			else
-			{
-				R[i_subvol][0] = shape_file[i_subvol-const_N_subvolumes_per_object].x* pow(delta_V_2,1./3) + origin2[0]; 
-				R[i_subvol][1] = shape_file[i_subvol-const_N_subvolumes_per_object].y*pow(delta_V_2,1./3) + origin2[1]; 
-				R[i_subvol][2] = shape_file[i_subvol-const_N_subvolumes_per_object].z*pow(delta_V_2,1./3) + origin2[2]; 
-			}
 
-		}   
+		populate_R_sphere(tot_sub_vol, const_N_subvolumes_per_object, origin1, origin2, delta_V_1, delta_V_2, shape_file, R);
 	}   
 
 	if(strcmp(geometry,"thin-films")==0)
@@ -160,12 +149,7 @@ int main()
 		sprintf(dirPathFileNameDISCRETIZATION, "discretizations/thin-film/%d_thin_films_Lx%dnm_Ly%dnm_Lz%dnm_d%dnm_N%d_discretization.txt",const_N_bulk_objects,  Lx_int, Ly_int, Lz_int, d_int, tot_sub_vol);	
 		populate_subvol_struct(dirPathFileNameDISCRETIZATION, tot_sub_vol, shape_filetf);
 
-		for (int i_subvol=0; i_subvol<tot_sub_vol;i_subvol++) //tot_sub_vol
-		{
-			R[i_subvol][0] = shape_filetf[i_subvol].x ;
-			R[i_subvol][1] = shape_filetf[i_subvol].y ;
-			R[i_subvol][2] = shape_filetf[i_subvol].z ;
-		} 
+		populate_R_thin_film(tot_sub_vol, shape_filetf, R);
 	}
 
 	printf("d = %e m \n",d);
