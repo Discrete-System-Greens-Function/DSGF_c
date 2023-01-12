@@ -114,23 +114,7 @@ int main()
 
 	if(strcmp(geometry,"sphere")==0)
 	{
-		read_geometry_sphere(&d, &radius, &T1, &T2);
-		radius1 = radius; // perfect same-sized spheres
-		radius2 = radius; // perfect same-sized spheres
-		vol1 = vol_sphere(radius1, pi); // calls function that calculates the volume for the sphere 1
-		vol2 = vol_sphere(radius2, pi); // calls function that calculates the volume for the sphere 2
-		delta_V_1 = vol1/const_N_subvolumes_per_object; // defines the subvolumes' volume for sphere 1
-		delta_V_2 = vol2/const_N_subvolumes_per_object; // defines the subvolumes' volume for sphere 2
-
-		subvol shape_file[const_N_subvolumes_per_object];
-
-		sprintf(dirPathFileNameDISCRETIZATION, "discretizations/sphere/sphere_subvol_%d.txt",const_N_subvolumes_per_object); // path where the file is stored
-		populate_subvol_struct(dirPathFileNameDISCRETIZATION, const_N_subvolumes_per_object, shape_file);	
-
-		double origin1[3] = {radius1,radius1,radius1};
-		double origin2[3]= {origin1[0]+radius1+d+radius2,origin1[1]+radius2-radius1,origin1[2]+radius2-radius1};
-
-		populate_R_sphere(tot_sub_vol, const_N_subvolumes_per_object, origin1, origin2, delta_V_1, delta_V_2, shape_file, R);
+		set_up_sphere_geometry(pi, tot_sub_vol, const_N_subvolumes_per_object, &T1, &T2, &d, &delta_V_1, &delta_V_2, R);
 	}   
 
 	if(strcmp(geometry,"thin-films")==0)
@@ -778,7 +762,7 @@ int main()
 		memset(sum_trans_coeff, 0, sizeof sum_trans_coeff);
 		memset(Q_omega_subvol, 0, sizeof* Q_omega_subvol* tot_sub_vol); 
 
-	} // END OMEGA VALUE LOOP FOR FREQUENCY RANGE ANALYSIS, loop started in line 481
+	} // END OMEGA VALUE LOOP FOR FREQUENCY RANGE ANALYSIS
 
 	free(R);
 	free(sum_trans_coeff);
