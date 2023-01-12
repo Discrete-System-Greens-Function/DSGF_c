@@ -110,8 +110,6 @@ int main()
 	// ######### Properties for thermal objects ###########
 	printf("Simulation for a total of %d dipoles in %d thermal objects\n",tot_sub_vol,const_N_bulk_objects);
 
-	char dirPathFileNameDISCRETIZATION[260]; // https://stackoverflow.com/questions/46612504/creating-directories-and-files-using-a-loop-in-c 
-
 	if(strcmp(geometry,"sphere")==0)
 	{
 		set_up_sphere_geometry(pi, tot_sub_vol, const_N_subvolumes_per_object, &T1, &T2, &d, &delta_V_1, &delta_V_2, R);
@@ -119,24 +117,7 @@ int main()
 
 	if(strcmp(geometry,"thin-films")==0)
 	{
-		read_geometry_thin_films(&d, &Lx, &Ly, &Lz, &T1, &T2);
-
-		vol1 = Lx*Ly*Lz; // calculates the volume for membrane 1
-		vol2 = vol1;     // defines the volume of membrane 2 = membrane 1
-		delta_V_1 = vol1/const_N_subvolumes_per_object; // defines the subvolumes' volume for membrane 1
-		delta_V_2 = vol2/const_N_subvolumes_per_object;  // defines the subvolumes' volume for membrane 1
-
-		subvol shape_filetf[tot_sub_vol];
-	
-		int Lx_int, Ly_int, Lz_int, d_int;
-		Lx_int = Lx*pow(10,9); 
-		Ly_int = Ly*pow(10,9); 
-		Lz_int = Lz*pow(10,9); 
-		d_int = d*pow(10,9); 
-		sprintf(dirPathFileNameDISCRETIZATION, "discretizations/thin-film/%d_thin_films_Lx%dnm_Ly%dnm_Lz%dnm_d%dnm_N%d_discretization.txt",const_N_bulk_objects,  Lx_int, Ly_int, Lz_int, d_int, tot_sub_vol);	
-		populate_subvol_struct(dirPathFileNameDISCRETIZATION, tot_sub_vol, shape_filetf);
-
-		populate_R_thin_film(tot_sub_vol, shape_filetf, R);
+		set_up_thin_film_geometry(tot_sub_vol, const_N_subvolumes_per_object, const_N_bulk_objects, &T1, &T2, &d, &delta_V_1, &delta_V_2, R);
 	}
 
 	printf("d = %e m \n",d);
