@@ -91,7 +91,6 @@ int main()
 	double (*R)[3] = calloc(tot_sub_vol, sizeof(*R)); // center of subvolumes for thermal objects: info imported from a .txt file
 
 	// radial frequency [rad/s]
-	double (*lambda) = malloc(sizeof *lambda *const_N_omega); 
 	double (*omega) = malloc(sizeof *omega *const_N_omega); 
 
 	double (*delta_V_vector) = malloc(sizeof *delta_V_vector *tot_sub_vol);  //Vector of all subvolume size. Combines delta_V_1 and delta_V_2 in the same array
@@ -212,6 +211,7 @@ int main()
 		//Uniform spectrum
 		initial = 5.e-6;
 		final = 25.e-6;
+		double lambda[const_N_omega];
 		double_linspace(initial, final, const_N_omega, lambda);
 		for(int i_lambda = 0; i_lambda < const_N_omega; i_lambda++)
 		{
@@ -870,7 +870,6 @@ int main()
 
 	printf("Usage: %ld + %ld = %ld kb\n", baseline, get_mem_usage()-baseline,get_mem_usage());
 
-	free(lambda);
 	free(omega);
 	free(delta_V_vector);
 	free(T_vector);
