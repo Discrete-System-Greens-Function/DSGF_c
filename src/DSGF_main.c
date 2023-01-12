@@ -286,7 +286,6 @@ int main()
 		double (*r)[tot_sub_vol][3] = calloc(tot_sub_vol, sizeof(*r));  // Complete discretized lattice [m]
 		double (*abs_r_ij)[tot_sub_vol][3] = calloc(tot_sub_vol, sizeof(*abs_r_ij)); 
 		double (*unit_r_ij)[tot_sub_vol][3] = calloc(tot_sub_vol, sizeof(*unit_r_ij));  
-		double (*transpose)[tot_sub_vol][3] = calloc(tot_sub_vol, sizeof(*transpose));
 		double complex (*unit_conj_r_ij)[tot_sub_vol][3] = calloc(tot_sub_vol, sizeof(*unit_conj_r_ij)); 
 		double complex (*r_i_j_outer_r_i_j)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*r_i_j_outer_r_i_j));  
 
@@ -311,8 +310,8 @@ int main()
 				for (int i_alpha = 0; i_alpha < 3; i_alpha++)
 				{  
 					unit_r_ij[i_i][i_j][i_alpha] = r[i_i][i_j][i_alpha]/modulo_r_i_j[i_i][i_j]; // ˆr -- unit distance 
-					transpose[i_j][i_i][i_alpha] = r[i_i][i_j][i_alpha]/modulo_r_i_j[i_i][i_j]; // https://www.programiz.com/c-programming/examples/matrix-transpose        
-					unit_conj_r_ij[i_i][i_j][i_alpha] = conj(transpose[i_j][i_i][i_alpha]);// r^+ Conjugate transpose unit distance 
+					double transpose = r[i_i][i_j][i_alpha]/modulo_r_i_j[i_i][i_j]; // https://www.programiz.com/c-programming/examples/matrix-transpose        
+					unit_conj_r_ij[i_i][i_j][i_alpha] = conj(transpose);// r^+ Conjugate transpose unit distance 
 				}
 			}
 		}
@@ -435,7 +434,6 @@ int main()
 		free(r);
 		free(abs_r_ij);
 		free(unit_r_ij);
-		free(transpose);
 		free(unit_conj_r_ij);
 		free(r_i_j_outer_r_i_j);
 
