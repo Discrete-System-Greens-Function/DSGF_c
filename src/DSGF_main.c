@@ -450,8 +450,6 @@ int main()
 		free(part2ij);
 		free(part3ij);
 
-		memset(modulo_r_i_j, 0, sizeof modulo_r_i_j);
-
 		//printf("##################### \n SOLVE LINEAR SYSTEM AG=G^0 \n##################### \n");
 		//printf("##################### \n LAPACK/LAPACKE ZGELS ROUTINE \n##################### \n");
 		//Description of ZGELS: https://extras.csc.fi/math/nag/mark21/pdf/F08/f08anf.pdf
