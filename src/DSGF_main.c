@@ -194,6 +194,12 @@ int main()
 	}
 
 
+	//################## FREE-SPACE GREEN'S FUNCTION AND INTERACTION A MATRIX ##################### 
+	// Fill terms for G^0: 
+
+	//Definitions for G^0: 
+	double complex (*r_i_j_outer_r_i_j)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*r_i_j_outer_r_i_j));  
+	setup_G_0_matrices(tot_sub_vol, modulo_r_i_j, r_i_j_outer_r_i_j, R);
 
 	// #################################################################
 	// ################## FREQUENCY RANGE ANALYSIS #####################
@@ -245,13 +251,6 @@ int main()
 		{
 			alpha_0[i_alpha] = delta_V_vector[i_alpha]*(epsilon - epsilon_ref); //Bare polarizability [m^3]
 		}
-
-		//################## FREE-SPACE GREEN'S FUNCTION AND INTERACTION A MATRIX ##################### 
-		// Fill terms for G^0: 
-
-		//Definitions for G^0: 
-		double complex (*r_i_j_outer_r_i_j)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*r_i_j_outer_r_i_j));  
-		setup_G_0_matrices(tot_sub_vol, modulo_r_i_j, r_i_j_outer_r_i_j, R);
 
 		// ################### MATRICES STRUCTURE LOOPS ###########################
 		// 3N X 3N Matrices structure loops for G^0 and A:
@@ -588,7 +587,6 @@ int main()
 		// #############  Clear values for next frequency ##################
 		// #################################################################
 
-		memset(modulo_r_i_j, 0, sizeof *modulo_r_i_j * tot_sub_vol); //modulo_r_i_j
 		memset(G_element, 0, sizeof *G_element * tot_sub_vol); //G_element
 		memset(sum_trans_coeff, 0, sizeof sum_trans_coeff);
 		memset(Q_omega_subvol, 0, sizeof* Q_omega_subvol* tot_sub_vol); 
@@ -598,6 +596,7 @@ int main()
 	free(R);
 	free(sum_trans_coeff);
 	free(modulo_r_i_j);
+	free(r_i_j_outer_r_i_j);
 	free(G_element);
 
 	free(alpha_0);
