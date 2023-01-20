@@ -263,13 +263,6 @@ int main()
 		double complex (*part2iiexp) = malloc(sizeof *part2iiexp *tot_sub_vol); 
 		double complex (*part3ii) = malloc(sizeof *part3ii *tot_sub_vol); 
 
-		//G^0_ij when i!=j:
-		double complex (*part1ij) = malloc(sizeof *part1ij *tot_sub_vol); 
-		double complex (*part1aij) = malloc(sizeof *part1aij *tot_sub_vol);
-		double complex (*part1aijexp) = malloc(sizeof *part1aijexp *tot_sub_vol);
-		double complex (*part2ij) = malloc(sizeof *part2ij *tot_sub_vol); 
-		double complex (*part3ij) = malloc(sizeof *part3ij *tot_sub_vol); 
-
 		// ################### MATRICES STRUCTURE LOOPS ###########################
 		// 3N X 3N Matrices structure loops for G^0 and A:
 		double denom_1, denom_2 ; // used in G^0_ij function
@@ -380,11 +373,6 @@ int main()
 		free(part2ii);
 		free(part2iiexp);
 		free(part3ii);
-		free(part1ij);
-		free(part1aij);
-		free(part1aijexp);
-		free(part2ij);
-		free(part3ij);
 
 		free(eyeG_0);
 		free(r_i_j_outer_r_i_j);
