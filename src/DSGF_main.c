@@ -256,126 +256,12 @@ int main()
 		// ################### MATRICES STRUCTURE LOOPS ###########################
 		// 3N X 3N Matrices structure loops for G^0 and A:
 
-		//G^0_ij when i=j:
-		double (*a_j) = malloc(sizeof *a_j *tot_sub_vol); 
-		double (*part1ii) = malloc(sizeof *part1ii *tot_sub_vol); 
-		double complex (*part2ii) = malloc(sizeof *part2ii *tot_sub_vol);
-		double complex (*part2iiexp) = malloc(sizeof *part2iiexp *tot_sub_vol); 
-		double complex (*part3ii) = malloc(sizeof *part3ii *tot_sub_vol); 
-
-		// ################### MATRICES STRUCTURE LOOPS ###########################
-		// 3N X 3N Matrices structure loops for G^0 and A:
-		double denom_1, denom_2 ; // used in G^0_ij function
-		double complex const_1, const_2, const_3,const_5; // used in G^0 functionl
-		double (*eyeG_0)[3] = calloc(3, sizeof(*eyeG_0)); 
-		double (*eyeA)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*eyeA)); 
-
 		// Linear system AG=G^0 
 		double complex (*G_0)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_0)); 
-		double complex (*A)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*A)); 
+		double complex (*A)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*A));
 
-		// eq. 25 from Lindsay's paper 
-
-		for (int jg_0 = 0; jg_0 < tot_sub_vol-1; jg_0++) //tot_sub_vol
-		{
-			for (int ig_0 = jg_0+1; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
-			{
-				const_1 = cexp(k_0*sqrt(epsilon_ref)*modulo_r_i_j[ig_0][jg_0]*I)/(4.*pi*modulo_r_i_j[ig_0][jg_0]); 
-				denom_1 = epsilon_ref*pow(k_0*modulo_r_i_j[ig_0][jg_0],2);
-				denom_2 = k_0*sqrt(epsilon_ref)*modulo_r_i_j[ig_0][jg_0];
-				//const_2 = (1. - 1./denom_1 + 1.*I/denom_2 ) ;
-				//const_3 = (1. - 3./denom_1 + 3.*I/denom_2) ;
-
-				//split of G_0:
-
-				if (jg_0<=tot_sub_vol/2 && ig_0>tot_sub_vol/2) //subvolumes in different objects
-				{
-					const_2 = (1. - 1./denom_1 + 1.*I/denom_2 ) ; // total 
-					const_3 = (1. - 3./denom_1 + 3.*I/denom_2) ;  // total 
-					//Goal: compute only the propagating wave contribution of DSGF
-					//const_2 = (1. ) ; //propagating only
-					//const_3 = (1. ) ; //propagating only
-					//Goal: compute only the evanescent wave contribution of DSGF
-					//const_2 = (- 1./denom_1 + 1.*I/denom_2 ) ; //evanescent only
-					//const_3 = (- 3./denom_1 + 3.*I/denom_2) ; //evanescent only
-				}
-				else 
-				{
-					const_2 = (1. - 1./denom_1 + 1.*I/denom_2 ) ;
-					const_3 = (1. - 3./denom_1 + 3.*I/denom_2) ; 
-				}
-
-
-				for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
-				{
-					for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions
-					{
-						if (i_subG_0 == j_subG_0)
-						{
-							eyeG_0[i_subG_0][j_subG_0] = 1.;    // 3x3 Identity matrix for G^0:
-							eyeA[ig_0][jg_0][i_subG_0][j_subG_0] = 0.; // 3Nx3N identity matrix for A:
-
-						}
-						else
-						{
-							eyeG_0[i_subG_0][j_subG_0] = 0.;     // 3x3 Identity matrix for G^0:
-							eyeA[ig_0][jg_0][i_subG_0][j_subG_0] = 0.; // 3Nx3N identity matrix for A: 
-						}
-						G_0[ig_0][jg_0][i_subG_0][j_subG_0] = const_1*((const_2*eyeG_0[i_subG_0][j_subG_0])-(const_3*r_i_j_outer_r_i_j[ig_0][jg_0][i_subG_0][j_subG_0]));  
-						G_0[jg_0][ig_0][i_subG_0][j_subG_0] = G_0[ig_0][jg_0][i_subG_0][j_subG_0];
-						A[ig_0][jg_0][i_subG_0][j_subG_0] = eyeA[ig_0][jg_0][i_subG_0][j_subG_0] - pow(k_0,2)*alpha_0[ig_0]*G_0[ig_0][jg_0][i_subG_0][j_subG_0]; 
-						A[jg_0][ig_0][i_subG_0][j_subG_0] =A[ig_0][jg_0][i_subG_0][j_subG_0];
-					}    
-				}
-			}    
-		} //end j_subG_0
-		// eq. 26 from Lindsay's paper: 
-
-
-		for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
-		{
-			a_j[ig_0] = a_j_function(delta_V_vector[ig_0], pi);
-			part1ii[ig_0] = 1./(3.*delta_V_vector[ig_0]*epsilon_ref*pow(k_0,2));
-			part2ii[ig_0] = a_j[ig_0]*k_0*sqrt(epsilon_ref)*I; // com i term 
-			part2iiexp[ig_0] = cexp(0. + a_j[ig_0]*k_0*sqrt(epsilon_ref)*I); 
-			// part3ii is inside brackets
-			part3ii[ig_0] = part2iiexp[ig_0]*(1-part2ii[ig_0]) - 1. ;
-			for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
-			{
-				for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //tot_sub_vol
-				{ 
-					if (ig_0==jg_0) // if i=j:
-					{
-						for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions
-						{
-							if (i_subG_0 == j_subG_0)
-							{
-								eyeG_0[i_subG_0][j_subG_0] = 1.;     // 3x3 Identity matrix for G^0:
-								eyeA[ig_0][jg_0][i_subG_0][j_subG_0] = 1.; // 3Nx3N identity matrix for A:
-							}
-							else
-							{
-								eyeG_0[i_subG_0][j_subG_0] = 0.;     // 3x3 Identity matrix for G^0:
-								eyeA[ig_0][jg_0][i_subG_0][j_subG_0] = 0.; // 3Nx3N identity matrix for A:
-							}
-							G_0[ig_0][jg_0][i_subG_0][j_subG_0] = eyeG_0[i_subG_0][j_subG_0]*part1ii[ig_0]*(2.*part3ii[ig_0]-1.); 
-							A[ig_0][jg_0][i_subG_0][j_subG_0] = eyeA[ig_0][jg_0][i_subG_0][j_subG_0] - pow(k_0,2)*alpha_0[ig_0]*G_0[ig_0][jg_0][i_subG_0][j_subG_0]; 
-						}
-					} 
-				}   //end jg_0   
-			} //end i_subG_0     
-		} //end ig_0 
-
-
-
-		free(a_j);
-		free(part1ii);
-		free(part2ii);
-		free(part2iiexp);
-		free(part3ii);
-
-		free(eyeG_0);
-		free(r_i_j_outer_r_i_j);
+		get_G0_A_matrices(tot_sub_vol, G_0, A, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, alpha_0, delta_V_vector);
+	
 		//printf("##################### \n SOLVE LINEAR SYSTEM AG=G^0 \n##################### \n");
 		//printf("##################### \n LAPACK/LAPACKE ZGELS ROUTINE \n##################### \n");
 		//Description of ZGELS: https://extras.csc.fi/math/nag/mark21/pdf/F08/f08anf.pdf
