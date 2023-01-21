@@ -42,6 +42,7 @@
 #include "material/u_SiC.h"
 #include "material/SiN.h"
 #include "computational/GreensFunction.h"
+#include "computational/solvers/direct_solver.h"
 
 // LAPACKE libraries: https://www.netlib.org/lapack/lapacke.html ; https://extras.csc.fi/math/nag/mark21/pdf/F08/f08anf.pdf
 #include <lapacke.h> 
@@ -273,10 +274,10 @@ int main()
 		if(solution =='D')
 		{
 			printf("Direct inversion status: ");
-			double complex (*A_direct) = malloc(sizeof *A_direct *lda*n); 
-			double complex (*b_direct) = malloc(sizeof *b_direct *ldb*nrhs);
+			double complex A_direct[3*3*tot_sub_vol*tot_sub_vol];
+			double complex b_direct[3*3*tot_sub_vol*tot_sub_vol];
 
-			int ipack=0; 
+/*			int ipack=0; 
 			for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 			{
 				for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
@@ -292,11 +293,11 @@ int main()
 					}
 				}        
 			}   
-
+*/
+			A_b_direct_populator(tot_sub_vol, A, G_0, A_direct, b_direct);
 			int gpack=0;
 			// F08ANF (ZGELS) solves linear least-squares problems using a QR or LQ factorization of A
-			info = LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',m,n,nrhs,A_direct,lda,b_direct,ldb); 
-			free(A_direct); 
+			info = LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',3*tot_sub_vol,3*tot_sub_vol,3*tot_sub_vol,A_direct,3*tot_sub_vol,b_direct,3*tot_sub_vol); 
 
 			for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 			{
@@ -314,8 +315,6 @@ int main()
 					}
 				}        
 			} 
-
-			free(b_direct); 
 			printf("concluded\n");
 		}
 		free(A);
