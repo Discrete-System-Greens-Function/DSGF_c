@@ -274,47 +274,19 @@ int main()
 		if(solution =='D')
 		{
 			printf("Direct inversion status: ");
+/*
 			double complex A_direct[3*3*tot_sub_vol*tot_sub_vol];
 			double complex b_direct[3*3*tot_sub_vol*tot_sub_vol];
-
-/*			int ipack=0; 
-			for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
-			{
-				for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
-				{
-					for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //tot_sub_vol
-					{
-						for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
-						{
-							A_direct[ipack] = A[ig_0][jg_0][i_subG_0][j_subG_0];
-							b_direct[ipack]= G_0[ig_0][jg_0][i_subG_0][j_subG_0];
-							ipack = ipack + 1;
-						}    
-					}
-				}        
-			}   
-*/
+			
 			A_b_direct_populator(tot_sub_vol, A, G_0, A_direct, b_direct);
-			int gpack=0;
+			
+
 			// F08ANF (ZGELS) solves linear least-squares problems using a QR or LQ factorization of A
 			info = LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',3*tot_sub_vol,3*tot_sub_vol,3*tot_sub_vol,A_direct,3*tot_sub_vol,b_direct,3*tot_sub_vol); 
-
-			for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
-			{
-				for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
-				{
-					ig_0_2d = (3*ig_0 + i_subG_0);
-					for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //tot_sub_vol
-					{
-						for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
-						{
-							jg_0_2d = (3*jg_0 + j_subG_0);
-							G_sys[ig_0_2d][jg_0_2d] = b_direct[gpack];
-							gpack += 1;
-						}    
-					}
-				}        
-			} 
+			
+			populate_G_sys(tot_sub_vol, b_direct, G_sys);
+*/
+			direct_solver(tot_sub_vol, A, G_0, G_sys);
 			printf("concluded\n");
 		}
 		free(A);
