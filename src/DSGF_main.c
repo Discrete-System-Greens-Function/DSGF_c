@@ -30,7 +30,7 @@
 #include "user_inputs.h" // User inputs definitions header. No values are defined in this file.  
 #include "functions_DSGF.h" // Definitions of functions used in DSGF
 #include "file_utils.h" // header with definitions of read_user_inputs and read_calculation_temperatures functions
-#include "iterative_solver.h"
+#include "computational/solvers/iterative_solver.h"
 #include "array_functions.h"
 
 #include "time.h"

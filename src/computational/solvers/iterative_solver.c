@@ -1,4 +1,4 @@
-#include "iterative_solver.h"
+#include "computational/solvers/iterative_solver.h"
 
 void matrix_reshape(int inner_size, int outer_size, double complex matrix_2d_1[][3*outer_size], double complex matrix_4d_1[outer_size][outer_size][inner_size][inner_size]){
 
