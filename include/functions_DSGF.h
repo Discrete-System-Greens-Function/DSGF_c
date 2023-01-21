@@ -14,11 +14,6 @@
 #include <sys/stat.h>
 // ########## dsgf_functions.h ##########
 
-
-// Constants: 
-
-double complex epsilon;  // Definition of dielectric function
-
 // Function for wave vector in free space calculation:
 double k_0_function(double omega, double epsilon_0, double mu_0);
 
@@ -48,29 +43,7 @@ double  dtheta_dT_function(double omega,double T_calc, double h_bar, double k_b)
 // How to measure memory usage inside my program? (getrusage): https://youtu.be/Os5cK0H8EOA
 long get_mem_usage();
 
-// Geometry parameters' definitions
-double radius1; 
-double radius2; 
-double vol1;
-double vol2;
-double delta_V_1; 
-double delta_V_2;
-
-// Frequency parameters' definitions
-int N_range;
-int omega_range;
-double omega_value; 
-
-int bulk; //Indice used to thermal power dissipated 
-
-double denom1, denom2 ; // used in G^0_ij function
-
-double complex epsilon_s; // Scattering dielectric function used in iterative solver
-int ipack, gpack; //lapacke counters
 int ig_0_2d,jg_0_2d,mm_2d,mm_2d_n, mm_sub, mm_sub_n; // Set indices used in "iterative" solution
-double complex G_sys_prod; // Matricial product in iterative solver
-
-double trapz; // Definition for trapezoidal integration. Used in total conductance
 
 // Code's output files definitions
 char matrices_folder[100];

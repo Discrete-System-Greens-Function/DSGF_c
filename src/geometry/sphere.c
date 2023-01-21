@@ -27,10 +27,10 @@ void set_up_sphere_geometry(double pi, int tot_sub_vol, int subvol_per_object, d
 	double radius;
 
 	read_geometry_sphere(d, &radius, T1, T2);
-	radius1 = radius; // perfect same-sized spheres
-	radius2 = radius; // perfect same-sized spheres
-	vol1 = vol_sphere(radius1, pi); // calls function that calculates the volume for the sphere 1
-	vol2 = vol_sphere(radius2, pi); // calls function that calculates the volume for the sphere 2
+	double radius1 = radius; // perfect same-sized spheres
+	double radius2 = radius; // perfect same-sized spheres
+	double vol1 = vol_sphere(radius1, pi); // calls function that calculates the volume for the sphere 1
+	double vol2 = vol_sphere(radius2, pi); // calls function that calculates the volume for the sphere 2
 	*delta_V_1 = vol1/subvol_per_object; // defines the subvolumes' volume for sphere 1
 	*delta_V_2 = vol2/subvol_per_object; // defines the subvolumes' volume for sphere 2
 

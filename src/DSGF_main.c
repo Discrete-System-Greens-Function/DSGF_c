@@ -110,7 +110,8 @@ int main()
 
 	// ######### Properties for thermal objects ###########
 	printf("Simulation for a total of %d dipoles in %d thermal objects\n",tot_sub_vol,const_N_bulk_objects);
-
+	
+	double delta_V_1, delta_V_2;
 	if(strcmp(geometry,"sphere")==0)
 	{
 		set_up_sphere_geometry(pi, tot_sub_vol, const_N_subvolumes_per_object, &T1, &T2, &d, &delta_V_1, &delta_V_2, R);
@@ -206,7 +207,8 @@ int main()
 	// #################################################################
 	//Loop to analyze a range of desired frequencies
 	printf("----- Spectrum range calculation -----\n");
-
+	
+	double omega_range;
 	if(single_spectrum_analysis =='Y') omega_range=1;
 	if(single_spectrum_analysis =='N') omega_range=const_N_omega;
 
@@ -220,9 +222,10 @@ int main()
 		}
 
 
-		omega_value = omega[i_omega]; // omega definition is on line 212
+		double omega_value = omega[i_omega]; // omega definition is on line 212
 		printf("%d) omega = %e. ", i_omega+1,omega_value);
-
+		
+		double complex epsilon;
 		if(strcmp(material,"SiO2")==0) //cannot compare strings in C with ==; source: https://ideone.com/BrFA00
 		{
 			epsilon = calculate_epsilon_SiO2(q, omega_value, h_bar);
@@ -273,7 +276,7 @@ int main()
 			double complex (*A_direct) = malloc(sizeof *A_direct *lda*n); 
 			double complex (*b_direct) = malloc(sizeof *b_direct *ldb*nrhs);
 
-			ipack=0; 
+			int ipack=0; 
 			for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 			{
 				for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
@@ -290,7 +293,7 @@ int main()
 				}        
 			}   
 
-			gpack=0;
+			int gpack=0;
 			// F08ANF (ZGELS) solves linear least-squares problems using a QR or LQ factorization of A
 			info = LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',m,n,nrhs,A_direct,lda,b_direct,ldb); 
 			free(A_direct); 
@@ -306,7 +309,7 @@ int main()
 						{
 							jg_0_2d = (3*jg_0 + j_subG_0);
 							G_sys[ig_0_2d][jg_0_2d] = b_direct[gpack];
-							gpack=gpack + 1;
+							gpack += 1;
 						}    
 					}
 				}        
@@ -350,7 +353,7 @@ int main()
 				printf("%d - ",mm+1);
 				mm_2d =0;
 
-				epsilon_s = (epsilon - epsilon_ref); // Scattering dielectric function
+				double complex epsilon_s = (epsilon - epsilon_ref); // Scattering dielectric function
 
 				A2d_solver(epsilon_s, mm, tot_sub_vol, eye_iter, delta_V_vector[mm], G_sys_old, A_2d, k);	
 				/*
@@ -377,7 +380,7 @@ int main()
 
 					// %%%%%%%%%%% G_new using Linear inversion using LAPACK %%%%%%%%%%%%%%%%%
 					info = LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',3,3,3,A_iterative,3,b_iterative,3); 
-					gpack=0;     	
+					int gpack=0;     	
 
 					for (int mm_sub = 0; mm_sub < 3; mm_sub++) // 3D coordinate positions
 					{
@@ -388,7 +391,7 @@ int main()
 
 							G_sys_new[mm_2d][jg_0_2d] = b_iterative[gpack]; // stores G^1_11
 
-							gpack=gpack + 1;
+							gpack += 1;
 						}  
 					}
 					// %%%%%%%%%%% End G_new using linear inversion using LAPACK %%%%%%%%%%%%%%%%%
@@ -435,7 +438,7 @@ int main()
 								for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
 								{
 									jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
-									G_sys_prod = 0.;
+									double complex G_sys_prod = 0.;
 									for(int m_sub = 0;  m_sub < 3;  m_sub++)//loop for matricial multiplication
 									{
 										mm_2d = (3*mm + m_sub);
@@ -527,12 +530,12 @@ int main()
 
 			if(ig_0 < const_N_subvolumes_per_object)// Thermal power dissipated was not verified yet!!!!
 			{
-				bulk=0;
+				int bulk=0;
 				Q_omega_thermal_object[bulk][i_omega] += Q_omega_subvol[ig_0];
 			}
 			else if(const_N_subvolumes_per_object<=ig_0<tot_sub_vol)
 			{
-				bulk=1;
+				int bulk=1;
 				Q_omega_thermal_object[bulk][i_omega] += Q_omega_subvol[ig_0];
 			} 
 
@@ -605,7 +608,7 @@ int main()
 	double(*Q_tot_thermal_object) = malloc(sizeof * Q_tot_thermal_object * const_N_bulk_objects); 
 	double (*trapz_Q) = malloc(sizeof *trapz_Q *tot_sub_vol); // Definition for trapezoidal integration. Used in total power dissipated
 
-	trapz=0.;
+	double trapz=0.;
 	if( const_N_omega > 1)
 	{
 		printf("\nEnd of frequency loop\n");

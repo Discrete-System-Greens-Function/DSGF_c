@@ -18,18 +18,18 @@ void set_up_thin_film_geometry(int tot_sub_vol, int subvol_per_object, int N_bul
 	double Lx, Ly, Lz;
 	read_geometry_thin_films(d, &Lx, &Ly, &Lz, T1, T2);
 
-	vol1 = Lx*Ly*Lz; // calculates the volume for membrane 1
-	vol2 = vol1;     // defines the volume of membrane 2 = membrane 1
+	double vol1 = Lx*Ly*Lz; // calculates the volume for membrane 1
+	double vol2 = vol1;     // defines the volume of membrane 2 = membrane 1
 	*delta_V_1 = vol1/subvol_per_object; // defines the subvolumes' volume for membrane 1
 	*delta_V_2 = vol2/subvol_per_object;  // defines the subvolumes' volume for membrane 1
 
 	subvol shape_filetf[tot_sub_vol];
 
-	int Lx_int, Ly_int, Lz_int, d_int;
-	Lx_int = Lx*pow(10,9); 
-	Ly_int = Ly*pow(10,9); 
-	Lz_int = Lz*pow(10,9); 
-	d_int = (*d)*pow(10,9);
+	
+	int Lx_int = Lx*pow(10,9); 
+	int Ly_int = Ly*pow(10,9); 
+	int Lz_int = Lz*pow(10,9); 
+	int d_int = (*d)*pow(10,9);
 
 	char filename[256];
 

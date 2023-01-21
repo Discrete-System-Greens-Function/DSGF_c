@@ -2,8 +2,6 @@
 
 void matrix_reshape(int inner_size, int outer_size, double complex matrix_2d_1[][3*outer_size], double complex matrix_4d_1[outer_size][outer_size][inner_size][inner_size]){
 
-	//index_map *indexing_map = init_index_map();
-
 	for (int major_row = 0; major_row < outer_size; major_row++)
 	{
 		for (int major_y = 0; major_y < outer_size; major_y++)
@@ -14,7 +12,6 @@ void matrix_reshape(int inner_size, int outer_size, double complex matrix_2d_1[]
 				{
 					int new_x = 3*major_row + minor_x;
 					int new_y = 3*major_y + minor_y;
-					//four_d_two_d_mapping(indexing_map, 3, major_row, minor_x, major_y, minor_y);
 					matrix_2d_1[new_x][new_y]=matrix_4d_1[major_row][major_y][minor_x][minor_y]; 
 				}
 			}
@@ -50,7 +47,6 @@ void A_b_iterative_populator(int tot_sub_vol, double complex *A_iterative, doubl
 			ipack = ipack + 1;
 		}    
 	}
-
 }
 
 
