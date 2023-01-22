@@ -283,57 +283,8 @@ int main()
 		if(solution =='I')
 		{ 
 			printf("Iterative status:\n m= ");
-
-			double complex G_sys_old[3*tot_sub_vol][3*tot_sub_vol];
-			double complex G_sys_new[3*tot_sub_vol][3*tot_sub_vol];
-			double complex A_2d[3][3];
-			double complex A_iterative[3*3];
-			double complex b_iterative[3*3];
-
-			double eye_iter[3][3] = {{1., 0., 0.}, {0., 1., 0.}, {0., 0., 1.}}; // 3-by-3 unit matrix used in iterative solver
-
-			// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-			// Calculate background medium Green's function 
-			// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%     
-
-			// this reshapes 2 4D matrices to 2 2D matrices
-			// G0 and eyeA are 4D
-			// G_sys_old and eyeA_2d are the respective 2D matrices
-			matrix_reshape(3, tot_sub_vol, G_sys_old, G_0);
-
-
-			// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-			// Calculate system Green's function 
-			// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-			// First, solve ii = mm system of equations.
-			for (int mm = 0; mm < tot_sub_vol; mm++) //tot_sub_vol
-			{
-				printf("%d - ",mm+1);
-				mm_2d =0;
-
-				double complex epsilon_s = (epsilon - epsilon_ref); // Scattering dielectric function
-
-				A2d_solver(epsilon_s, mm, tot_sub_vol, eye_iter, delta_V_vector[mm], G_sys_old, A_2d, k);	
-				for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) // Only loop through remaining perturbations
-				{
-					A_b_iterative_populator(tot_sub_vol, A_iterative, b_iterative, A_2d, G_sys_old, mm, jg_0);
-
-					// %%%%%%%%%%% G_new using Linear inversion using LAPACK %%%%%%%%%%%%%%%%%
-					int info = LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',3,3,3,A_iterative,3,b_iterative,3);
-					G_sys_new_populator(tot_sub_vol, mm, jg_0, G_sys_new, b_iterative);
-
-				} // end jg_0					
-
-				offdiagonal_solver(tot_sub_vol, mm, k, alpha_0, G_sys_old, G_sys_new);
-				memcpy(G_sys_old,G_sys_new,3*tot_sub_vol*3*tot_sub_vol*sizeof(double complex)); // Update G_old = G_new for next iteration.
-
-
-			}//end mm loop 
-
+			iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_0, G_sys);
 			printf("Final solution:\n");
-			memcpy(G_sys,G_sys_new,3*tot_sub_vol*3*tot_sub_vol*sizeof(double complex)); //Populate G_sys with G_new 
-
 		}
 
 		free(G_0);

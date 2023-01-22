@@ -1,9 +1,9 @@
-geometry = thin-films
-number_subvolumes_per_object = 40 
+geometry = sphere
+number_subvolumes_per_object = 8 
 number_bulk_objects = 2
-material = SiN
+material = u-SiC
 number_omega = 100
-solution = D 
+solution = I 
 single_spectrum_analysis = N 
 save_spectral_conductance = Y
 save_spectral_transmissivity = Y
