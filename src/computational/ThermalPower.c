@@ -3,11 +3,13 @@
 #include <math.h>
 #include "functions_DSGF.h"
 
-void spectral_total_conductance_thermal_power(int tot_sub_vol, int i_omega, double k_0, double h_bar, double k_b, double complex epsilon, double omega_value, double T_vector[],double delta_V_vector[], double const_N_subvolumes_per_object, double pi,double complex G_sys[3*tot_sub_vol][3*tot_sub_vol]){
+void spectral_total_conductance_thermal_power(int tot_sub_vol, int i_omega, int const_N_omega, double k_0, double h_bar, double k_b, double complex epsilon, double omega_value, double T_vector[],double delta_V_vector[], double const_N_subvolumes_per_object, double pi,double complex G_sys[3*tot_sub_vol][3*tot_sub_vol], double sum_trans_coeff[], double Q_subvol[tot_sub_vol][const_N_omega]){
+
 
 
 	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 	{
+		double complex Q_omega_subvol = 0;
 		for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //tot_sub_vol
 		{
 			double complex G_element = 0;
@@ -43,21 +45,9 @@ void spectral_total_conductance_thermal_power(int tot_sub_vol, int i_omega, doub
 				sum_trans_coeff[i_omega] += trans_coeff;
 			} 
 
-			Q_omega_subvol[ig_0] += (1 / (2 * pi)) * inner_sum; // calculates the thermal power dissipated per subvolume
+			Q_omega_subvol += (1 / (2 * pi)) * inner_sum; // calculates the thermal power dissipated per subvolume
 
 		} 
-		Q_subvol[ig_0][i_omega] = Q_omega_subvol[ig_0];
-
-		if(ig_0 < const_N_subvolumes_per_object)// Thermal power dissipated was not verified yet!!!!
-		{
-			int bulk=0;
-			Q_omega_thermal_object[bulk][i_omega] += Q_omega_subvol[ig_0];
-		}
-		else if(const_N_subvolumes_per_object<=ig_0<tot_sub_vol)
-		{
-			int bulk=1;
-			Q_omega_thermal_object[bulk][i_omega] += Q_omega_subvol[ig_0];
-		} 
-
+		Q_subvol[ig_0][i_omega] = Q_omega_subvol;
 	}       
 }
