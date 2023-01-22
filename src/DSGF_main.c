@@ -301,7 +301,6 @@ int main()
 		double complex (*transpose_G_sys)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*transpose_G_sys)); 
 		double(*inner_sum) = malloc(sizeof * inner_sum * tot_sub_vol);
 
-		int counter = 0;
 		sum_trans_coeff[i_omega] = 0.;    
 
 		for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
@@ -310,10 +309,10 @@ int main()
 			{
 				for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
 				{
-					ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
+					int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
 					for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
 					{
-						jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
+						int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
 						// Extract one Green's function component: G_sys[ig_0][jg_0][i_subG_0]
 						transpose_G_sys[jg_0][ig_0][i_subG_0][j_subG_0] = G_sys[ig_0_2d][jg_0_2d];
 						G_sys_cross[ig_0][jg_0][i_subG_0][j_subG_0]= conj(transpose_G_sys[jg_0][ig_0][i_subG_0][j_subG_0]);
@@ -337,7 +336,6 @@ int main()
 				if(ig_0 < const_N_subvolumes_per_object && jg_0 >= const_N_subvolumes_per_object)// bulk 1 -> 2
 				{
 					sum_trans_coeff[i_omega] += trans_coeff[ig_0][jg_0];
-					counter+=1;
 				} 
 
 				Q_omega_subvol[ig_0] += (1 / (2 * pi)) * inner_sum[jg_0]; // calculates the thermal power dissipated per subvolume

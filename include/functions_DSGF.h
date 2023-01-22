@@ -43,8 +43,6 @@ double  dtheta_dT_function(double omega,double T_calc, double h_bar, double k_b)
 // How to measure memory usage inside my program? (getrusage): https://youtu.be/Os5cK0H8EOA
 long get_mem_usage();
 
-int ig_0_2d,jg_0_2d,mm_2d,mm_2d_n, mm_sub, mm_sub_n; // Set indices used in "iterative" solution
-
 // Code's output files definitions
 char matrices_folder[100];
 char frequency_folder[100];
