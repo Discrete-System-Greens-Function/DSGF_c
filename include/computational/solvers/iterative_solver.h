@@ -11,4 +11,8 @@ void A2d_solver(double complex epsilon, int mm, int tot_sub_vol, double eyeA_2d[
 
 void A_b_iterative_populator(int tot_sub_vol ,double complex *A_iterative, double complex *b_iterative, double complex A_2d[3][3], double complex G_sys_old[3*tot_sub_vol][3*tot_sub_vol], int mm, int jg_0);
 
+void G_sys_new_populator(int tot_sub_vol, int mm, int jg_0, double complex G_sys_new[3*tot_sub_vol][3*tot_sub_vol], double complex b_iterative[]);
+
+void offdiagonal_solver(int tot_sub_vol, int mm, double k, double complex alpha_0[], double complex G_sys_old[3*tot_sub_vol][3*tot_sub_vol], double complex G_sys_new[3*tot_sub_vol][3*tot_sub_vol]);
+
 #endif

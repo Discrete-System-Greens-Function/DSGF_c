@@ -111,7 +111,7 @@ int main()
 
 	// ######### Properties for thermal objects ###########
 	printf("Simulation for a total of %d dipoles in %d thermal objects\n",tot_sub_vol,const_N_bulk_objects);
-	
+
 	double delta_V_1, delta_V_2;
 	if(strcmp(geometry,"sphere")==0)
 	{
@@ -208,7 +208,7 @@ int main()
 	// #################################################################
 	//Loop to analyze a range of desired frequencies
 	printf("----- Spectrum range calculation -----\n");
-	
+
 	double omega_range;
 	if(single_spectrum_analysis =='Y') omega_range=1;
 	if(single_spectrum_analysis =='N') omega_range=const_N_omega;
@@ -225,7 +225,7 @@ int main()
 
 		double omega_value = omega[i_omega]; // omega definition is on line 212
 		printf("%d) omega = %e. ", i_omega+1,omega_value);
-		
+
 		double complex epsilon;
 		if(strcmp(material,"SiO2")==0) //cannot compare strings in C with ==; source: https://ideone.com/BrFA00
 		{
@@ -264,7 +264,7 @@ int main()
 		double complex (*A)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*A));
 
 		get_G0_A_matrices(tot_sub_vol, G_0, A, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, alpha_0, delta_V_vector);
-	
+
 		//printf("##################### \n SOLVE LINEAR SYSTEM AG=G^0 \n##################### \n");
 		//printf("##################### \n LAPACK/LAPACKE ZGELS ROUTINE \n##################### \n");
 		//Description of ZGELS: https://extras.csc.fi/math/nag/mark21/pdf/F08/f08anf.pdf
@@ -274,18 +274,6 @@ int main()
 		if(solution =='D')
 		{
 			printf("Direct inversion status: ");
-/*
-			double complex A_direct[3*3*tot_sub_vol*tot_sub_vol];
-			double complex b_direct[3*3*tot_sub_vol*tot_sub_vol];
-			
-			A_b_direct_populator(tot_sub_vol, A, G_0, A_direct, b_direct);
-			
-
-			// F08ANF (ZGELS) solves linear least-squares problems using a QR or LQ factorization of A
-			info = LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',3*tot_sub_vol,3*tot_sub_vol,3*tot_sub_vol,A_direct,3*tot_sub_vol,b_direct,3*tot_sub_vol); 
-			
-			populate_G_sys(tot_sub_vol, b_direct, G_sys);
-*/
 			direct_solver(tot_sub_vol, A, G_0, G_sys);
 			printf("concluded\n");
 		}
@@ -296,11 +284,11 @@ int main()
 		{ 
 			printf("Iterative status:\n m= ");
 
-			double complex (*G_sys_old)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys_old)); 
-			double complex (*G_sys_new)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys_old)); 
-			double complex (*A_2d)[3] = calloc(3, sizeof(*A_2d)); // Amm
-			double complex (*A_iterative) = malloc(sizeof *A_iterative *3*3); // direct inversion when i=m;
-			double complex (*b_iterative) = malloc(sizeof *b_iterative *3*3); //direct inversion when i=m;
+			double complex G_sys_old[3*tot_sub_vol][3*tot_sub_vol];
+			double complex G_sys_new[3*tot_sub_vol][3*tot_sub_vol];
+			double complex A_2d[3][3];
+			double complex A_iterative[3*3];
+			double complex b_iterative[3*3];
 
 			double eye_iter[3][3] = {{1., 0., 0.}, {0., 1., 0.}, {0., 0., 1.}}; // 3-by-3 unit matrix used in iterative solver
 
@@ -327,117 +315,24 @@ int main()
 				double complex epsilon_s = (epsilon - epsilon_ref); // Scattering dielectric function
 
 				A2d_solver(epsilon_s, mm, tot_sub_vol, eye_iter, delta_V_vector[mm], G_sys_old, A_2d, k);	
-				/*
-				// %%%%%%%%%%%%%%%%%% Manual inversion of Amm %%%%%%%%%%%%%%%%%%%% 
-				det =  (Amm[0][0] * (Amm[1][1] * Amm[2][2] - Amm[2][1] * Amm[1][2])) - (Amm[0][1] * (Amm[1][0] * Amm[2][2] - Amm[1][2] * Amm[2][0])) + (Amm[0][2] * (Amm[1][0] * Amm[2][1] - Amm[1][1] * Amm[2][0]));
-
-				// computes the inverse of Amm
-				Amm_inv[0][0] = (Amm[1][1] * Amm[2][2] - Amm[2][1] * Amm[1][2]) / det;
-				Amm_inv[0][1] = (Amm[0][2] * Amm[2][1] - Amm[0][1] * Amm[2][2]) / det;
-				Amm_inv[0][2] = (Amm[0][1] * Amm[1][2] - Amm[0][2] * Amm[1][1]) / det;
-				Amm_inv[1][0] = (Amm[1][2] * Amm[2][0] - Amm[1][0] * Amm[2][2]) / det;
-				Amm_inv[1][1] = (Amm[0][0] * Amm[2][2] - Amm[0][2] * Amm[2][0]) / det;
-				Amm_inv[1][2] = (Amm[1][0] * Amm[0][2] - Amm[0][0] * Amm[1][2]) / det;
-				Amm_inv[2][0] = (Amm[1][0] * Amm[2][1] - Amm[2][0] * Amm[1][1]) / det;
-				Amm_inv[2][1] = (Amm[2][0] * Amm[0][1] - Amm[0][0] * Amm[2][1]) / det;
-				Amm_inv[2][2] = (Amm[0][0] * Amm[1][1] - Amm[1][0] * Amm[0][1]) / det;
-				// %%%%%%%%%%%%%%%%%% end Manual inversion of Amm %%%%%%%%%%%%%%%%%%	
-				*/	
-
 				for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) // Only loop through remaining perturbations
 				{
-
 					A_b_iterative_populator(tot_sub_vol, A_iterative, b_iterative, A_2d, G_sys_old, mm, jg_0);
 
 					// %%%%%%%%%%% G_new using Linear inversion using LAPACK %%%%%%%%%%%%%%%%%
-					info = LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',3,3,3,A_iterative,3,b_iterative,3); 
-					int gpack=0;     	
-
-					for (int mm_sub = 0; mm_sub < 3; mm_sub++) // 3D coordinate positions
-					{
-						mm_2d = (3*mm + mm_sub);
-						for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
-						{
-							jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
-
-							G_sys_new[mm_2d][jg_0_2d] = b_iterative[gpack]; // stores G^1_11
-
-							gpack += 1;
-						}  
-					}
-					// %%%%%%%%%%% End G_new using linear inversion using LAPACK %%%%%%%%%%%%%%%%%
-
-
-					/*				
-					// %%%%%%%%%%%%%%%%%% G_new using manual inversion of Amm %%%%%%%%%%%%%%%%%%%% 
-
-					for (int mm_sub = 0; mm_sub < 3; mm_sub++) // 3D coordinate positions
-					{
-					mm_2d = (3*mm + mm_sub);
-					for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
-					{
-					jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
-					G_sys_new[mm_2d][jg_0_2d] = 0;
-					for(int k_sub = 0; k_sub < 3; k_sub++)
-					{
-					k_sub_2d = (3*mm + k_sub); 
-					G_sys_new[mm_2d][jg_0_2d] += Amm_inv[mm_sub][k_sub]*G_sys_old[k_sub_2d][jg_0_2d]; // stores G^1_11	
-					}	
-					}  
-					}
-					// %%%%%%%%%%%%%%%%%% end G_new using manual inversion of Amm %%%%%%%%%%%%%%%%%%%% 
-					*/
-
+					int info = LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',3,3,3,A_iterative,3,b_iterative,3);
+					G_sys_new_populator(tot_sub_vol, mm, jg_0, G_sys_new, b_iterative);
 
 				} // end jg_0					
 
-				memset(A_2d, 0, sizeof *A_2d * 3);
-				memset(A_iterative, 0, sizeof *A_iterative *3*3);
-				memset(b_iterative, 0, sizeof *b_iterative *3*3);
-
-
-				// Next, solve all systems of equations for ii not equal to mm		
-				for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
-				{ 
-					for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
-					{
-						ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
-						for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //lower triangular matrix
-						{
-							if(ig_0 != mm)
-							{
-								for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
-								{
-									jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
-									double complex G_sys_prod = 0.;
-									for(int m_sub = 0;  m_sub < 3;  m_sub++)//loop for matricial multiplication
-									{
-										mm_2d = (3*mm + m_sub);
-										G_sys_prod += G_sys_old[ig_0_2d][mm_2d]*G_sys_new[mm_2d][jg_0_2d];
-									}
-
-									G_sys_new[ig_0_2d][jg_0_2d] = G_sys_old[ig_0_2d][jg_0_2d] + pow(k,2)*alpha_0[mm]*G_sys_prod;
-
-								} // j_subG_0            				
-							} // if(ig_0 != mm) 
-						} // jg_0   	
-					}// i_subG_0   	                	
-				} // ig_0    
-
+				offdiagonal_solver(tot_sub_vol, mm, k, alpha_0, G_sys_old, G_sys_new);
 				memcpy(G_sys_old,G_sys_new,3*tot_sub_vol*3*tot_sub_vol*sizeof(double complex)); // Update G_old = G_new for next iteration.
 
 
 			}//end mm loop 
 
 			printf("Final solution:\n");
-
-			free(A_iterative); 
-			free(b_iterative);
-			free(A_2d);
-			free(G_sys_old);
-
 			memcpy(G_sys,G_sys_new,3*tot_sub_vol*3*tot_sub_vol*sizeof(double complex)); //Populate G_sys with G_new 
-			free(G_sys_new);	   
 
 		}
 
