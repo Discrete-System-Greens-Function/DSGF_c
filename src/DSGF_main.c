@@ -129,21 +129,6 @@ int main()
 
 	char *results_folder = set_up_results(material, geometry, tot_sub_vol, d); // Folders for results 
 
-/*	
-	for (int i_vec=0; i_vec<tot_sub_vol; i_vec++)
-	{
-		if (i_vec < const_N_subvolumes_per_object) // 2-body case
-		{
-			delta_V_vector[i_vec] = delta_V_1;
-			T_vector[i_vec] = T1;
-		}
-		else
-		{
-			delta_V_vector[i_vec] = delta_V_2;
-			T_vector[i_vec] = T2;
-		}
-	}  
-*/
 	if(save_power_dissipated =='Y'){
 		//EXPORT R
 		for (int i_subvol=0; i_subvol<tot_sub_vol;i_subvol++) //tot_sub_vol
@@ -354,7 +339,6 @@ int main()
 	free(alpha_0);
 
 	double (*Total_conductance) = malloc(sizeof *Total_conductance *N_Tcalc); 
-	double(*Q_tot_thermal_object) = malloc(sizeof * Q_tot_thermal_object * const_N_bulk_objects); 
 	double (*trapz_Q) = malloc(sizeof *trapz_Q *tot_sub_vol); // Definition for trapezoidal integration. Used in total power dissipated
 
 	double trapz=0.;
@@ -429,7 +413,6 @@ int main()
 	create_pos_processing(dirPathpos_processing_summary_FileName, material, initial, final, time_spent, Tcalc_vector, Total_conductance, N_Tcalc);
 
 
-	free(Q_tot_thermal_object);
 	free(Total_conductance); 
 
 	printf("Usage: %ld + %ld = %ld kb\n", baseline, get_mem_usage()-baseline,get_mem_usage());
