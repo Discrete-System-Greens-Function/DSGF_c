@@ -3,7 +3,7 @@
 // Near-field radiative heat transfer framework between thermal objects 
 // Developed by RETL group at the University of Utah, USA
 
-// LAST UPDATE: January 09, 2023
+// LAST UPDATE: January 17, 2023
 // 
 // In this version:
 //	- The following .txt files remove recompile the code need for user modifications:
@@ -39,7 +39,7 @@
 
 //#include <omp.h> // library for OpenMP
 
-FILE * pos_processing_summary; // call the main outputs' file,  
+//FILE * pos_processing_summary; // call the main outputs' file,  
 
 // #################################################################
 // ################### START OF THE CODE ###########################
@@ -136,7 +136,7 @@ int main()
 		delta_V_1 = vol1/const_N_subvolumes_per_object; // defines the subvolumes' volume for sphere 1
 		delta_V_2 = vol2/const_N_subvolumes_per_object; // defines the subvolumes' volume for sphere 2
 	
-		sprintf(dirPathFileNameDISCRETIZATION, "discretizations/sphere_subvol_%d.txt",const_N_subvolumes_per_object); // path where the file is stored
+		sprintf(dirPathFileNameDISCRETIZATION, "user_inputs/discretizations/sphere_subvol_%d.txt",const_N_subvolumes_per_object); // path where the file is stored
 		import_discretization = fopen(dirPathFileNameDISCRETIZATION, "r");
 		while (3 == fscanf(import_discretization, "%e %e %e", &shape_file[i_import].x, &shape_file[i_import].y, &shape_file[i_import].z))
 		{   
@@ -177,7 +177,7 @@ int main()
 		Ly_int = Ly*pow(10,9); 
 		Lz_int = Lz*pow(10,9); 
 		d_int = d*pow(10,9); 
-		sprintf(dirPathFileNameDISCRETIZATION, "discretizations/%d_thin_films_Lx%dnm_Ly%dnm_Lz%dnm_d%dnm_N%d_discretization.txt",const_N_bulk_objects,  Lx_int, Ly_int, Lz_int, d_int, tot_sub_vol);
+		sprintf(dirPathFileNameDISCRETIZATION, "user_inputs/discretizations/%d_thin_films_Lx%dnm_Ly%dnm_Lz%dnm_d%dnm_N%d_discretization.txt",const_N_bulk_objects,  Lx_int, Ly_int, Lz_int, d_int, tot_sub_vol);
 		import_discretization = fopen(dirPathFileNameDISCRETIZATION, "r");
 		while (3 == fscanf(import_discretization, "%e %e %e", &shape_filetf[i_import].x, &shape_filetf[i_import].y, &shape_filetf[i_import].z))
 		{   
@@ -198,8 +198,16 @@ int main()
 	printf("d = %e m \n",d);
 	
 	char *results_folder = set_up_results(material, geometry, tot_sub_vol, d); // Folders for results 
-
 	
+	char copy_control[260];
+	sprintf(copy_control, "cp ./user_inputs/control.txt  ./%s\n",results_folder);
+	system(copy_control);
+	
+	char copy_geometry[260];
+	if(strcmp(geometry,"sphere")==0) sprintf(copy_geometry, "cp ./user_inputs/Geometry/sphere.txt  ./%s\n",results_folder);
+	if(strcmp(geometry,"thin-films")==0) sprintf(copy_geometry, "cp ./user_inputs/Geometry/thin_films.txt  ./%s\n",results_folder);
+	system(copy_geometry);
+		
 	for (int i_vec=0; i_vec<tot_sub_vol; i_vec++)
 	{
 		if (i_vec < const_N_subvolumes_per_object) // 2-body case
@@ -242,7 +250,6 @@ int main()
 				}
 		}		
 	} // end if save_power_dissipated
-	
 	
 
 	double initial,final;
@@ -481,20 +488,6 @@ int main()
 		// ################### MATRICES STRUCTURE LOOPS ###########################
 		// 3N X 3N Matrices structure loops for G^0 and A:
 
-		//G^0_ij when i=j:
-		double (*a_j) = malloc(sizeof *a_j *tot_sub_vol); 
-		double (*part1ii) = malloc(sizeof *part1ii *tot_sub_vol); 
-		double complex (*part2ii) = malloc(sizeof *part2ii *tot_sub_vol);
-		double complex (*part2iiexp) = malloc(sizeof *part2iiexp *tot_sub_vol); 
-		double complex (*part3ii) = malloc(sizeof *part3ii *tot_sub_vol); 
-
-		//G^0_ij when i!=j:
-		double complex (*part1ij) = malloc(sizeof *part1ij *tot_sub_vol); 
-		double complex (*part1aij) = malloc(sizeof *part1aij *tot_sub_vol);
-		double complex (*part1aijexp) = malloc(sizeof *part1aijexp *tot_sub_vol);
-		double complex (*part2ij) = malloc(sizeof *part2ij *tot_sub_vol); 
-		double complex (*part3ij) = malloc(sizeof *part3ij *tot_sub_vol); 
-
 		double (*eyeG_0)[3] = calloc(3, sizeof(*eyeG_0)); 
 		double (*eyeA)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*eyeA)); 
 
@@ -503,19 +496,46 @@ int main()
 		double complex (*A)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*A)); 
 
 		// eq. 25 from Lindsay's paper 
+		/*
 		for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //tot_sub_vol
 		{
 			for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 			{
-				if (ig_0!=jg_0)
-				{
-					part1aij[ig_0] = 0.+ k_0*sqrt(epsilon_ref)*modulo_r_i_j[ig_0][jg_0]*I; // com i term 
-					part1aijexp[ig_0]= cexp(k_0*sqrt(epsilon_ref)*modulo_r_i_j[ig_0][jg_0]*I);
-					part1ij[ig_0] = part1aijexp[ig_0]/(4.*pi*modulo_r_i_j[ig_0][jg_0]);
-					denom1 = epsilon_ref*pow(k_0*modulo_r_i_j[ig_0][jg_0],2);
-					denom2 = k_0*sqrt(epsilon_ref)*modulo_r_i_j[ig_0][jg_0];
-					part2ij[ig_0] = (1. - 1./denom1 + 1.*I/denom2 ) ;
-					part3ij[ig_0] = (1. - 3./denom1 + 3.*I/denom2) ;
+		*/	
+			
+		for (int jg_0 = 0; jg_0 < tot_sub_vol-1; jg_0++) //tot_sub_vol
+		{
+			for (int ig_0 = jg_0+1; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
+			{
+				//if (ig_0!=jg_0)
+				//{
+					const_1 = cexp(k_0*sqrt(epsilon_ref)*modulo_r_i_j[ig_0][jg_0]*I)/(4.*pi*modulo_r_i_j[ig_0][jg_0]); 
+					denom_1 = epsilon_ref*pow(k_0*modulo_r_i_j[ig_0][jg_0],2);
+					denom_2 = k_0*sqrt(epsilon_ref)*modulo_r_i_j[ig_0][jg_0];
+					const_2 = (1. - 1./denom_1 + 1.*I/denom_2 ) ;
+					const_3 = (1. - 3./denom_1 + 3.*I/denom_2) ;
+					
+					//split of G_0:
+					//if (jg_0<=tot_sub_vol/2 && ig_0>tot_sub_vol/2 || jg_0>=tot_sub_vol/2 && ig_0<tot_sub_vol/2 || ig_0<=tot_sub_vol/2 && jg_0>tot_sub_vol/2 || ig_0>=tot_sub_vol/2 && jg_0<tot_sub_vol/2) //subvolumes in different objects
+					/*
+					if (jg_0<=tot_sub_vol/2 && ig_0>tot_sub_vol/2) //subvolumes in different objects
+					{
+						//const_2 = (1. - 1./denom_1 + 1.*I/denom_2 ) ; // total 
+						//const_3 = (1. - 3./denom_1 + 3.*I/denom_2) ;  // total 
+						 //Goal: compute only the propagating wave contribution of DSGF
+						const_2 = (1. ) ; //propagating only
+						const_3 = (1. ) ; //propagating only
+						//Goal: compute only the evanescent wave contribution of DSGF
+						//const_2 = (- 1./denom_1 + 1.*I/denom_2 ) ; //evanescent only
+						//const_3 = (- 3./denom_1 + 3.*I/denom_2) ; //evanescent only
+					}
+					else 
+					{
+						const_2 = (1. - 1./denom_1 + 1.*I/denom_2 ) ;
+						const_3 = (1. - 3./denom_1 + 3.*I/denom_2) ; 
+					}
+					*/
+					
 					for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
 					{
 						for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions
@@ -531,25 +551,40 @@ int main()
 								eyeG_0[i_subG_0][j_subG_0] = 0.;     // 3x3 Identity matrix for G^0:
 								eyeA[ig_0][jg_0][i_subG_0][j_subG_0] = 0.; // 3Nx3N identity matrix for A: 
 							}
-							G_0[ig_0][jg_0][i_subG_0][j_subG_0] = part1ij[ig_0]*((part2ij[ig_0]*eyeG_0[i_subG_0][j_subG_0])-(part3ij[ig_0]*r_i_j_outer_r_i_j[ig_0][jg_0][i_subG_0][j_subG_0]));  
+							G_0[ig_0][jg_0][i_subG_0][j_subG_0] = const_1*((const_2*eyeG_0[i_subG_0][j_subG_0])-(const_3*r_i_j_outer_r_i_j[ig_0][jg_0][i_subG_0][j_subG_0]));  
+							G_0[jg_0][ig_0][i_subG_0][j_subG_0] = G_0[ig_0][jg_0][i_subG_0][j_subG_0];
 							A[ig_0][jg_0][i_subG_0][j_subG_0] = eyeA[ig_0][jg_0][i_subG_0][j_subG_0] - pow(k_0,2)*alpha_0[ig_0]*G_0[ig_0][jg_0][i_subG_0][j_subG_0]; 
+							A[jg_0][ig_0][i_subG_0][j_subG_0] =A[ig_0][jg_0][i_subG_0][j_subG_0];
 						}    
 					}
-				}    
+				//}  
 			}    
 		} //end ig_0 
+		/*
+		for (int jg_0 = 0; jg_0 < tot_sub_vol-1; jg_0++) //tot_sub_vol
+		{
+			for (int ig_0 = jg_0+1; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
+			{
+				for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
+				{
+					for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions
+					{
+						G_0[jg_0][ig_0][i_subG_0][j_subG_0] = G_0[ig_0][jg_0][i_subG_0][j_subG_0];
+						A[jg_0][ig_0][i_subG_0][j_subG_0] =A[ig_0][jg_0][i_subG_0][j_subG_0];
+					}
+				}
+			}
+		}			
+		*/
 
 		// eq. 26 from Lindsay's paper: 
 
 
 		for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 		{
-			a_j[ig_0] = a_j_function(delta_V_vector[ig_0], pi);
-			part1ii[ig_0] = 1./(3.*delta_V_vector[ig_0]*epsilon_ref*pow(k_0,2));
-			part2ii[ig_0] = a_j[ig_0]*k_0*sqrt(epsilon_ref)*I; // com i term 
-			part2iiexp[ig_0] = cexp(0. + a_j[ig_0]*k_0*sqrt(epsilon_ref)*I); 
-											 // part3ii is inside brackets
-			part3ii[ig_0] = part2iiexp[ig_0]*(1-part2ii[ig_0]) - 1. ;
+			a_j = a_j_function(delta_V_vector[ig_0], pi);
+			const_4 = 1./(3.*delta_V_vector[ig_0]*epsilon_ref*pow(k_0,2)); 
+			const_5 = cexp(0. + a_j*k_0*sqrt(epsilon_ref)*I)*(1.-(a_j*k_0*sqrt(epsilon_ref)*I)) - 1. ; //part3ii[ig_0]
 			for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
 			{
 				for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //tot_sub_vol
@@ -568,7 +603,7 @@ int main()
 								eyeG_0[i_subG_0][j_subG_0] = 0.;     // 3x3 Identity matrix for G^0:
 								eyeA[ig_0][jg_0][i_subG_0][j_subG_0] = 0.; // 3Nx3N identity matrix for A:
 							}
-							G_0[ig_0][jg_0][i_subG_0][j_subG_0] = eyeG_0[i_subG_0][j_subG_0]*part1ii[ig_0]*(2.*part3ii[ig_0]-1.); 
+							G_0[ig_0][jg_0][i_subG_0][j_subG_0] = eyeG_0[i_subG_0][j_subG_0]*const_4*(2.*const_5-1.); 
 							A[ig_0][jg_0][i_subG_0][j_subG_0] = eyeA[ig_0][jg_0][i_subG_0][j_subG_0] - pow(k_0,2)*alpha_0[ig_0]*G_0[ig_0][jg_0][i_subG_0][j_subG_0]; 
 						}
 					} 
@@ -578,23 +613,13 @@ int main()
 
 
 		free(eyeG_0);
+		free(eyeA);
 		free(r);
 		free(abs_r_ij);
 		free(unit_r_ij);
 		free(transpose);
 		free(unit_conj_r_ij);
 		free(r_i_j_outer_r_i_j);
-
-		free(a_j);
-		free(part1ii);
-		free(part2ii);
-		free(part2iiexp);
-		free(part3ii);
-		free(part1ij);
-		free(part1aij);
-		free(part1aijexp);
-		free(part2ij);
-		free(part3ij);
 
 		memset(modulo_r_i_j, 0, sizeof modulo_r_i_j);
 
@@ -1087,38 +1112,44 @@ int main()
 		} // END FOR T_calc LOOP
 
 		printf("Total conductance at %e K= %e \n",Tcalc_vector[2],Total_conductance[2]);    
+		
+		
+		
 
 	} //end if const_N_omega>1
 
 	printf("\n");
-
-
-	sprintf(dirPathpos_processing_summary_FileName, "%s/pos_processing_summary.txt",results_folder); // path where the file is stored
-
-	pos_processing_summary =fopen(dirPathpos_processing_summary_FileName,"w"); 
-	fprintf(pos_processing_summary,"Material: %s\nSpectrum range (in wavelength) = %e--%e m \n",material, initial,final); 
-	fclose(pos_processing_summary);
-
-	for (int iTcalc = 0; iTcalc < N_Tcalc; iTcalc++) 
+	
+	for (int iTcalc=0; iTcalc<N_Tcalc; iTcalc++)
 	{
-		pos_processing_summary =fopen(dirPathpos_processing_summary_FileName,"a"); 
-		fprintf(pos_processing_summary,"Total conductance at %eK = %e\n",Tcalc_vector[iTcalc], Total_conductance[iTcalc]); 
-		fclose(pos_processing_summary);
+		{
+			FILE * Total_conductance_file; //append
+			char dirPath_Total_conductance_FileName[260];
+			sprintf(dirPath_Total_conductance_FileName, "%s/total_conductance.csv",results_folder); // path where the file is stored
+			if(iTcalc == 0) Total_conductance_file =fopen(dirPath_Total_conductance_FileName,"w"); //write
+			else Total_conductance_file = fopen(dirPath_Total_conductance_FileName, "a"); //append
+			fprintf(Total_conductance_file,"%e, %e\n",Tcalc_vector[iTcalc],Total_conductance[iTcalc]); 
+			fclose(Total_conductance_file);
+		}
 	}
 
 	free(Q_tot_thermal_object);
 	free(Total_conductance); 
 
-
+	/*
 	clock_t end = clock(); //end timer
 	double time_spent = (double)(end - begin) / CLOCKS_PER_SEC; //calculate time for the code
 
-	fopen(dirPathpos_processing_summary_FileName,"a"); // Opens file for appending. (File remains unchanged, file pointer gets moved to end) https://stackoverflow.com/questions/16427664/trying-not-to-overwrite-a-file-in-c/16427698
+	sprintf(dirPathpos_processing_summary_FileName, "%s/pos_processing_summary.txt",results_folder); // path where the file is stored
+	pos_processing_summary =fopen(dirPathpos_processing_summary_FileName,"w"); 
+	
+	//fopen(dirPathpos_processing_summary_FileName,"w"); // Opens file for appending. (File remains unchanged, file pointer gets moved to end) https://stackoverflow.com/questions/16427664/trying-not-to-overwrite-a-file-in-c/16427698
 	fprintf(pos_processing_summary,"Time counter: %f s\n",time_spent);
 	fclose(pos_processing_summary);
-
+	*/
 
 	printf("Usage: %ld + %ld = %ld kb\n", baseline, get_mem_usage()-baseline,get_mem_usage());
+	printf("\nThe results can be accessed in the folder:\n %s\n",results_folder);
 
 	/*   // Condition used to compute memory_usage for one frequency.
 	     if ( single_analysis =='y')

@@ -63,7 +63,9 @@ double omega_value;
 
 int bulk; //Indice used to thermal power dissipated 
 
-double denom1, denom2 ; // used in G^0_ij function
+double denom_1, denom_2 ; // used in G^0_ij function
+double complex const_1, const_2, const_3,const_5; // used in G^0 function
+double a_j, const_4; // used in G^0_ii function
 
 double complex epsilon_s; // Scattering dielectric function used in iterative solver
 int ipack, gpack; //lapacke counters
