@@ -37,6 +37,8 @@
 
 #include "geometry/sphere.h"
 #include "geometry/thin_film.h"
+#include "geometry/shared.h"
+
 #include "material/SiO2.h"
 #include "material/SiC.h"
 #include "material/u_SiC.h"
@@ -120,12 +122,14 @@ int main()
 	{
 		set_up_thin_film_geometry(tot_sub_vol, const_N_subvolumes_per_object, const_N_bulk_objects, &T1, &T2, &d, &delta_V_1, &delta_V_2, R);
 	}
+	set_delta_V_vector_T_vector(T1, T2, delta_V_1, delta_V_2, tot_sub_vol, const_N_subvolumes_per_object, T_vector, delta_V_vector);
+	
 
 	printf("d = %e m \n",d);
 
 	char *results_folder = set_up_results(material, geometry, tot_sub_vol, d); // Folders for results 
 
-
+/*	
 	for (int i_vec=0; i_vec<tot_sub_vol; i_vec++)
 	{
 		if (i_vec < const_N_subvolumes_per_object) // 2-body case
@@ -139,7 +143,7 @@ int main()
 			T_vector[i_vec] = T2;
 		}
 	}  
-
+*/
 	if(save_power_dissipated =='Y'){
 		//EXPORT R
 		for (int i_subvol=0; i_subvol<tot_sub_vol;i_subvol++) //tot_sub_vol
