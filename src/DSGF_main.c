@@ -105,7 +105,7 @@ int main()
 	double (*G_12_omega_SGF)[N_Tcalc] = calloc(const_N_omega, sizeof(*G_12_omega_SGF));
 
 	double (*modulo_r_i_j)[tot_sub_vol] = malloc(sizeof *modulo_r_i_j * tot_sub_vol);
-	double (*sum_trans_coeff) = calloc(const_N_omega, sizeof(*sum_trans_coeff)); 
+	//double (*sum_trans_coeff) = calloc(const_N_omega, sizeof(*sum_trans_coeff)); 
 
 	double (*Q_subvol)[const_N_omega] = calloc(tot_sub_vol, sizeof(*Q_subvol));
 
@@ -216,6 +216,7 @@ int main()
 			epsilon = calculate_epsilon_SiN(omega_value, pi);
 		}
 
+		double sum_trans_coeff = 0;
 
 		double k_0=k_0_function(omega_value, epsilon_0, mu_0) ; //wave vector in free space
 
@@ -265,7 +266,7 @@ int main()
 		// ###################  Thermal power dissipated ###################
 		// #################################################################
 
-		spectral_total_conductance_thermal_power(tot_sub_vol, i_omega, const_N_omega, k_0, h_bar, k_b, epsilon, omega_value, T_vector, delta_V_vector, const_N_subvolumes_per_object, pi, G_sys, sum_trans_coeff, Q_subvol);
+		spectral_total_conductance_thermal_power(tot_sub_vol, i_omega, const_N_omega, k_0, h_bar, k_b, epsilon, omega_value, T_vector, delta_V_vector, const_N_subvolumes_per_object, pi, G_sys, &sum_trans_coeff, Q_subvol);
 		free(G_sys);
 
 
@@ -279,7 +280,7 @@ int main()
 				char dirPathSpectral_trans_FileName[260];
 				sprintf(dirPathSpectral_trans_FileName, "%s/%d.csv",spectral_transmissivity_folder,i_omega+1); // path where the file is stored
 				spectral_transmissivity =fopen(dirPathSpectral_trans_FileName,"w"); 
-				fprintf(spectral_transmissivity,"%e",sum_trans_coeff[i_omega]);      
+				fprintf(spectral_transmissivity,"%e",sum_trans_coeff);      
 				fclose(spectral_transmissivity);
 			}
 		}
@@ -287,7 +288,7 @@ int main()
 		for (int iTcalc = 0; iTcalc < N_Tcalc; iTcalc++) // EDIT VALUE :: change 1 to N_Tcalc for the temperature loop
 		{
 			double dtheta_dT = dtheta_dT_function(omega_value,Tcalc_vector[iTcalc], h_bar, k_b); 
-			G_12_omega_SGF[i_omega][iTcalc] = dtheta_dT*sum_trans_coeff[i_omega];
+			G_12_omega_SGF[i_omega][iTcalc] = dtheta_dT*sum_trans_coeff;
 			if(save_spectral_conductance =='Y'){
 				{
 					FILE * spectral_conductance; //append
@@ -307,12 +308,12 @@ int main()
 		// #############  Clear values for next frequency ##################
 		// #################################################################
 
-		memset(sum_trans_coeff, 0, sizeof sum_trans_coeff);
+		//memset(sum_trans_coeff, 0, sizeof sum_trans_coeff);
 
 	} // END OMEGA VALUE LOOP FOR FREQUENCY RANGE ANALYSIS
 
 	free(R);
-	free(sum_trans_coeff);
+	//free(sum_trans_coeff);
 	free(modulo_r_i_j);
 	free(r_i_j_outer_r_i_j);
 
