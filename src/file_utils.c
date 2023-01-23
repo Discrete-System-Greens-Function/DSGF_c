@@ -74,7 +74,7 @@ void create_folder(char folder_name[]){
 		if (0 != mkdir(folder_name, 0700)){
 			printf("when executing mkdir(\"%s\")\n", folder_name);
 			perror("mkdir");
-			exit(1);
+			//exit(1);
 		}
 	}
 }

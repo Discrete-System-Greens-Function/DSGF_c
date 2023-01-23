@@ -177,11 +177,11 @@ int main()
 	//Loop to analyze a range of desired frequencies
 	printf("----- Spectrum range calculation -----\n");
 
-	double omega_range;
+	int omega_range;
 	if(single_spectrum_analysis =='Y') omega_range=1;
 	if(single_spectrum_analysis =='N') omega_range=const_N_omega;
 
-	//	#pragma omp parallel for
+	#pragma omp parallel for
 	for (int i_omega = 0; i_omega < omega_range; i_omega++) // Frequency loop
 	{
 
@@ -273,15 +273,12 @@ int main()
 
 			sprintf(spectral_transmissivity_folder, "%s/spectral_transmissivity",results_folder); 
 			create_folder(spectral_transmissivity_folder);
-
-			{
-				FILE * spectral_transmissivity; 
-				char dirPathSpectral_trans_FileName[260];
-				sprintf(dirPathSpectral_trans_FileName, "%s/%d.csv",spectral_transmissivity_folder,i_omega+1); // path where the file is stored
-				spectral_transmissivity =fopen(dirPathSpectral_trans_FileName,"w"); 
-				fprintf(spectral_transmissivity,"%e",sum_trans_coeff);      
-				fclose(spectral_transmissivity);
-			}
+			FILE * spectral_transmissivity; 
+			char dirPathSpectral_trans_FileName[260];
+			sprintf(dirPathSpectral_trans_FileName, "%s/%d.csv",spectral_transmissivity_folder,i_omega+1); // path where the file is stored
+			spectral_transmissivity =fopen(dirPathSpectral_trans_FileName,"w"); 
+			fprintf(spectral_transmissivity,"%e",sum_trans_coeff);      
+			fclose(spectral_transmissivity);
 		}
 
 		for (int iTcalc = 0; iTcalc < N_Tcalc; iTcalc++) // EDIT VALUE :: change 1 to N_Tcalc for the temperature loop
