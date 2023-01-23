@@ -100,12 +100,10 @@ int main()
 
 	double (*delta_V_vector) = malloc(sizeof *delta_V_vector *tot_sub_vol);  //Vector of all subvolume size. Combines delta_V_1 and delta_V_2 in the same array
 	double (*T_vector) = malloc(sizeof *T_vector *tot_sub_vol); // (N x 1) vector of all subvolume temperatures [K]
-	double complex (*alpha_0) = malloc(sizeof *alpha_0 *tot_sub_vol); //Bare polarizability [m^3]
 
 	double (*G_12_omega_SGF)[N_Tcalc] = calloc(const_N_omega, sizeof(*G_12_omega_SGF));
 
 	double (*modulo_r_i_j)[tot_sub_vol] = malloc(sizeof *modulo_r_i_j * tot_sub_vol);
-	//double (*sum_trans_coeff) = calloc(const_N_omega, sizeof(*sum_trans_coeff)); 
 
 	double (*Q_subvol)[const_N_omega] = calloc(tot_sub_vol, sizeof(*Q_subvol));
 
@@ -221,7 +219,8 @@ int main()
 		double k_0=k_0_function(omega_value, epsilon_0, mu_0) ; //wave vector in free space
 
 		double k=k_function(omega_value, epsilon_ref, epsilon_0, mu_0); //wave vector in reference medium
-
+		
+		double complex alpha_0[tot_sub_vol];
 		for (int i_alpha = 0; i_alpha < tot_sub_vol; i_alpha++)
 		{
 			alpha_0[i_alpha] = delta_V_vector[i_alpha]*(epsilon - epsilon_ref); //Bare polarizability [m^3]
@@ -308,16 +307,13 @@ int main()
 		// #############  Clear values for next frequency ##################
 		// #################################################################
 
-		//memset(sum_trans_coeff, 0, sizeof sum_trans_coeff);
+
 
 	} // END OMEGA VALUE LOOP FOR FREQUENCY RANGE ANALYSIS
 
 	free(R);
-	//free(sum_trans_coeff);
 	free(modulo_r_i_j);
 	free(r_i_j_outer_r_i_j);
-
-	free(alpha_0);
 
 	double (*Total_conductance) = malloc(sizeof *Total_conductance *N_Tcalc); 
 	double (*trapz_Q) = malloc(sizeof *trapz_Q *tot_sub_vol); // Definition for trapezoidal integration. Used in total power dissipated
