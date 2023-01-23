@@ -150,8 +150,8 @@ void core_solver(int tot_sub_vol, double complex epsilon, double complex epsilon
 void iterative_solver(int tot_sub_vol, double complex epsilon, double complex epsilon_ref, double k, double delta_V_vector[], double complex alpha_0[],double complex G_0[tot_sub_vol][tot_sub_vol][3][3], double complex G_sys[3*tot_sub_vol][3*tot_sub_vol]){
 
 
-	double complex G_sys_old[3*tot_sub_vol][3*tot_sub_vol];
-	double complex G_sys_new[3*tot_sub_vol][3*tot_sub_vol];
+	double complex (*G_sys_old)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys_old));
+	double complex (*G_sys_new)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys_new));
 
 	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	// Calculate background medium Green's function 
@@ -168,6 +168,9 @@ void iterative_solver(int tot_sub_vol, double complex epsilon, double complex ep
 	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	core_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys_new, G_sys_old);
 
-	memcpy(G_sys,G_sys_new,3*tot_sub_vol*3*tot_sub_vol*sizeof(double complex)); //Populate G_sys with G_new 
+	memcpy(G_sys,G_sys_new,3*tot_sub_vol*3*tot_sub_vol*sizeof(double complex)); //Populate G_sys with G_new
+
+	free(G_sys_new);
+	free(G_sys_old);
 
 }

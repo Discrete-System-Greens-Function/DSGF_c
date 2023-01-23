@@ -1,14 +1,15 @@
 #include "computational/GreensFunction.h"
 #include <math.h>
 #include "functions_DSGF.h"
+#include <stdlib.h>
 
 void setup_G_0_matrices(int tot_sub_vol, double modulo_r_i_j[tot_sub_vol][tot_sub_vol], double complex r_i_j_outer_r_i_j[tot_sub_vol][tot_sub_vol][3][3], double R[][3]){
 
 
-	double r[tot_sub_vol][tot_sub_vol][3];
-	double abs_r_ij[tot_sub_vol][tot_sub_vol][3];
-	double unit_r_ij[tot_sub_vol][tot_sub_vol][3];
-	double complex unit_conj_r_ij[tot_sub_vol][tot_sub_vol][3];
+	double (*r)[tot_sub_vol][3] = calloc(tot_sub_vol, sizeof(*r));
+	double (*abs_r_ij)[tot_sub_vol][3] = calloc(tot_sub_vol, sizeof(*abs_r_ij));
+	double (*unit_r_ij)[tot_sub_vol][3] = calloc(tot_sub_vol, sizeof(*unit_r_ij));
+	double complex (*unit_conj_r_ij)[tot_sub_vol][3] = calloc(tot_sub_vol, sizeof(*unit_conj_r_ij));
 
 	for (int i=0; i<tot_sub_vol; i++)
 	{   
@@ -52,16 +53,13 @@ void setup_G_0_matrices(int tot_sub_vol, double modulo_r_i_j[tot_sub_vol][tot_su
 		}
 	}
 
+	free(r);
+	free(abs_r_ij);
+	free(unit_r_ij);
+	free(unit_conj_r_ij);
 }
 
 void get_G0_A_matrices(int tot_sub_vol, double complex G_0[tot_sub_vol][tot_sub_vol][3][3], double complex A[tot_sub_vol][tot_sub_vol][3][3], double k_0, double pi, double epsilon_ref, double modulo_r_i_j[tot_sub_vol][tot_sub_vol], double complex r_i_j_outer_r_i_j[tot_sub_vol][tot_sub_vol][3][3], double complex alpha_0[tot_sub_vol], double delta_V_vector[tot_sub_vol]){
-
-	//G^0_ij when i=j:
-	double a_j[tot_sub_vol];
-	double part1ii[tot_sub_vol];
-	double complex part2ii[tot_sub_vol];
-	double complex part2iiexp[tot_sub_vol];
-	double complex part3ii[tot_sub_vol];
 
 	// ################### MATRICES STRUCTURE LOOPS ###########################
 	// 3N X 3N Matrices structure loops for G^0 and A:
@@ -120,12 +118,12 @@ void get_G0_A_matrices(int tot_sub_vol, double complex G_0[tot_sub_vol][tot_sub_
 
 	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 	{
-		a_j[ig_0] = a_j_function(delta_V_vector[ig_0], pi);
-		part1ii[ig_0] = 1./(3.*delta_V_vector[ig_0]*epsilon_ref*pow(k_0,2));
-		part2ii[ig_0] = a_j[ig_0]*k_0*sqrt(epsilon_ref)*I; // com i term 
-		part2iiexp[ig_0] = cexp(0. + a_j[ig_0]*k_0*sqrt(epsilon_ref)*I); 
+		double a_j = a_j_function(delta_V_vector[ig_0], pi);
+		double part1ii = 1./(3.*delta_V_vector[ig_0]*epsilon_ref*pow(k_0,2));
+		double complex part2ii = a_j*k_0*sqrt(epsilon_ref)*I; // com i term 
+		double complex part2iiexp = cexp(0. + a_j*k_0*sqrt(epsilon_ref)*I); 
 		// part3ii is inside brackets
-		part3ii[ig_0] = part2iiexp[ig_0]*(1-part2ii[ig_0]) - 1. ;
+		double complex part3ii = part2iiexp*(1-part2ii) - 1. ;
 		for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
 		{
 			for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //tot_sub_vol
@@ -134,7 +132,7 @@ void get_G0_A_matrices(int tot_sub_vol, double complex G_0[tot_sub_vol][tot_sub_
 				{
 					for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions
 					{
-						G_0[ig_0][jg_0][i_subG_0][j_subG_0] = eyeG_0[i_subG_0][j_subG_0]*part1ii[ig_0]*(2.*part3ii[ig_0]-1.); 
+						G_0[ig_0][jg_0][i_subG_0][j_subG_0] = eyeG_0[i_subG_0][j_subG_0]*part1ii*(2.*part3ii-1.); 
 						A[ig_0][jg_0][i_subG_0][j_subG_0] = eyeG_0[i_subG_0][j_subG_0] - pow(k_0,2)*alpha_0[ig_0]*G_0[ig_0][jg_0][i_subG_0][j_subG_0]; 
 					}
 				} 
