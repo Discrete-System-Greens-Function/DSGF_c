@@ -48,8 +48,8 @@ void populate_G_sys(int tot_sub_vol, double complex b_direct[3*3*tot_sub_vol*tot
 void direct_solver(int tot_sub_vol, double complex A[tot_sub_vol][tot_sub_vol][3][3], double complex G_0[tot_sub_vol][tot_sub_vol][3][3], double complex G_sys[3*tot_sub_vol][3*tot_sub_vol]){
 
 
-	double complex A_direct[3*3*tot_sub_vol*tot_sub_vol];
-	double complex b_direct[3*3*tot_sub_vol*tot_sub_vol];
+	double complex (*A_direct) = calloc(3*3*tot_sub_vol*tot_sub_vol, sizeof(*A_direct));
+	double complex (*b_direct) = calloc(3*3*tot_sub_vol*tot_sub_vol, sizeof(*b_direct));
 
 	A_b_direct_populator(tot_sub_vol, A, G_0, A_direct, b_direct);
 
@@ -58,4 +58,7 @@ void direct_solver(int tot_sub_vol, double complex A[tot_sub_vol][tot_sub_vol][3
 	int info = LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',3*tot_sub_vol,3*tot_sub_vol,3*tot_sub_vol,A_direct,3*tot_sub_vol,b_direct,3*tot_sub_vol); 
 
 	populate_G_sys(tot_sub_vol, b_direct, G_sys);
+
+	free(A_direct);
+	free(b_direct);	
 }
