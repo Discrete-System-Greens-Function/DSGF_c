@@ -6,5 +6,5 @@ number_omega = 100
 solution = I 
 single_spectrum_analysis = N 
 save_spectral_conductance = Y
-save_spectral_transmissivity = Y
+save_spectral_transmissivity = N
 save_power_dissipated = Y
