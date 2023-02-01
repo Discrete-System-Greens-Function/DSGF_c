@@ -127,6 +127,16 @@ int main()
 
 	char *results_folder = set_up_results(material, geometry, tot_sub_vol, d); // Folders for results 
 
+	char copy_control[260];
+	sprintf(copy_control, "cp ./user_inputs/control.txt  ./%s\n",results_folder);
+	system(copy_control);
+	
+	
+	char copy_geometry[260];
+if(strcmp(geometry,"sphere")==0) sprintf(copy_geometry, "cp ./user_inputs/Geometry/sphere.txt  ./%s\n",results_folder);
+	if(strcmp(geometry,"thin-films")==0) sprintf(copy_geometry, "cp ./user_inputs/Geometry/thin_films.txt  ./%s\n",results_folder);
+	system(copy_geometry);	
+
 	if(save_power_dissipated =='Y'){
 		//EXPORT R
 		char dirPathVector_subvolumes_lattice_FileName[260];
@@ -379,17 +389,27 @@ int main()
 
 	printf("\n");
 
-	sprintf(dirPathpos_processing_summary_FileName, "%s/pos_processing_summary.txt",results_folder); // path where the file is stored
+	for (int iTcalc=0; iTcalc<N_Tcalc; iTcalc++)
+	{
+		{
+			FILE * Total_conductance_file; //append
+			char dirPath_Total_conductance_FileName[260];
+			sprintf(dirPath_Total_conductance_FileName, "%s/total_conductance.csv",results_folder); // path where the file is stored
+			if(iTcalc == 0) Total_conductance_file =fopen(dirPath_Total_conductance_FileName,"w"); //write
+			else Total_conductance_file = fopen(dirPath_Total_conductance_FileName, "a"); //append
+			fprintf(Total_conductance_file,"%e, %e\n",Tcalc_vector[iTcalc],Total_conductance[iTcalc]); 
+			fclose(Total_conductance_file);
+		}
+	}
 
 	clock_t end = clock(); //end timer
 	double time_spent = (double)(end - begin) / CLOCKS_PER_SEC; //calculate time for the code
-
-	create_pos_processing(dirPathpos_processing_summary_FileName, material, initial, final, time_spent, Tcalc_vector, Total_conductance, N_Tcalc);
 
 
 	free(Total_conductance); 
 
 	printf("Usage: %ld + %ld = %ld kb\n", baseline, get_mem_usage()-baseline,get_mem_usage());
+	printf("\nThe results can be accessed in the folder:\n %s\n",results_folder);
 
 	free(omega);
 	free(delta_V_vector);
