@@ -33,8 +33,9 @@ void set_up_thin_film_geometry(int tot_sub_vol, int subvol_per_object, int N_bul
 
 	char filename[256];
 
-	sprintf(filename, "discretizations/thin-film/%d_thin_films_Lx%dnm_Ly%dnm_Lz%dnm_d%dnm_N%d_discretization.txt", N_bulk_objects, Lx_int, Ly_int, Lz_int, d_int, tot_sub_vol);	
+	sprintf(filename, "library/discretizations/thin-film/%d_thin_films_Lx%dnm_Ly%dnm_Lz%dnm_d%dnm_N%d_discretization.txt", N_bulk_objects, Lx_int, Ly_int, Lz_int, d_int, tot_sub_vol);	
 	populate_subvol_struct(filename, tot_sub_vol, shape_filetf);
 
-	populate_R_thin_film(tot_sub_vol, shape_filetf, R);
+	populate_R_thin_film(tot_sub_vol, shape_filetf, R); 	
 }
+

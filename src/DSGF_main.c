@@ -3,17 +3,7 @@
 // Near-field radiative heat transfer framework between thermal objects 
 // Developed by RETL group at the University of Utah, USA
 
-// LAST UPDATE: January 09, 2023
-// 
-// In this version:
-//	- The following .txt files remove recompile the code need for user modifications:
-//	    - const_N_subvolumes_per_object.txt defines the number of subvolumes per thermal object
-//	    - const_N_bulk_objects.txt defines the number of bulk objects
-//	    - const_N_omega.txt defines the number of frequencies to evaluate
-//	    - T_calc.txt defines the temperature where the conductance is calculated
-//	    - control.txt contains other user definitions such as type of geometry, material, solution as saving options
-//	    - after selecting the geometry, go to the chosen geometry .txt file to set the dimensions and temperatures of the thermal objects
-//  - More info in read_me-user_inputs.txt 
+// LAST UPDATE: February 03, 2023
 // 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // General c libraries
@@ -26,6 +16,7 @@
 // Libraries for creating directories and files using a loop in C. Sources: https://stackoverflow.com/questions/46612504/creating-directories-and-files-using-a-loop-in-c and https://stackoverflow.com/questions/7430248/creating-a-new-directory-in-c 
 #include <string.h> // library used to concatenate 2 strings https://stackoverflow.com/questions/46612504/creating-directories-and-files-using-a-loop-in-c
 
+#include <errno.h>
 // Library with the inputs and functions for DSGF
 #include "user_inputs.h" // User inputs definitions header. No values are defined in this file.  
 #include "functions_DSGF.h" // Definitions of functions used in DSGF
@@ -110,21 +101,43 @@ int main()
 	double (*Q_subvol)[const_N_omega] = calloc(tot_sub_vol, sizeof(*Q_subvol));
 
 	// ######### Properties for thermal objects ###########
-	printf("Simulation for a total of %d dipoles in %d thermal objects\n",tot_sub_vol,const_N_bulk_objects);
+	printf("Simulation for a total of %d subvolumes in %d thermal objects\n",tot_sub_vol,const_N_bulk_objects);
 
 	double delta_V_1, delta_V_2;
 	if(strcmp(geometry,"sphere")==0)
 	{
 		set_up_sphere_geometry(pi, tot_sub_vol, const_N_subvolumes_per_object, &T1, &T2, &d, &delta_V_1, &delta_V_2, R);
 	}   
-
 	if(strcmp(geometry,"thin-films")==0)
 	{
-		set_up_thin_film_geometry(tot_sub_vol, const_N_subvolumes_per_object, const_N_bulk_objects, &T1, &T2, &d, &delta_V_1, &delta_V_2, R);
+		set_up_thin_film_geometry(tot_sub_vol, const_N_subvolumes_per_object, const_N_bulk_objects, &T1, &T2, &d,&delta_V_1, &delta_V_2, R);
 	}
 	set_delta_V_vector_T_vector(T1, T2, delta_V_1, delta_V_2, tot_sub_vol, const_N_subvolumes_per_object, T_vector, delta_V_vector);
-
-
+	
+	
+	// ##### INCLUSION BY LIVIA!!!! #####
+	//if(mesh_uniform =='N')
+	//{
+	//double delta_V_vector_test[850];  //Vector of all subvolume size. Combines delta_V_1 and delta_V_2 in the same array
+	char *delta_v_name = "library/discretizations/thin-film/2_thin_films_Lx1000nm_Ly100nm_Lz20nm_d100nm_N850_delta_V_vector.csv"; //this needs to be general
+	//sprintf(delta_v_name, "library/discretizations/thin-film/%d_thin_films_Lx%dnm_Ly%dnm_Lz%dnm_d%dnm_N%d_delta_V_vector.csv", N_bulk_objects, Lx_int, Ly_int, Lz_int, d_int, tot_sub_vol);
+	FILE *import_delta_v_vector;
+	import_delta_v_vector= fopen(delta_v_name, "r");
+	char buffer[1024];
+	int i_subvol=0;
+	while(fgets(buffer,sizeof(buffer),import_delta_v_vector))//loop works
+	{   
+		char* value = strtok(buffer,", ");// token!=NULL; token = strtok(NULL,",") )
+		//printf("%d) %s \n",i_subvol+1,value); //value
+		sscanf(value, "%lf", &delta_V_vector[i_subvol]); //delta_V_vector_test
+		//printf("%d) %e \n",i_subvol+1,delta_V_vector[i_subvol]);  //delta_V_vector_test
+		i_subvol++;
+	}
+	fclose(import_delta_v_vector);
+	//printf("%s\n", delta_v_name);
+	//}
+	// ##### END INCLUSION BY LIVIA!!!! #####
+	
 	printf("d = %e m \n",d);
 
 	char *results_folder = set_up_results(material, geometry, tot_sub_vol, d); // Folders for results 
@@ -154,7 +167,7 @@ if(strcmp(geometry,"sphere")==0) sprintf(copy_geometry, "cp ./user_inputs/Geomet
 
 	double initial,final;
 
-	if(strcmp(material,"SiO2")==0 || strcmp(material,"SiC")==0 || strcmp(material,"u-SiC")==0) 
+	if(strcmp(material,"SiO2")==0 || strcmp(material,"u-SiC")==0)  // removed strcmp(material,"SiC")==0 || from uniform
 	{
 		//Uniform spectrum
 		initial = 5.e-6;
@@ -165,8 +178,39 @@ if(strcmp(geometry,"sphere")==0) sprintf(copy_geometry, "cp ./user_inputs/Geomet
 		{
 			omega[i_lambda] = 2.*pi*c_0/lambda[i_lambda];  // Radial frequency [rad/s]
 		}
-	}	
-
+	}
+	
+	// ##### INCLUSION BY LIVIA!!!! #####
+	else if(strcmp(material,"SiC")==0) 
+	{
+		/*
+		//Uniform spectrum
+		initial = 5.e-6;
+		final = 25.e-6;
+		double lambda[const_N_omega];
+		double_linspace(initial, final, const_N_omega, lambda);
+		*/
+		/*
+		for(int i_lambda = 0; i_lambda < const_N_omega; i_lambda++)
+		{
+			 omega[i_lambda] = 2.*pi*c_0/lambda[i_lambda];  // Radial frequency [rad/s] conversion using uniform spectra
+		}
+		*/
+		
+		//Import non-uniform spectra
+		FILE *non_uniform_SiC_spectra;
+		char dirPathFileNameSpectra[260];
+		
+		sprintf(dirPathFileNameSpectra, "library/Non_uniform_spectra/SiC_non_uniform_spectra_%d.csv",const_N_omega);
+		non_uniform_SiC_spectra = fopen(dirPathFileNameSpectra,"r");
+		for(int i_lambda = 0; i_lambda < const_N_omega; i_lambda++)
+		{
+		fscanf(non_uniform_SiC_spectra,"%lf", &omega[i_lambda]); //
+		}
+		fclose(non_uniform_SiC_spectra);		
+	}
+	// ##### END INCLUSION BY LIVIA!!!! #####
+	
 	else if(strcmp(material,"SiN")==0) //cannot compare strings in C with ==; source: https://ideone.com/BrFA00
 	{
 		//Uniform spectrum: 
@@ -188,7 +232,7 @@ if(strcmp(geometry,"sphere")==0) sprintf(copy_geometry, "cp ./user_inputs/Geomet
 	// #################################################################
 	//Loop to analyze a range of desired frequencies
 	printf("----- Spectrum range calculation -----\n");
-
+	
 	int omega_range;
 	if(single_spectrum_analysis =='Y') omega_range=1;
 	if(single_spectrum_analysis =='N') omega_range=const_N_omega;

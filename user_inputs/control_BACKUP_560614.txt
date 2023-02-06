@@ -1,0 +1,22 @@
+<<<<<<< HEAD
+geometry = thin-films
+material = SiC
+solution = D
+=======
+geometry = sphere
+number_subvolumes_per_object = 8
+number_bulk_objects = 2
+material = SiO2
+number_omega = 100
+solution = I
+>>>>>>> 96ece6cbbf44832a9a7a95f3fa8145dc8390aa77
+single_spectrum_analysis = N
+save_spectral_conductance = Y
+save_spectral_transmissivity = N
+save_power_dissipated = Y
+<<<<<<< HEAD
+number_bulk_objects = 2
+number_omega = 100
+number_subvolumes_per_object = 2000
+=======
+>>>>>>> 96ece6cbbf44832a9a7a95f3fa8145dc8390aa77
