@@ -68,8 +68,10 @@ int main()
 	clock_t begin = clock();  /* set timer here, do your time-consuming job */
 
 	int N_subvolumes_per_object, N_bulk_objects, N_omega;
+	
+	char wave_type, non_uniform_subvolumes;
 
-	read_user_control(geometry, material, &solution, &single_spectrum_analysis, &save_spectral_conductance, &save_spectral_transmissivity, &save_power_dissipated, &N_bulk_objects, &N_omega, &N_subvolumes_per_object);
+	read_user_control(geometry, material, &solution, &single_spectrum_analysis, &save_spectral_conductance, &save_spectral_transmissivity, &save_power_dissipated, &N_bulk_objects, &N_omega, &N_subvolumes_per_object, &wave_type, &non_uniform_subvolumes);
 
 	read_calculation_temperatures(N_Tcalc, Tcalc_vector);
 
