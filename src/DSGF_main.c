@@ -69,9 +69,9 @@ int main()
 
 	int N_subvolumes_per_object, N_bulk_objects, N_omega;
 	
-	char wave_type, non_uniform_subvolumes;
+	char wave_type, non_uniform_subvolumes, multithread;
 
-	read_user_control(geometry, material, &solution, &single_spectrum_analysis, &save_spectral_conductance, &save_spectral_transmissivity, &save_power_dissipated, &N_bulk_objects, &N_omega, &N_subvolumes_per_object, &wave_type, &non_uniform_subvolumes);
+	read_user_control(geometry, material, &solution, &single_spectrum_analysis, &save_spectral_conductance, &save_spectral_transmissivity, &save_power_dissipated, &N_bulk_objects, &N_omega, &N_subvolumes_per_object, &wave_type, &non_uniform_subvolumes, &multithread);
 
 	read_calculation_temperatures(N_Tcalc, Tcalc_vector);
 
@@ -237,7 +237,7 @@ if(strcmp(geometry,"sphere")==0) sprintf(copy_geometry, "cp ./user_inputs/Geomet
 	if(single_spectrum_analysis =='Y') omega_range=1;
 	if(single_spectrum_analysis =='N') omega_range=const_N_omega;
 
-	#pragma omp parallel for
+	#pragma omp parallel for if(multithread == 'Y')
 	for (int i_omega = 0; i_omega < omega_range; i_omega++) // Frequency loop
 	{
 

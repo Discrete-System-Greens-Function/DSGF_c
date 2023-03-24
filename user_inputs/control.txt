@@ -10,3 +10,4 @@ non_uniform_subvolumes = N
 save_spectral_conductance = Y
 save_spectral_transmissivity = N
 save_power_dissipated = Y
+multithread = N
