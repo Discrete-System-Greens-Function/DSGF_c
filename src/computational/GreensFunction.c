@@ -71,16 +71,20 @@ void get_G0_A_matrices(int tot_sub_vol, double complex G_0[tot_sub_vol][tot_sub_
 
 	// eq. 25 from Lindsay's paper 
 
+	//for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++)//
 	for (int jg_0 = 0; jg_0 < tot_sub_vol-1; jg_0++) //tot_sub_vol
 	{
+		//for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++)//
 		for (int ig_0 = jg_0+1; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 		{
+			if (ig_0!=jg_0)
+			{
 			const_1 = cexp(k_0*sqrt(epsilon_ref)*modulo_r_i_j[ig_0][jg_0]*I)/(4.*pi*modulo_r_i_j[ig_0][jg_0]); 
 			denom_1 = epsilon_ref*pow(k_0*modulo_r_i_j[ig_0][jg_0],2);
 			denom_2 = k_0*sqrt(epsilon_ref)*modulo_r_i_j[ig_0][jg_0];
-			//const_2 = (1. - 1./denom_1 + 1.*I/denom_2 ) ;
-			//const_3 = (1. - 3./denom_1 + 3.*I/denom_2) ;
-
+			const_2 = (1. - 1./denom_1 + 1.*I/denom_2 ) ;
+			const_3 = (1. - 3./denom_1 + 3.*I/denom_2) ;
+			/*
 			//split of G_0:
 
 			if (jg_0<=tot_sub_vol/2 && ig_0>tot_sub_vol/2) //subvolumes in different objects
@@ -99,7 +103,7 @@ void get_G0_A_matrices(int tot_sub_vol, double complex G_0[tot_sub_vol][tot_sub_
 				const_2 = (1. - 1./denom_1 + 1.*I/denom_2 ) ;
 				const_3 = (1. - 3./denom_1 + 3.*I/denom_2) ; 
 			}
-
+			*/
 
 			for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
 			{
@@ -110,6 +114,7 @@ void get_G0_A_matrices(int tot_sub_vol, double complex G_0[tot_sub_vol][tot_sub_
 					A[ig_0][jg_0][i_subG_0][j_subG_0] = 0 - pow(k_0,2)*alpha_0[ig_0]*G_0[ig_0][jg_0][i_subG_0][j_subG_0]; 
 					A[jg_0][ig_0][i_subG_0][j_subG_0] =A[ig_0][jg_0][i_subG_0][j_subG_0];
 				}    
+			}
 			}
 		}    
 	} //end j_subG_0

@@ -65,6 +65,8 @@ int main()
 
 
 	long baseline = get_mem_usage(); // measure baseline memory usage
+	long matrices_memory;
+	
 	clock_t begin = clock();  /* set timer here, do your time-consuming job */
 
 	int N_subvolumes_per_object, N_bulk_objects, N_omega;
@@ -112,14 +114,19 @@ int main()
 	{
 		set_up_thin_film_geometry(tot_sub_vol, const_N_subvolumes_per_object, const_N_bulk_objects, &T1, &T2, &d,&delta_V_1, &delta_V_2, R);
 	}
-	set_delta_V_vector_T_vector(T1, T2, delta_V_1, delta_V_2, tot_sub_vol, const_N_subvolumes_per_object, T_vector, delta_V_vector);
 	
-	
-	// ##### INCLUSION BY LIVIA!!!! #####
-	//if(mesh_uniform =='N')
-	//{
-	//double delta_V_vector_test[850];  //Vector of all subvolume size. Combines delta_V_1 and delta_V_2 in the same array
-	char *delta_v_name = "library/discretizations/thin-film/2_thin_films_Lx1000nm_Ly100nm_Lz20nm_d100nm_N850_delta_V_vector.csv"; //this needs to be general
+
+	if(non_uniform_subvolumes =='N')
+	{
+		set_delta_V_vector_T_vector(T1, T2, delta_V_1, delta_V_2, tot_sub_vol, const_N_subvolumes_per_object, T_vector, delta_V_vector);
+	}
+	if(non_uniform_subvolumes =='Y')
+	{	
+		set_T_vector(T1, T2, tot_sub_vol, const_N_subvolumes_per_object, T_vector);
+		char *delta_v_name = "library/discretizations/thin-film/2_thin_films_Lx500nm_Ly500nm_Lz500nm_d500nm_N280_delta_V_vector.txt"; //this needs to be general
+	//char *delta_v_name = "library/discretizations/thin-film/2_thin_films_Lx1000nm_Ly100nm_Lz20nm_d100nm_N850_delta_V_vector.csv"; //this needs to be general
+	//char *delta_v_name = "library/discretizations/thin-film/2_thin_films_Lx200nm_Ly100nm_Lz20nm_d100nm_N450_delta_V_vector.txt"; //this needs to be general
+	//char *delta_v_name = "library/discretizations/thin-film/2_thin_films_Lx1000nm_Ly1000nm_Lz20nm_d100nm_N12000_delta_V_vector.txt"; //this needs to be general
 	//sprintf(delta_v_name, "library/discretizations/thin-film/%d_thin_films_Lx%dnm_Ly%dnm_Lz%dnm_d%dnm_N%d_delta_V_vector.csv", N_bulk_objects, Lx_int, Ly_int, Lz_int, d_int, tot_sub_vol);
 	FILE *import_delta_v_vector;
 	import_delta_v_vector= fopen(delta_v_name, "r");
@@ -135,8 +142,7 @@ int main()
 	}
 	fclose(import_delta_v_vector);
 	//printf("%s\n", delta_v_name);
-	//}
-	// ##### END INCLUSION BY LIVIA!!!! #####
+	}
 	
 	printf("d = %e m \n",d);
 
@@ -180,36 +186,30 @@ if(strcmp(geometry,"sphere")==0) sprintf(copy_geometry, "cp ./user_inputs/Geomet
 		}
 	}
 	
-	// ##### INCLUSION BY LIVIA!!!! #####
+	
 	else if(strcmp(material,"SiC")==0) 
 	{
 		/*
-		//Uniform spectrum
-		initial = 5.e-6;
-		final = 25.e-6;
-		double lambda[const_N_omega];
-		double_linspace(initial, final, const_N_omega, lambda);
-		*/
-		/*
-		for(int i_lambda = 0; i_lambda < const_N_omega; i_lambda++)
-		{
-			 omega[i_lambda] = 2.*pi*c_0/lambda[i_lambda];  // Radial frequency [rad/s] conversion using uniform spectra
-		}
-		*/
-		
+		//Uniform spectrum: 
+		initial = 1.4e14;
+		final = 1.9e14;
+		double_linspace(initial, final, const_N_omega, omega);
+		*/	
+	
 		//Import non-uniform spectra
 		FILE *non_uniform_SiC_spectra;
 		char dirPathFileNameSpectra[260];
 		
 		sprintf(dirPathFileNameSpectra, "library/Non_uniform_spectra/SiC_non_uniform_spectra_%d.csv",const_N_omega);
 		non_uniform_SiC_spectra = fopen(dirPathFileNameSpectra,"r");
-		for(int i_lambda = 0; i_lambda < const_N_omega; i_lambda++)
+		for(int i = 0; i < const_N_omega; i++)
 		{
-		fscanf(non_uniform_SiC_spectra,"%lf", &omega[i_lambda]); //
+		fscanf(non_uniform_SiC_spectra,"%lf", &omega[i]); //
 		}
-		fclose(non_uniform_SiC_spectra);		
+		fclose(non_uniform_SiC_spectra);
+				
 	}
-	// ##### END INCLUSION BY LIVIA!!!! #####
+	
 	
 	else if(strcmp(material,"SiN")==0) //cannot compare strings in C with ==; source: https://ideone.com/BrFA00
 	{
@@ -296,7 +296,9 @@ if(strcmp(geometry,"sphere")==0) sprintf(copy_geometry, "cp ./user_inputs/Geomet
 		//Description of ZGELS: https://extras.csc.fi/math/nag/mark21/pdf/F08/f08anf.pdf
 
 		double complex (*G_sys)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys));
-
+		
+		matrices_memory = get_mem_usage()-baseline; // measure matrices memory usage
+		
 		if(solution =='D')
 		{
 			printf("Direct inversion status: ");
@@ -308,9 +310,9 @@ if(strcmp(geometry,"sphere")==0) sprintf(copy_geometry, "cp ./user_inputs/Geomet
 
 		if(solution =='I')
 		{ 
-			printf("Iterative status:\n m= ");
+			printf("\n Iterative solver status: m= ");
 			iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_0, G_sys);
-			printf("Final solution:\n");
+			printf("concluded\n");
 		}
 
 		free(G_0);
@@ -348,7 +350,7 @@ if(strcmp(geometry,"sphere")==0) sprintf(copy_geometry, "cp ./user_inputs/Geomet
 					sprintf(dirPathSpectral_cond_FileName, "%s/spectral_conductance_%eK.csv", results_folder, Tcalc_vector[iTcalc]); // path where the file is stored
 					if(i_omega == 0) spectral_conductance =fopen(dirPathSpectral_cond_FileName,"w"); //write
 					else spectral_conductance = fopen(dirPathSpectral_cond_FileName, "a"); //append
-					fprintf(spectral_conductance,"%e ; %e\n",omega_value,G_12_omega_SGF[i_omega][iTcalc]); 
+					fprintf(spectral_conductance,"%e , %e\n",omega_value,G_12_omega_SGF[i_omega][iTcalc]); 
 					fclose(spectral_conductance);
 				}
 			} // end if save_spectral_conductance
@@ -450,13 +452,20 @@ if(strcmp(geometry,"sphere")==0) sprintf(copy_geometry, "cp ./user_inputs/Geomet
 
 	clock_t end = clock(); //end timer
 	double time_spent = (double)(end - begin) / CLOCKS_PER_SEC; //calculate time for the code
+	long total_memory = get_mem_usage(); // measure post-processing memory usage
+	{
+		FILE * memory; //append
+		char dirPathMemory_FileName[260];
+		sprintf(dirPathMemory_FileName, "matlab_scripts/memory/memory_analysis.csv"); // path where the file is stored
+		memory = fopen(dirPathMemory_FileName, "a"); //append
+		fprintf(memory,"%d,%c,%ld,%ld,%ld\n",tot_sub_vol,solution,baseline,matrices_memory,total_memory); 
+		fclose(memory);
+	}
+	 
 
-
-	free(Total_conductance); 
-
-	printf("Usage: %ld + %ld = %ld kb\n", baseline, get_mem_usage()-baseline,get_mem_usage());
+	//printf("Usage: %ld + %ld = %ld kb\n", baseline, get_mem_usage()-baseline,get_mem_usage());
 	printf("\nThe results can be accessed in the folder:\n %s\n",results_folder);
-
+	free(Total_conductance);
 	free(omega);
 	free(delta_V_vector);
 	free(T_vector);
