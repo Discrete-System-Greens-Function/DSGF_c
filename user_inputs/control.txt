@@ -1,5 +1,5 @@
 geometry = thin-films
-number_subvolumes_per_object = 250
+number_subvolumes_per_object = 40
 number_bulk_objects = 2
 material = SiC
 number_omega = 100
