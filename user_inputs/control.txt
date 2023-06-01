@@ -1,12 +1,11 @@
-geometry = thin-films
-number_subvolumes_per_object = 40
+geometry = sphere
+number_subvolumes_per_object = 8
 number_bulk_objects = 2
 material = SiO2
 number_omega = 100
-solution = D 
+solution = D
 single_spectrum_analysis = N 
 wave_type = T
-non_uniform_subvolumes = Y
 save_spectral_conductance = Y
 save_spectral_transmissivity = N
 save_power_dissipated = Y
