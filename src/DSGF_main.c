@@ -71,9 +71,9 @@ int main()
 
 	int N_subvolumes_per_object, N_bulk_objects, N_omega;
 	
-	char wave_type, non_uniform_subvolumes;
+	char wave_type;
 
-	read_user_control(geometry, material, &solution, &single_spectrum_analysis, &save_spectral_conductance, &save_spectral_transmissivity, &save_power_dissipated, &N_bulk_objects, &N_omega, &N_subvolumes_per_object, &wave_type, &non_uniform_subvolumes);
+	read_user_control(geometry, material, &solution, &single_spectrum_analysis, &save_spectral_conductance, &save_spectral_transmissivity, &save_power_dissipated, &N_bulk_objects, &N_omega, &N_subvolumes_per_object, &wave_type);
 
 	read_calculation_temperatures(N_Tcalc, Tcalc_vector);
 
@@ -116,32 +116,13 @@ int main()
 	}
 	
 
-	if(non_uniform_subvolumes =='N')
+	if(strcmp(geometry,"user-defined")==0)
 	{
-		set_delta_V_vector_T_vector(T1, T2, delta_V_1, delta_V_2, tot_sub_vol, const_N_subvolumes_per_object, T_vector, delta_V_vector);
+		
 	}
-	if(non_uniform_subvolumes =='Y')
+	else
 	{	
-		set_T_vector(T1, T2, tot_sub_vol, const_N_subvolumes_per_object, T_vector);
-		char *delta_v_name = "library/discretizations/thin-film/2_thin_films_Lx500nm_Ly500nm_Lz500nm_d500nm_N280_delta_V_vector.txt"; //this needs to be general
-	//char *delta_v_name = "library/discretizations/thin-film/2_thin_films_Lx1000nm_Ly100nm_Lz20nm_d100nm_N850_delta_V_vector.csv"; //this needs to be general
-	//char *delta_v_name = "library/discretizations/thin-film/2_thin_films_Lx200nm_Ly100nm_Lz20nm_d100nm_N450_delta_V_vector.txt"; //this needs to be general
-	//char *delta_v_name = "library/discretizations/thin-film/2_thin_films_Lx1000nm_Ly1000nm_Lz20nm_d100nm_N12000_delta_V_vector.txt"; //this needs to be general
-	//sprintf(delta_v_name, "library/discretizations/thin-film/%d_thin_films_Lx%dnm_Ly%dnm_Lz%dnm_d%dnm_N%d_delta_V_vector.csv", N_bulk_objects, Lx_int, Ly_int, Lz_int, d_int, tot_sub_vol);
-	FILE *import_delta_v_vector;
-	import_delta_v_vector= fopen(delta_v_name, "r");
-	char buffer[1024];
-	int i_subvol=0;
-	while(fgets(buffer,sizeof(buffer),import_delta_v_vector))//loop works
-	{   
-		char* value = strtok(buffer,", ");// token!=NULL; token = strtok(NULL,",") )
-		//printf("%d) %s \n",i_subvol+1,value); //value
-		sscanf(value, "%lf", &delta_V_vector[i_subvol]); //delta_V_vector_test
-		//printf("%d) %e \n",i_subvol+1,delta_V_vector[i_subvol]);  //delta_V_vector_test
-		i_subvol++;
-	}
-	fclose(import_delta_v_vector);
-	//printf("%s\n", delta_v_name);
+		set_delta_V_vector_T_vector(T1, T2, delta_V_1, delta_V_2, tot_sub_vol, const_N_subvolumes_per_object, T_vector, delta_V_vector);	
 	}
 	
 	printf("d = %e m \n",d);
@@ -306,7 +287,6 @@ if(strcmp(geometry,"sphere")==0) sprintf(copy_geometry, "cp ./user_inputs/Geomet
 			printf("concluded\n");
 		}
 		free(A);
-
 
 		if(solution =='I')
 		{ 
