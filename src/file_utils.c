@@ -178,7 +178,7 @@ void write_to_csv_double_array(char file_name[], int length, double array[]){
 }
 
 void populate_subvol_struct(char file_name[], int array_length, subvol shape[array_length]){
-
+	
 	int i_import = 0;
 	FILE *import_discretization = fopen(file_name, "r");
 	while (3 == fscanf(import_discretization, "%e %e %e", &shape[i_import].x, &shape[i_import].y, &shape[i_import].z))
@@ -189,20 +189,9 @@ void populate_subvol_struct(char file_name[], int array_length, subvol shape[arr
 }
 
 void populate_subvol_delta_v(char file_name[], int array_length, double delta_V_vector[array_length]){
-	int i_import = 0;
 	FILE *import_delta_v = fopen(file_name, "r");
-	/*
-	while (1 == fscanf(import_delta_v, "%lf", &delta_V_vector[i_import]))
-	{   
-		printf("here\n");
-		
-		i_import++;
-	}
-	*/
-//printf("%s\n",file_name);
 	for (int i = 0; i < array_length; i++) {
    		fscanf(import_delta_v,"%le", &delta_V_vector[i]);
-   		printf("%le\n",delta_V_vector[i_import]);
  	}
 	fclose(import_delta_v);
 }

@@ -16,28 +16,17 @@ void set_up_user_defined_geometry(int tot_sub_vol, int subvol_per_object, int N_
     
     char file_name_ud[256];
 	read_geometry_user_defined(d,file_name_ud, T1, T2);
-	printf("%s \n", file_name_ud);
 
 	subvol shape_fileud[tot_sub_vol];
     char filename[256];
     sprintf(filename, "library/discretizations/user_defined/%s_discretization.txt", file_name_ud);	
-	printf("%s \n",filename);
-	printf("line 25 %s \n", file_name_ud);
 	populate_subvol_struct(filename, tot_sub_vol, shape_fileud);
-	printf("line 27 %s \n", file_name_ud);
 	populate_R_user_defined(tot_sub_vol, shape_fileud, R);
 
-	printf("line 28 %s \n", file_name_ud);
-    //double delta_v_file_ud[tot_sub_vol];
     char filename_delta_v[256];
     sprintf(filename_delta_v, "library/discretizations/user_defined/%s_delta_V_vector.txt", file_name_ud);	
 	
-
-	printf("%s\n",filename_delta_v);
-    populate_subvol_delta_v(filename_delta_v, tot_sub_vol, delta_V_vector);
-	for (int i = 0; i < tot_sub_vol; i++)
-	{
-		printf("%le\n",delta_V_vector[i]);
-	}
+	populate_subvol_delta_v(filename_delta_v, tot_sub_vol, delta_V_vector);
+	
 	
 }
