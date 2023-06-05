@@ -1,4 +1,4 @@
-geometry = sphere
+geometry = user-defined
 number_subvolumes_per_object = 8
 number_bulk_objects = 2
 material = SiO2

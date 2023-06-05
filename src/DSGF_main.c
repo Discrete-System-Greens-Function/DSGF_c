@@ -3,7 +3,7 @@
 // Near-field radiative heat transfer framework between thermal objects 
 // Developed by RETL group at the University of Utah, USA
 
-// LAST UPDATE: February 03, 2023
+// LAST UPDATE: June 01, 2023
 // 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // General c libraries
@@ -29,6 +29,7 @@
 #include "geometry/sphere.h"
 #include "geometry/thin_film.h"
 #include "geometry/shared.h"
+#include "geometry/user_defined.h"
 
 #include "material/SiO2.h"
 #include "material/SiC.h"
@@ -77,11 +78,11 @@ int main()
 
 	read_calculation_temperatures(N_Tcalc, Tcalc_vector);
 
-	int const const_N_subvolumes_per_object = N_subvolumes_per_object;
+	int const const_N_subvolumes_per_object = N_subvolumes_per_object; // Number of subvolumes per object
 
-	int const const_N_bulk_objects = N_bulk_objects;
+	int const const_N_bulk_objects = N_bulk_objects; // Number of objects
 
-	int const const_N_omega = N_omega;
+	int const const_N_omega = N_omega; // Number of frequencies to be computed 
 
 	int tot_sub_vol = const_N_subvolumes_per_object*const_N_bulk_objects; // Assign tot_sub_vol: Computes the total number of subvolumes in the system. tot_sub_vol is defined this way because it must be a non-variable parameter due to the computations perfomed in the code. Previously, it was defined as #define tot_sub_vol const_N_subvolumes_per_object*const_N_bulk_objects
 
@@ -112,31 +113,30 @@ int main()
 	}   
 	if(strcmp(geometry,"thin-films")==0)
 	{
-		set_up_thin_film_geometry(tot_sub_vol, const_N_subvolumes_per_object, const_N_bulk_objects, &T1, &T2, &d,&delta_V_1, &delta_V_2, R);
+		set_up_thin_film_geometry(tot_sub_vol, const_N_subvolumes_per_object, const_N_bulk_objects, &T1, &T2, &d, &delta_V_1, &delta_V_2, R);
 	}
-	
-
 	if(strcmp(geometry,"user-defined")==0)
 	{
-		
+		//char file_name;
+		set_up_user_defined_geometry(tot_sub_vol,const_N_subvolumes_per_object,const_N_bulk_objects, &d, &T1, &T2, R, delta_V_vector);//T_vector,delta_V_vector, file_name_ud
+		set_T_vector(T1, T2, tot_sub_vol, const_N_subvolumes_per_object, T_vector);
 	}
 	else
 	{	
 		set_delta_V_vector_T_vector(T1, T2, delta_V_1, delta_V_2, tot_sub_vol, const_N_subvolumes_per_object, T_vector, delta_V_vector);	
 	}
-	
 	printf("d = %e m \n",d);
-
+	
 	char *results_folder = set_up_results(material, geometry, tot_sub_vol, d); // Folders for results 
 
 	char copy_control[260];
 	sprintf(copy_control, "cp ./user_inputs/control.txt  ./%s\n",results_folder);
 	system(copy_control);
-	
-	
+		
 	char copy_geometry[260];
-if(strcmp(geometry,"sphere")==0) sprintf(copy_geometry, "cp ./user_inputs/Geometry/sphere.txt  ./%s\n",results_folder);
+	if(strcmp(geometry,"sphere")==0) sprintf(copy_geometry, "cp ./user_inputs/Geometry/sphere.txt  ./%s\n",results_folder);
 	if(strcmp(geometry,"thin-films")==0) sprintf(copy_geometry, "cp ./user_inputs/Geometry/thin_films.txt  ./%s\n",results_folder);
+	if(strcmp(geometry,"user-defined")==0) sprintf(copy_geometry, "cp ./user_inputs/Geometry/user_defined.txt  ./%s\n",results_folder);
 	system(copy_geometry);	
 
 	if(save_power_dissipated =='Y'){

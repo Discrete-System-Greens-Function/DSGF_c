@@ -1,7 +1,7 @@
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // Read user inputs and create folder name in DSGF framework
 // Developed by RETL Lab, Department of Mechanical Engineering, The University of Utah, USA.
-// LAST UPDATE: JUNE 20, 2022  
+// LAST UPDATE: JUNE 01, 2023  
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 #include <stdlib.h>
@@ -54,6 +54,19 @@ void read_geometry_thin_films(double *d, double *Lx, double *Ly, double *Lz, dou
 	fscanf(import_thin_films_inputs,"%s = %lf\n",buffer, T1);
 	fscanf(import_thin_films_inputs,"%s = %lf\n",buffer, T2);	
 	fclose(import_thin_films_inputs);
+}
+
+void read_geometry_user_defined(double *d,char file_name_ud[], double *T1, double *T2){
+
+	char dirPathGeometryUserDefinedInputs[260] = "user_inputs/Geometry/user_defined.txt";
+	FILE *import_user_defined_inputs = fopen(dirPathGeometryUserDefinedInputs, "r"); 
+	char buffer[256]; 
+	fscanf(import_user_defined_inputs,"%s = %lf\n",buffer, d);
+	fscanf(import_user_defined_inputs,"%s = %s\n",buffer, file_name_ud);
+	fscanf(import_user_defined_inputs,"%s = %lf\n",buffer, T1);
+	fscanf(import_user_defined_inputs,"%s = %lf\n",buffer, T2);	
+	fclose(import_user_defined_inputs);
+	
 }
 
 void read_calculation_temperatures(int N_Tcalc, double Tcalc_vector[]){
@@ -175,6 +188,24 @@ void populate_subvol_struct(char file_name[], int array_length, subvol shape[arr
 	fclose(import_discretization);
 }
 
+void populate_subvol_delta_v(char file_name[], int array_length, double delta_V_vector[array_length]){
+	int i_import = 0;
+	FILE *import_delta_v = fopen(file_name, "r");
+	/*
+	while (1 == fscanf(import_delta_v, "%lf", &delta_V_vector[i_import]))
+	{   
+		printf("here\n");
+		
+		i_import++;
+	}
+	*/
+//printf("%s\n",file_name);
+	for (int i = 0; i < array_length; i++) {
+   		fscanf(import_delta_v,"%le", &delta_V_vector[i]);
+   		printf("%le\n",delta_V_vector[i_import]);
+ 	}
+	fclose(import_delta_v);
+}
 
 void create_pos_processing(char file_name[], char material[], double initial, double end, double time_spent, double Tcalc_vector[], double Total_conductance[], int N_Tcalc){
 	
