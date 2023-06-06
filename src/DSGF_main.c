@@ -151,7 +151,6 @@ int main()
 		write_to_csv_double_array(dirPathVector_subvolumes_volume_FileName, tot_sub_vol, delta_V_vector);
 	} // end if save_power_dissipated
 
-
 	double initial,final;
 
 	if(strcmp(material,"SiO2")==0 || strcmp(material,"u-SiC")==0)  // removed strcmp(material,"SiC")==0 || from uniform
@@ -261,40 +260,38 @@ int main()
 		for (int i_alpha = 0; i_alpha < tot_sub_vol; i_alpha++)
 		{
 			alpha_0[i_alpha] = delta_V_vector[i_alpha]*(epsilon - epsilon_ref); //Bare polarizability [m^3]
+			//printf("%e +i%e\n ",creal(alpha_0[i_alpha]),cimag(alpha_0[i_alpha]));
+			//printf("%e\n",delta_V_vector[i_alpha]);
+
 		}
+				
+		// ######### Calculation of SGF ###########
 
-		// ################### MATRICES STRUCTURE LOOPS ###########################
-		// 3N X 3N Matrices structure loops for G^0 and A:
-
-		// Linear system AG=G^0 
 		double complex (*G_0)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_0)); 
-		double complex (*A)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*A));
-
-		get_G0_A_matrices(tot_sub_vol, G_0, A, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, alpha_0, delta_V_vector);
-
-		//printf("##################### \n SOLVE LINEAR SYSTEM AG=G^0 \n##################### \n");
-		//printf("##################### \n LAPACK/LAPACKE ZGELS ROUTINE \n##################### \n");
-		//Description of ZGELS: https://extras.csc.fi/math/nag/mark21/pdf/F08/f08anf.pdf
-
+		get_G0_matrix(tot_sub_vol, G_0, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type);
 		double complex (*G_sys)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys));
-		
 		matrices_memory = get_mem_usage()-baseline; // measure matrices memory usage
-		
+
 		if(solution =='D')
 		{
+			// Solves the linear system AG=G^0, where G^0 and A are 3N X 3N matrices. 
+			double complex (*A)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*A));
+			//get_G0_A_matrices(tot_sub_vol, G_0, A, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, alpha_0, delta_V_vector, wave_type);
+			get_A_matrix(tot_sub_vol, G_0, A, k_0, alpha_0);
 			printf("Direct inversion status: ");
 			direct_solver(tot_sub_vol, A, G_0, G_sys);
 			printf("concluded\n");
+			free(A);
 		}
-		free(A);
 
 		if(solution =='I')
 		{ 
+			//get_G0_A_matrices(tot_sub_vol, G_0, A, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, alpha_0, delta_V_vector, wave_type);
 			printf("\n Iterative solver status: m= ");
 			iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_0, G_sys);
 			printf("concluded\n");
 		}
-
+		
 		free(G_0);
 
 
