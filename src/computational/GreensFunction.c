@@ -258,11 +258,11 @@ void get_A_matrix(int tot_sub_vol, double complex G_0[tot_sub_vol][tot_sub_vol][
 
 	// ################### MATRICES STRUCTURE LOOPS ###########################
 	// 3N X 3N Matrices structure loops for G^0 and A:
-	double eye2D[tot_sub_vol][tot_sub_vol][3][3];
-	//double eyeG_0[3][3] = {{1,0,0}, {0,1,0}, {0,0,1}};
+	
 	double complex alpha_0_matrix[tot_sub_vol][tot_sub_vol][3][3];
+	//double complex alpha_0_matrix_transpose[tot_sub_vol][tot_sub_vol][3][3];
 	double complex prod[tot_sub_vol][tot_sub_vol][3][3];
-
+	
 	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++)//
 	{
 		for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
@@ -278,12 +278,12 @@ void get_A_matrix(int tot_sub_vol, double complex G_0[tot_sub_vol][tot_sub_vol][
 					else
 					{
 						alpha_0_matrix[ig_0][jg_0][i_subG_0][j_subG_0] = 0.;
-					}	
+					}
+					//alpha_0_matrix_transpose[ig_0][jg_0][i_subG_0][j_subG_0] = alpha_0_matrix[jg_0][ig_0][i_subG_0][j_subG_0]; //https://akkadia.org/drepper/cpumemory.pdf
 				}
 			}
 		}
 	}				
-
 	
 	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 	{ 
@@ -291,25 +291,23 @@ void get_A_matrix(int tot_sub_vol, double complex G_0[tot_sub_vol][tot_sub_vol][
 		{
 			for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //lower triangular matrix
 			{
-				for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions 
-					{
-						for(int j_subG_0 = 0;  j_subG_0 < 3;  j_subG_0++)//loop for matricial multiplication
-						{
+				for(int j_subG_0 = 0;  j_subG_0 < 3;  j_subG_0++)//loop for matricial multiplication
+				{
 							double complex G_0_alpha_matrix_prod = 0.;
-							for (int object = 0; object < tot_sub_vol; object++)
+							for (int object = 0; object < tot_sub_vol; object++) //slow part of the code!!!!!
 							{
 								for (int axis = 0; axis < 3; axis++)
 								{
 									G_0_alpha_matrix_prod += pow(k_0,2)*G_0[ig_0][object][i_subG_0][axis]*alpha_0_matrix[object][jg_0][axis][j_subG_0];
+									//G_0_alpha_matrix_prod += pow(k_0,2)*G_0[ig_0][object][i_subG_0][axis]*alpha_0_matrix_transpose[jg_0][object][j_subG_0][axis];
 								}
 							}
 							prod[ig_0][jg_0][i_subG_0][j_subG_0] = G_0_alpha_matrix_prod;	
-						}
-					} // j_subG_0   
+				}// j_subG_0  
 			} // jg_0   	
 		}// i_subG_0   	                	
 	} // ig_0    
-
+	
 	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++)//
 	{
 		for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
@@ -318,25 +316,13 @@ void get_A_matrix(int tot_sub_vol, double complex G_0[tot_sub_vol][tot_sub_vol][
 			{
 				for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions
 				{
-					if (ig_0==jg_0) // if i=j:
+					if (ig_0==jg_0 && i_subG_0==j_subG_0) // if i=j:
 					{
-						if (i_subG_0==j_subG_0)
-						{
-							//eye2D[ig_0][jg_0][i_subG_0][j_subG_0] = 1.;
-							//A[ig_0][jg_0][i_subG_0][j_subG_0] = 1. - pow(k_0,2)*alpha_0_matrix[ig_0][jg_0][i_subG_0][j_subG_0]*G_0[ig_0][jg_0][i_subG_0][j_subG_0]; // eq. 26 from Lindsay's paper
-							A[ig_0][jg_0][i_subG_0][j_subG_0] = 1. - prod[ig_0][jg_0][i_subG_0][j_subG_0]; // eq. 26 from Lindsay's paper
-					
-						}
-						else
-						{
-							//eye2D[ig_0][jg_0][i_subG_0][j_subG_0] = 0.;
-							//A[ig_0][jg_0][i_subG_0][j_subG_0] = 0. - pow(k_0,2)*alpha_0_matrix[ig_0][jg_0][i_subG_0][j_subG_0]*G_0[ig_0][jg_0][i_subG_0][j_subG_0]; // eq. 26 from Lindsay's paper
-							A[ig_0][jg_0][i_subG_0][j_subG_0] = 0. - prod[ig_0][jg_0][i_subG_0][j_subG_0]; // eq. 26 from Lindsay's paper
-						}
+						//A[ig_0][jg_0][i_subG_0][j_subG_0] = 1. - pow(k_0,2)*alpha_0_matrix[ig_0][jg_0][i_subG_0][j_subG_0]*G_0[ig_0][jg_0][i_subG_0][j_subG_0]; // eq. 26 from Lindsay's paper
+						A[ig_0][jg_0][i_subG_0][j_subG_0] = 1. - prod[ig_0][jg_0][i_subG_0][j_subG_0]; // eq. 26 from Lindsay's paper
 					}	
 					else
 					{
-							//eye2D[ig_0][jg_0][i_subG_0][j_subG_0] = 0.;
 						//A[ig_0][jg_0][i_subG_0][j_subG_0] = 0. - pow(k_0,2)*alpha_0_matrix[ig_0][jg_0][i_subG_0][j_subG_0]*G_0[ig_0][jg_0][i_subG_0][j_subG_0]; // eq. 26 from Lindsay's paper
 						A[ig_0][jg_0][i_subG_0][j_subG_0] = 0. - prod[ig_0][jg_0][i_subG_0][j_subG_0]; // eq. 26 from Lindsay's paper
 					}
