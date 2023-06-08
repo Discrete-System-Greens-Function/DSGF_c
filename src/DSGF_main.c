@@ -66,8 +66,8 @@ int main()
 
 
 	long baseline = get_mem_usage(); // measure baseline memory usage
-	long matrices_memory;
-	
+	long calculation_memory, total_memory;
+
 	clock_t begin = clock();  /* set timer here, do your time-consuming job */
 
 	int N_subvolumes_per_object, N_bulk_objects, N_omega;
@@ -267,33 +267,56 @@ int main()
 				
 		// ######### Calculation of SGF ###########
 
-		double complex (*G_0)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_0)); 
-		get_G0_matrix(tot_sub_vol, G_0, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type);
 		double complex (*G_sys)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys));
-		matrices_memory = get_mem_usage()-baseline; // measure matrices memory usage
-
+		
 		if(solution =='D')
-		{
+		{	
 			// Solves the linear system AG=G^0, where G^0 and A are 3N X 3N matrices. 
+			
+			double complex (*G_0)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_0)); 
+			get_G0_matrix(tot_sub_vol, G_0, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type);
+			
 			double complex (*A)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*A));
-			//get_G0_A_matrices(tot_sub_vol, G_0, A, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, alpha_0, delta_V_vector, wave_type);
 			get_A_matrix(tot_sub_vol, G_0, A, k_0, alpha_0);
-			printf("Direct inversion status: ");
-			direct_solver(tot_sub_vol, A, G_0, G_sys);
-			printf("concluded\n");
+			
+			//get_G0_A_matrices(tot_sub_vol, G_0, A, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, alpha_0, delta_V_vector, wave_type);
+			
+			double complex (*A_direct) = calloc(3*3*tot_sub_vol*tot_sub_vol, sizeof(*A_direct));
+			A_direct_populator(tot_sub_vol, A, A_direct);
 			free(A);
+			
+			double complex (*b_direct) = calloc(3*3*tot_sub_vol*tot_sub_vol, sizeof(*b_direct));
+			b_direct_populator(tot_sub_vol, G_0, b_direct);
+			free(G_0);
+
+			printf("Direct inversion status: ");
+			direct_solver(tot_sub_vol, A_direct, b_direct, G_sys); // we noticed an memory improved from the old function direct_solver(tot_sub_vol, A, G_0, G_sys);
+
+			free(A_direct);
+			free(b_direct);	
+			printf("concluded\n");
+			
 		}
 
 		if(solution =='I')
-		{ 
-			//get_G0_A_matrices(tot_sub_vol, G_0, A, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, alpha_0, delta_V_vector, wave_type);
+		{ 	
+			double complex (*G_0)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_0)); 
+			get_G0_matrix(tot_sub_vol, G_0, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type);
+			
+			double complex (*G_sys_old)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys_old));
+			matrix_reshape(3, tot_sub_vol, G_sys_old, G_0); // this reshapes 2 4D matrices to 2 2D matrices, where G0 and eyeA are 4D and G_sys_old and eyeA_2d are the respective 2D matrices
+			free(G_0);
+
 			printf("\n Iterative solver status: m= ");
-			iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_0, G_sys);
-			printf("concluded\n");
+			iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys_old, G_sys); //  we noticed an memory improved from the old function iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_0, G_sys);
+			
+			free(G_sys_old);
+			printf("concluded\n");	
+			
 		}
 		
-		free(G_0);
-
+		
+		calculation_memory = get_mem_usage()-baseline;
 
 		// #################################################################
 		//  Spectral and total conductance between bulk objects at temp. T
@@ -429,18 +452,16 @@ int main()
 
 	clock_t end = clock(); //end timer
 	double time_spent = (double)(end - begin) / CLOCKS_PER_SEC; //calculate time for the code
-	long total_memory = get_mem_usage(); // measure post-processing memory usage
+	total_memory = get_mem_usage(); // measure post-processing memory usage
 	{
 		FILE * memory; //append
 		char dirPathMemory_FileName[260];
 		sprintf(dirPathMemory_FileName, "matlab_scripts/memory/memory_analysis.csv"); // path where the file is stored
 		memory = fopen(dirPathMemory_FileName, "a"); //append
-		fprintf(memory,"%d,%c,%ld,%ld,%ld\n",tot_sub_vol,solution,baseline,matrices_memory,total_memory); 
+		fprintf(memory,"%d,%c,%ld,%ld,%ld,%f s\n",tot_sub_vol,solution,baseline,calculation_memory,total_memory,time_spent); // matrices_memory
 		fclose(memory);
 	}
 	 
-
-	//printf("Usage: %ld + %ld = %ld kb\n", baseline, get_mem_usage()-baseline,get_mem_usage());
 	printf("\nThe results can be accessed in the folder:\n %s\n",results_folder);
 	free(Total_conductance);
 	free(omega);
