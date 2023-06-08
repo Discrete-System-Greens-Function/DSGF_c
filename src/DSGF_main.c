@@ -272,28 +272,9 @@ int main()
 		if(solution =='D')
 		{	
 			// Solves the linear system AG=G^0, where G^0 and A are 3N X 3N matrices. 
-			
-			double complex (*G_0)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_0)); 
-			get_G0_matrix(tot_sub_vol, G_0, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type);
-			
-			double complex (*A)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*A));
-			get_A_matrix(tot_sub_vol, G_0, A, k_0, alpha_0);
-			
-			//get_G0_A_matrices(tot_sub_vol, G_0, A, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, alpha_0, delta_V_vector, wave_type);
-			
-			double complex (*A_direct) = calloc(3*3*tot_sub_vol*tot_sub_vol, sizeof(*A_direct));
-			A_direct_populator(tot_sub_vol, A, A_direct);
-			free(A);
-			
-			double complex (*b_direct) = calloc(3*3*tot_sub_vol*tot_sub_vol, sizeof(*b_direct));
-			b_direct_populator(tot_sub_vol, G_0, b_direct);
-			free(G_0);
-
 			printf("Direct inversion status: ");
-			direct_solver(tot_sub_vol, A_direct, b_direct, G_sys); // we noticed an memory improved from the old function direct_solver(tot_sub_vol, A, G_0, G_sys);
-
-			free(A_direct);
-			free(b_direct);	
+			//direct_solver(tot_sub_vol, A_direct, b_direct, G_sys); // we noticed an memory improved from the old function direct_solver(tot_sub_vol, A, G_0, G_sys);
+			direct_solver(tot_sub_vol, G_sys, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type, alpha_0);
 			printf("concluded\n");
 			
 		}

@@ -1,5 +1,5 @@
 geometry = user-defined
-number_subvolumes_per_object = 64
+number_subvolumes_per_object = 36
 number_bulk_objects = 2
 material = SiO2
 number_omega = 100
