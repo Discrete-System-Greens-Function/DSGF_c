@@ -1,4 +1,4 @@
 d = 500.e-9
-file_name = 2_thin_films_Lx500nm_Ly500nm_Lz500nm_d500nm_N72
+file_name = 2_thin_films_Lx500nm_Ly500nm_Lz500nm_d500nm_N16
 T1 = 400
 T2 = 300
