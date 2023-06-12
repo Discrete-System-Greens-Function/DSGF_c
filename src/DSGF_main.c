@@ -68,9 +68,9 @@ int main()
 
 	int N_subvolumes_per_object, N_bulk_objects, N_omega;
 
-	char wave_type, non_uniform_subvolumes, multithread;
+	char wave_type, multithread;
 
-	read_user_control(geometry, material, &solution, &single_spectrum_analysis, &save_spectral_conductance, &save_spectral_transmissivity, &save_power_dissipated, &N_bulk_objects, &N_omega, &N_subvolumes_per_object, &wave_type, &non_uniform_subvolumes, &multithread);
+	read_user_control(geometry, material, &solution, &single_spectrum_analysis, &save_spectral_conductance, &save_spectral_transmissivity, &save_power_dissipated, &N_bulk_objects, &N_omega, &N_subvolumes_per_object, &wave_type, &multithread);
 
 	printf("%c\n", multithread);
 

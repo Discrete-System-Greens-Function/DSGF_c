@@ -4,7 +4,7 @@
 #include <complex.h>
 #include <functions_DSGF.h>
 
-void read_user_control(char *geometry,char *material, char *solution, char *single_spectrum_analysis, char *save_spectral_conductance, char *save_spectral_transmissivity, char *save_power_dissipated, int *number_bulk_objects, int *number_omega, int *number_subvolumes_per_object, char* wave_type, char *non_uniform_subvolumes, char *multithread);
+void read_user_control(char *geometry,char *material, char *solution, char *single_spectrum_analysis, char *save_spectral_conductance, char *save_spectral_transmissivity, char *save_power_dissipated, int *number_bulk_objects, int *number_omega, int *number_subvolumes_per_object, char* wave_type, char *multithread);
 
 void read_geometry_sphere(double *d, double *radius, double *T1, double *T2);
 
