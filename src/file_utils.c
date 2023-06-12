@@ -24,6 +24,7 @@ void read_user_control(char *geometry,char *material, char *solution, char *sing
 	fscanf(import_control_inputs,"%s = %c\n",buffer, solution);
 	fscanf(import_control_inputs,"%s = %c\n",buffer, single_spectrum_analysis);
 	fscanf(import_control_inputs,"%s = %c\n",buffer, wave_type);
+	fscanf(import_control_inputs,"%s = %c\n",buffer, non_uniform_subvolumes);
 	fscanf(import_control_inputs,"%s = %c\n",buffer, save_spectral_conductance);
 	fscanf(import_control_inputs,"%s = %c\n",buffer, save_spectral_transmissivity); 
 	fscanf(import_control_inputs,"%s = %c\n",buffer, save_power_dissipated);

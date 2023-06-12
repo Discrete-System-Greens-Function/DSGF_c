@@ -74,6 +74,8 @@ int main()
 
 	read_user_control(geometry, material, &solution, &single_spectrum_analysis, &save_spectral_conductance, &save_spectral_transmissivity, &save_power_dissipated, &N_bulk_objects, &N_omega, &N_subvolumes_per_object, &wave_type, &non_uniform_subvolumes, &multithread);
 
+	printf("%c\n", multithread);
+
 	read_calculation_temperatures(N_Tcalc, Tcalc_vector);
 
 	int const const_N_subvolumes_per_object = N_subvolumes_per_object; // Number of subvolumes per object
