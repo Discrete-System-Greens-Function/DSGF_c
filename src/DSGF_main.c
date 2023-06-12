@@ -43,8 +43,6 @@
 #include <lapacke.h>
 #include "lapack_header.h" //header with Lapack definitions
 
-// #include <omp.h> // library for OpenMP
-
 // #################################################################
 // ################### START OF THE CODE ###########################
 // #################################################################
@@ -216,6 +214,7 @@ int main()
 		omega_range = const_N_omega;
 
 	#pragma omp parallel for if (multithread == 'Y')
+
 	for (int i_omega = 0; i_omega < omega_range; i_omega++) // Frequency loop
 	{
 
@@ -270,7 +269,9 @@ int main()
 		{	
 			// Solves the linear system AG=G^0, where G^0 and A are 3N X 3N matrices. 
 			printf("Direct inversion status: ");
-			//direct_solver(tot_sub_vol, A_direct, b_direct, G_sys); // we noticed an memory improved from the old function direct_solver(tot_sub_vol, A, G_0, G_sys);
+			
+			//direct_solver(tot_sub_vol, A_direct, b_direct, G_sys); // we noticed an memory improved from the old function 
+			//direct_solver(tot_sub_vol, A, G_0, G_sys);
 			direct_solver(tot_sub_vol, G_sys, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type, alpha_0);
 			printf("concluded\n");
 			
@@ -278,21 +279,21 @@ int main()
 
 		if(solution =='I')
 		{ 	
+			/*
 			double complex (*G_0)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_0)); 
 			get_G0_matrix(tot_sub_vol, G_0, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type);
 			
 			double complex (*G_sys_old)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys_old));
 			matrix_reshape(3, tot_sub_vol, G_sys_old, G_0); // this reshapes 2 4D matrices to 2 2D matrices, where G0 and eyeA are 4D and G_sys_old and eyeA_2d are the respective 2D matrices
 			free(G_0);
-
+			*/
 			printf("\n Iterative solver status: m= ");
-			iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys_old, G_sys); //  we noticed an memory improved from the old function iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_0, G_sys);
-			
-			free(G_sys_old);
+			//iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys_old, G_sys); //  we noticed an memory improved from the old function iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_0, G_sys);
+			iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type);
+			//free(G_sys_old);
 			printf("concluded\n");	
 			
 		}
-		
 		
 		calculation_memory = get_mem_usage()-baseline;
 
