@@ -10,6 +10,8 @@ void read_geometry_sphere(double *d, double *radius, double *T1, double *T2);
 
 void read_geometry_thin_films(double *d, double *Lx, double *Ly, double *Lz, double *T1, double *T2);
 
+void read_geometry_user_defined(double *d, char file_name_ud[], double *T1, double *T2);
+
 void read_calculation_temperatures(int N_Tcalc, double Tcalc_vector[]);
 
 void create_folder(char folder_name[]);
@@ -24,6 +26,8 @@ void write_to_csv_double_matrix(char file_name[], int rows, int cols, double mat
 void write_to_csv_double_array(char file_name[], int length, double array[]);
 
 void populate_subvol_struct(char file_name[], int array_length, subvol shape[array_length]);
+
+void populate_subvol_delta_v(char file_name[], int array_length, double delta_V_vector[array_length]);
 
 void create_pos_processing(char file_name[], char material[], double initial, double end, double time_spent, double T_calc_vector[], double Total_conductance[], int N_Tcalc);
 

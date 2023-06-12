@@ -1,10 +1,10 @@
-geometry = thin-films
-number_subvolumes_per_object = 64
+geometry = user-defined
+number_subvolumes_per_object = 36
 number_bulk_objects = 2
 material = SiC
 number_omega = 100
-solution = D 
-single_spectrum_analysis = N 
+solution = D
+single_spectrum_analysis = N
 wave_type = T
 non_uniform_subvolumes = N
 save_spectral_conductance = N

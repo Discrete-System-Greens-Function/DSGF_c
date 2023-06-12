@@ -16,8 +16,9 @@ int N_omega; //  Number of frequencies to evaluate
 // %%%%%%  Material, geometry and temperature %%%%%%%%%%%
 
 char material[]; // Material options: SiC or SiO2
-char geometry[]; //Geometry options: sphere or thin-films
+char geometry[]; //Geometry options: sphere, thin-films or user-defined
 char discretization_thin_film[260]; //discretization_thin_film = 2_thin_films_Lx200nm_Ly1um_Lz200nm_d150nm_N640_discretization
+//char file_name_ud[]; // user_defined
 
 double d; // Separation distance
 

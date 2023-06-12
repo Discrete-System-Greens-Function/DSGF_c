@@ -77,8 +77,9 @@ void G_sys_new_populator(int tot_sub_vol, int mm, int jg_0, double complex G_sys
 
 void offdiagonal_solver(int tot_sub_vol, int mm, double k, double complex alpha_0[], double complex G_sys_old[3*tot_sub_vol][3*tot_sub_vol], double complex G_sys_new[3*tot_sub_vol][3*tot_sub_vol]){
 
-
-	// Next, solve all systems of equations for ii not equal to mm		
+	/*
+	double complex G_sys_new_transpose[3*tot_sub_vol][3*tot_sub_vol];
+	
 	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 	{ 
 		for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
@@ -86,7 +87,25 @@ void offdiagonal_solver(int tot_sub_vol, int mm, double k, double complex alpha_
 			int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
 			for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //lower triangular matrix
 			{
-				if(ig_0 != mm)
+				for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
+				{
+					int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
+					G_sys_new_transpose[ig_0_2d][jg_0_2d] = G_sys_new[jg_0_2d][ig_0_2d]; //https://akkadia.org/drepper/cpumemory.pdf
+				}
+			}
+		}
+	}		
+	*/
+
+	// Next, solve all systems of equations for ii not equal to mm		
+	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
+	{ 
+		if(ig_0 != mm)
+		{
+			for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
+			{
+				int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
+				for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //lower triangular matrix
 				{
 					for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
 					{
@@ -96,14 +115,13 @@ void offdiagonal_solver(int tot_sub_vol, int mm, double k, double complex alpha_
 						{
 							int mm_2d = (3*mm + m_sub);
 							G_sys_prod += G_sys_old[ig_0_2d][mm_2d]*G_sys_new[mm_2d][jg_0_2d];
+							//G_sys_prod += G_sys_old[ig_0_2d][mm_2d]*G_sys_new_transpose[jg_0_2d][mm_2d];	
 						}
-
 						G_sys_new[ig_0_2d][jg_0_2d] = G_sys_old[ig_0_2d][jg_0_2d] + pow(k,2)*alpha_0[mm]*G_sys_prod;
-
-					} // j_subG_0            				
-				} // if(ig_0 != mm) 
+					} // j_subG_0    
 			} // jg_0   	
-		}// i_subG_0   	                	
+		}// i_subG_0   	        				
+		} // if(ig_0 != mm)              	
 	} // ig_0    
 
 }
@@ -142,11 +160,10 @@ void core_solver(int tot_sub_vol, double complex epsilon, double complex epsilon
 		offdiagonal_solver(tot_sub_vol, mm, k, alpha_0, G_sys_old, G_sys_new);
 
 		memcpy(G_sys_old,G_sys_new,3*tot_sub_vol*3*tot_sub_vol*sizeof(double complex)); // Update G_old = G_new for next iteration.
-
-
 	}//end mm loop 
 }
 
+/*
 void iterative_solver(int tot_sub_vol, double complex epsilon, double complex epsilon_ref, double k, double delta_V_vector[], double complex alpha_0[],double complex G_0[tot_sub_vol][tot_sub_vol][3][3], double complex G_sys[3*tot_sub_vol][3*tot_sub_vol]){
 
 
@@ -172,5 +189,18 @@ void iterative_solver(int tot_sub_vol, double complex epsilon, double complex ep
 
 	free(G_sys_new);
 	free(G_sys_old);
+
+}
+*/
+
+void iterative_solver(int tot_sub_vol, double complex epsilon, double complex epsilon_ref, double k, double delta_V_vector[], double complex alpha_0[],double complex G_sys_old[3*tot_sub_vol][3*tot_sub_vol], double complex G_sys[3*tot_sub_vol][3*tot_sub_vol]){
+
+	double complex (*G_sys_new)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys_new));
+    
+	core_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys_new, G_sys_old);
+
+	memcpy(G_sys,G_sys_new,3*tot_sub_vol*3*tot_sub_vol*sizeof(double complex)); //Populate G_sys with G_new
+
+	free(G_sys_new);
 
 }

@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "functions_dsgf.h": "c",
+        "file_utils.h": "c",
+        "user_inputs.h": "c",
+        "errno.h": "c"
+    }
+}

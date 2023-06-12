@@ -3,8 +3,8 @@
 // Near-field radiative heat transfer framework between thermal objects
 // Developed by RETL group at the University of Utah, USA
 
-// LAST UPDATE: February 03, 2023
-//
+// LAST UPDATE: June 01, 2023
+// 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // General c libraries
 #include <stdio.h>
@@ -29,6 +29,7 @@
 #include "geometry/sphere.h"
 #include "geometry/thin_film.h"
 #include "geometry/shared.h"
+#include "geometry/user_defined.h"
 
 #include "material/SiO2.h"
 #include "material/SiC.h"
@@ -63,9 +64,9 @@ int main()
 	const double epsilon_ref = 1.;				 // dielectric function of the background reference medium
 
 	long baseline = get_mem_usage(); // measure baseline memory usage
-	long matrices_memory;
+	long calculation_memory, total_memory;
 
-	clock_t begin = clock(); /* set timer here, do your time-consuming job */
+	clock_t begin = clock();  /* set timer here, do your time-consuming job */
 
 	int N_subvolumes_per_object, N_bulk_objects, N_omega;
 
@@ -75,11 +76,11 @@ int main()
 
 	read_calculation_temperatures(N_Tcalc, Tcalc_vector);
 
-	int const const_N_subvolumes_per_object = N_subvolumes_per_object;
+	int const const_N_subvolumes_per_object = N_subvolumes_per_object; // Number of subvolumes per object
 
-	int const const_N_bulk_objects = N_bulk_objects;
+	int const const_N_bulk_objects = N_bulk_objects; // Number of objects
 
-	int const const_N_omega = N_omega;
+	int const const_N_omega = N_omega; // Number of frequencies to be computed 
 
 	int tot_sub_vol = const_N_subvolumes_per_object * const_N_bulk_objects; // Assign tot_sub_vol: Computes the total number of subvolumes in the system. tot_sub_vol is defined this way because it must be a non-variable parameter due to the computations perfomed in the code. Previously, it was defined as #define tot_sub_vol const_N_subvolumes_per_object*const_N_bulk_objects
 
@@ -111,49 +112,29 @@ int main()
 	{
 		set_up_thin_film_geometry(tot_sub_vol, const_N_subvolumes_per_object, const_N_bulk_objects, &T1, &T2, &d, &delta_V_1, &delta_V_2, R);
 	}
-
-	if (non_uniform_subvolumes == 'N')
+	if(strcmp(geometry,"user-defined")==0)
 	{
-		set_delta_V_vector_T_vector(T1, T2, delta_V_1, delta_V_2, tot_sub_vol, const_N_subvolumes_per_object, T_vector, delta_V_vector);
-	}
-	if (non_uniform_subvolumes == 'Y')
-	{
+		//char file_name;
+		set_up_user_defined_geometry(tot_sub_vol,const_N_subvolumes_per_object,const_N_bulk_objects, &d, &T1, &T2, R, delta_V_vector);//T_vector,delta_V_vector, file_name_ud
 		set_T_vector(T1, T2, tot_sub_vol, const_N_subvolumes_per_object, T_vector);
-		char *delta_v_name = "library/discretizations/thin-film/2_thin_films_Lx500nm_Ly500nm_Lz500nm_d500nm_N280_delta_V_vector.txt"; // this needs to be general
-		// char *delta_v_name = "library/discretizations/thin-film/2_thin_films_Lx1000nm_Ly100nm_Lz20nm_d100nm_N850_delta_V_vector.csv"; //this needs to be general
-		// char *delta_v_name = "library/discretizations/thin-film/2_thin_films_Lx200nm_Ly100nm_Lz20nm_d100nm_N450_delta_V_vector.txt"; //this needs to be general
-		// char *delta_v_name = "library/discretizations/thin-film/2_thin_films_Lx1000nm_Ly1000nm_Lz20nm_d100nm_N12000_delta_V_vector.txt"; //this needs to be general
-		// sprintf(delta_v_name, "library/discretizations/thin-film/%d_thin_films_Lx%dnm_Ly%dnm_Lz%dnm_d%dnm_N%d_delta_V_vector.csv", N_bulk_objects, Lx_int, Ly_int, Lz_int, d_int, tot_sub_vol);
-		FILE *import_delta_v_vector;
-		import_delta_v_vector = fopen(delta_v_name, "r");
-		char buffer[1024];
-		int i_subvol = 0;
-		while (fgets(buffer, sizeof(buffer), import_delta_v_vector)) // loop works
-		{
-			char *value = strtok(buffer, ", "); // token!=NULL; token = strtok(NULL,",") )
-			// printf("%d) %s \n",i_subvol+1,value); //value
-			sscanf(value, "%lf", &delta_V_vector[i_subvol]); // delta_V_vector_test
-			// printf("%d) %e \n",i_subvol+1,delta_V_vector[i_subvol]);  //delta_V_vector_test
-			i_subvol++;
-		}
-		fclose(import_delta_v_vector);
-		// printf("%s\n", delta_v_name);
 	}
-
-	printf("d = %e m \n", d);
-
-	char *results_folder = set_up_results(material, geometry, tot_sub_vol, d); // Folders for results
+	else
+	{	
+		set_delta_V_vector_T_vector(T1, T2, delta_V_1, delta_V_2, tot_sub_vol, const_N_subvolumes_per_object, T_vector, delta_V_vector);	
+	}
+	printf("d = %e m \n",d);
+	
+	char *results_folder = set_up_results(material, geometry, tot_sub_vol, d); // Folders for results 
 
 	char copy_control[260];
 	sprintf(copy_control, "cp ./user_inputs/control.txt  ./%s\n", results_folder);
 	system(copy_control);
-
+		
 	char copy_geometry[260];
-	if (strcmp(geometry, "sphere") == 0)
-		sprintf(copy_geometry, "cp ./user_inputs/Geometry/sphere.txt  ./%s\n", results_folder);
-	if (strcmp(geometry, "thin-films") == 0)
-		sprintf(copy_geometry, "cp ./user_inputs/Geometry/thin_films.txt  ./%s\n", results_folder);
-	system(copy_geometry);
+	if(strcmp(geometry,"sphere")==0) sprintf(copy_geometry, "cp ./user_inputs/Geometry/sphere.txt  ./%s\n",results_folder);
+	if(strcmp(geometry,"thin-films")==0) sprintf(copy_geometry, "cp ./user_inputs/Geometry/thin_films.txt  ./%s\n",results_folder);
+	if(strcmp(geometry,"user-defined")==0) sprintf(copy_geometry, "cp ./user_inputs/Geometry/user_defined.txt  ./%s\n",results_folder);
+	system(copy_geometry);	
 
 	if (save_power_dissipated == 'Y')
 	{
@@ -168,9 +149,9 @@ int main()
 		write_to_csv_double_array(dirPathVector_subvolumes_volume_FileName, tot_sub_vol, delta_V_vector);
 	} // end if save_power_dissipated
 
-	double initial, final;
+	double initial,final;
 
-	if (strcmp(material, "SiO2") == 0 || strcmp(material, "u-SiC") == 0) // removed strcmp(material,"SiC")==0 || from uniform
+	if(strcmp(material,"SiO2")==0 || strcmp(material,"u-SiC")==0)  // removed strcmp(material,"SiC")==0 || from uniform
 	{
 		// Uniform spectrum
 		initial = 5.e-6;
@@ -273,42 +254,45 @@ int main()
 		double complex alpha_0[tot_sub_vol];
 		for (int i_alpha = 0; i_alpha < tot_sub_vol; i_alpha++)
 		{
-			alpha_0[i_alpha] = delta_V_vector[i_alpha] * (epsilon - epsilon_ref); // Bare polarizability [m^3]
+			alpha_0[i_alpha] = delta_V_vector[i_alpha]*(epsilon - epsilon_ref); //Bare polarizability [m^3]
+			//printf("%e +i%e\n ",creal(alpha_0[i_alpha]),cimag(alpha_0[i_alpha]));
+			//printf("%e\n",delta_V_vector[i_alpha]);
+
 		}
+				
+		// ######### Calculation of SGF ###########
 
-		// ################### MATRICES STRUCTURE LOOPS ###########################
-		// 3N X 3N Matrices structure loops for G^0 and A:
-
-		// Linear system AG=G^0
-		double complex(*G_0)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_0));
-		double complex(*A)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*A));
-
-		get_G0_A_matrices(tot_sub_vol, G_0, A, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, alpha_0, delta_V_vector);
-
-		// printf("##################### \n SOLVE LINEAR SYSTEM AG=G^0 \n##################### \n");
-		// printf("##################### \n LAPACK/LAPACKE ZGELS ROUTINE \n##################### \n");
-		// Description of ZGELS: https://extras.csc.fi/math/nag/mark21/pdf/F08/f08anf.pdf
-
-		double complex(*G_sys)[3 * tot_sub_vol] = calloc(3 * tot_sub_vol, sizeof(*G_sys));
-
-		matrices_memory = get_mem_usage() - baseline; // measure matrices memory usage
-
-		if (solution == 'D')
-		{
+		double complex (*G_sys)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys));
+		
+		if(solution =='D')
+		{	
+			// Solves the linear system AG=G^0, where G^0 and A are 3N X 3N matrices. 
 			printf("Direct inversion status: ");
-			direct_solver(tot_sub_vol, A, G_0, G_sys);
+			//direct_solver(tot_sub_vol, A_direct, b_direct, G_sys); // we noticed an memory improved from the old function direct_solver(tot_sub_vol, A, G_0, G_sys);
+			direct_solver(tot_sub_vol, G_sys, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type, alpha_0);
 			printf("concluded\n");
+			
 		}
-		free(A);
 
-		if (solution == 'I')
-		{
+		if(solution =='I')
+		{ 	
+			double complex (*G_0)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_0)); 
+			get_G0_matrix(tot_sub_vol, G_0, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type);
+			
+			double complex (*G_sys_old)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys_old));
+			matrix_reshape(3, tot_sub_vol, G_sys_old, G_0); // this reshapes 2 4D matrices to 2 2D matrices, where G0 and eyeA are 4D and G_sys_old and eyeA_2d are the respective 2D matrices
+			free(G_0);
+
 			printf("\n Iterative solver status: m= ");
-			iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_0, G_sys);
-			printf("concluded\n");
+			iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys_old, G_sys); //  we noticed an memory improved from the old function iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_0, G_sys);
+			
+			free(G_sys_old);
+			printf("concluded\n");	
+			
 		}
-
-		free(G_0);
+		
+		
+		calculation_memory = get_mem_usage()-baseline;
 
 		// #################################################################
 		//  Spectral and total conductance between bulk objects at temp. T
@@ -441,22 +425,19 @@ int main()
 		}
 	}
 
-	clock_t end = clock();										// end timer
-	double time_spent = (double)(end - begin) / CLOCKS_PER_SEC; // calculate time for the code
-	long total_memory = get_mem_usage();						// measure post-processing memory usage
-	/*
+	clock_t end = clock(); //end timer
+	double time_spent = (double)(end - begin) / CLOCKS_PER_SEC; //calculate time for the code
+	total_memory = get_mem_usage(); // measure post-processing memory usage
 	{
 		FILE * memory; //append
 		char dirPathMemory_FileName[260];
 		sprintf(dirPathMemory_FileName, "matlab_scripts/memory/memory_analysis.csv"); // path where the file is stored
 		memory = fopen(dirPathMemory_FileName, "a"); //append
-		fprintf(memory,"%d,%c,%ld,%ld,%ld\n",tot_sub_vol,solution,baseline,matrices_memory,total_memory);
+		fprintf(memory,"%d,%c,%ld,%ld,%ld,%f s\n",tot_sub_vol,solution,baseline,calculation_memory,total_memory,time_spent); // matrices_memory
 		fclose(memory);
 	}
-	 */
-
-	// printf("Usage: %ld + %ld = %ld kb\n", baseline, get_mem_usage()-baseline,get_mem_usage());
-	printf("\nThe results can be accessed in the folder:\n %s\n", results_folder);
+	 
+	printf("\nThe results can be accessed in the folder:\n %s\n",results_folder);
 	free(Total_conductance);
 	free(omega);
 	free(delta_V_vector);

@@ -33,4 +33,3 @@ void set_T_vector(double T1, double T2, int tot_sub_vol, int const_N_subvolumes_
 	}  
 }
 
-
