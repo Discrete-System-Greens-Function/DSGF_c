@@ -165,7 +165,17 @@ int main()
 		}
 		if (uniform_spectra == 'N')
 		{
-			
+			// Import non-uniform spectra
+			FILE *non_uniform_spectra;
+			char dirPathFileNameSpectra[260];
+
+			sprintf(dirPathFileNameSpectra, "library/Non_uniform_spectra/SiO2_non_uniform_spectra_%d.csv", const_N_omega);
+			non_uniform_spectra = fopen(dirPathFileNameSpectra, "r");
+			for (int i = 0; i < const_N_omega; i++)
+			{
+				fscanf(non_uniform_spectra, "%lf", &omega[i]); //
+			}
+			fclose(non_uniform_spectra);
 		}	
 	}
 
@@ -204,7 +214,17 @@ int main()
 		}
 		if (uniform_spectra == 'N')
 		{
+			// Import non-uniform spectra
+			FILE *non_uniform_spectra;
+			char dirPathFileNameSpectra[260];
 
+			sprintf(dirPathFileNameSpectra, "library/Non_uniform_spectra/SiN_non_uniform_spectra_%d.csv", const_N_omega);
+			non_uniform_spectra = fopen(dirPathFileNameSpectra, "r");
+			for (int i = 0; i < const_N_omega; i++)
+			{
+				fscanf(non_uniform_spectra, "%lf", &omega[i]); //
+			}
+			fclose(non_uniform_spectra);
 		}
 	}
 
