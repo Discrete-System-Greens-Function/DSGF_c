@@ -148,12 +148,11 @@ int main()
 		write_to_csv_double_array(dirPathVector_subvolumes_volume_FileName, tot_sub_vol, delta_V_vector);
 	} // end if save_power_dissipated
 
-	double initial,final;
-
 	if(strcmp(material,"SiO2")==0 || strcmp(material,"u-SiC")==0)  // removed strcmp(material,"SiC")==0 || from uniform
 	{
 		if (uniform_spectra == 'Y')
 		{
+			double initial,final;
 			initial = 5.e-6;
 			final = 25.e-6;
 			double lambda[const_N_omega];
@@ -165,8 +164,7 @@ int main()
 		}
 		if (uniform_spectra == 'N')
 		{
-			// Import non-uniform spectra
-			FILE *non_uniform_spectra;
+			FILE *non_uniform_spectra; // Import non-uniform spectra
 			char dirPathFileNameSpectra[260];
 
 			sprintf(dirPathFileNameSpectra, "library/Non_uniform_spectra/SiO2_non_uniform_spectra_%d.csv", const_N_omega);
@@ -183,14 +181,14 @@ int main()
 	{
 		if (uniform_spectra == 'Y')
 		{
+			double initial,final;
 			initial = 1.4e14;
 			final = 1.9e14;
 			double_linspace(initial, final, const_N_omega, omega);
 		}
 		if (uniform_spectra == 'N')
 		{
-			// Import non-uniform spectra
-			FILE *non_uniform_spectra;
+			FILE *non_uniform_spectra; 	// Import non-uniform spectra
 			char dirPathFileNameSpectra[260];
 
 			sprintf(dirPathFileNameSpectra, "library/Non_uniform_spectra/SiC_non_uniform_spectra_%d.csv", const_N_omega);
@@ -207,15 +205,14 @@ int main()
 	{
 		if (uniform_spectra == 'Y')
 		{
-		// Uniform spectrum:
+		double initial,final;
 		initial = 2.e13;
 		final = 3.e14;
 		double_linspace(initial, final, const_N_omega, omega);
 		}
 		if (uniform_spectra == 'N')
 		{
-			// Import non-uniform spectra
-			FILE *non_uniform_spectra;
+			FILE *non_uniform_spectra; // Import non-uniform spectra
 			char dirPathFileNameSpectra[260];
 
 			sprintf(dirPathFileNameSpectra, "library/Non_uniform_spectra/SiN_non_uniform_spectra_%d.csv", const_N_omega);
@@ -227,7 +224,6 @@ int main()
 			fclose(non_uniform_spectra);
 		}
 	}
-
 	// ################## FREE-SPACE GREEN'S FUNCTION AND INTERACTION A MATRIX #####################
 	//  Fill terms for G^0:
 
