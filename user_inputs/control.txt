@@ -1,9 +1,10 @@
 geometry = user-defined
 number_subvolumes_per_object = 36
 number_bulk_objects = 2
-material = SiO2
+material = SiC
 epsilon_ref = 1
 number_omega = 100
+uniform_spectra = N
 solution = D
 multithread = Y
 single_spectrum_analysis = N

@@ -69,7 +69,7 @@ int main()
 
 	char wave_type, multithread;
 
-	read_user_control(geometry, material, &solution, &single_spectrum_analysis, &save_spectral_conductance, &save_spectral_transmissivity, &save_power_dissipated, &N_bulk_objects, &N_omega, &N_subvolumes_per_object, &wave_type, &multithread, &epsilon_ref);
+	read_user_control(geometry, material, &solution, &single_spectrum_analysis, &save_spectral_conductance, &save_spectral_transmissivity, &save_power_dissipated, &N_bulk_objects, &N_omega, &N_subvolumes_per_object, &wave_type, &multithread, &epsilon_ref, &uniform_spectra);
 
 	printf("%c\n", multithread);
 
@@ -152,45 +152,60 @@ int main()
 
 	if(strcmp(material,"SiO2")==0 || strcmp(material,"u-SiC")==0)  // removed strcmp(material,"SiC")==0 || from uniform
 	{
-		// Uniform spectrum
-		initial = 5.e-6;
-		final = 25.e-6;
-		double lambda[const_N_omega];
-		double_linspace(initial, final, const_N_omega, lambda);
-		for (int i_lambda = 0; i_lambda < const_N_omega; i_lambda++)
+		if (uniform_spectra == 'Y')
 		{
-			omega[i_lambda] = 2. * pi * c_0 / lambda[i_lambda]; // Radial frequency [rad/s]
+			initial = 5.e-6;
+			final = 25.e-6;
+			double lambda[const_N_omega];
+			double_linspace(initial, final, const_N_omega, lambda);
+			for (int i_lambda = 0; i_lambda < const_N_omega; i_lambda++)
+			{
+				omega[i_lambda] = 2. * pi * c_0 / lambda[i_lambda]; // Radial frequency [rad/s]
+			}
 		}
+		if (uniform_spectra == 'N')
+		{
+			
+		}	
 	}
 
 	else if (strcmp(material, "SiC") == 0)
 	{
-		/*
-		//Uniform spectrum:
-		initial = 1.4e14;
-		final = 1.9e14;
-		double_linspace(initial, final, const_N_omega, omega);
-		*/
-
-		// Import non-uniform spectra
-		FILE *non_uniform_SiC_spectra;
-		char dirPathFileNameSpectra[260];
-
-		sprintf(dirPathFileNameSpectra, "library/Non_uniform_spectra/SiC_non_uniform_spectra_%d.csv", const_N_omega);
-		non_uniform_SiC_spectra = fopen(dirPathFileNameSpectra, "r");
-		for (int i = 0; i < const_N_omega; i++)
+		if (uniform_spectra == 'Y')
 		{
-			fscanf(non_uniform_SiC_spectra, "%lf", &omega[i]); //
+			initial = 1.4e14;
+			final = 1.9e14;
+			double_linspace(initial, final, const_N_omega, omega);
 		}
-		fclose(non_uniform_SiC_spectra);
+		if (uniform_spectra == 'N')
+		{
+			// Import non-uniform spectra
+			FILE *non_uniform_spectra;
+			char dirPathFileNameSpectra[260];
+
+			sprintf(dirPathFileNameSpectra, "library/Non_uniform_spectra/SiC_non_uniform_spectra_%d.csv", const_N_omega);
+			non_uniform_spectra = fopen(dirPathFileNameSpectra, "r");
+			for (int i = 0; i < const_N_omega; i++)
+			{
+				fscanf(non_uniform_spectra, "%lf", &omega[i]); //
+			}
+			fclose(non_uniform_spectra);
+		}	
 	}
 
 	else if (strcmp(material, "SiN") == 0) // cannot compare strings in C with ==; source: https://ideone.com/BrFA00
 	{
+		if (uniform_spectra == 'Y')
+		{
 		// Uniform spectrum:
 		initial = 2.e13;
 		final = 3.e14;
 		double_linspace(initial, final, const_N_omega, omega);
+		}
+		if (uniform_spectra == 'N')
+		{
+
+		}
 	}
 
 	// ################## FREE-SPACE GREEN'S FUNCTION AND INTERACTION A MATRIX #####################

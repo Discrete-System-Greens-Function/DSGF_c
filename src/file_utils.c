@@ -10,7 +10,7 @@
 #include <time.h>
 #include <file_utils.h>
 
-void read_user_control(char *geometry,char *material, char *solution, char *single_spectrum_analysis, char *save_spectral_conductance, char *save_spectral_transmissivity, char *save_power_dissipated, int *number_bulk_objects, int *number_omega, int *number_subvolumes_per_object, char* wave_type, char *multithread, double *epsilon_ref){
+void read_user_control(char *geometry,char *material, char *solution, char *single_spectrum_analysis, char *save_spectral_conductance, char *save_spectral_transmissivity, char *save_power_dissipated, int *number_bulk_objects, int *number_omega, int *number_subvolumes_per_object, char* wave_type, char *multithread, double *epsilon_ref, char *uniform_spectra){
 
 	char dirPathUserControl[260] = "user_inputs/control.txt";
 	FILE *import_control_inputs = fopen(dirPathUserControl, "r"); 
@@ -22,6 +22,7 @@ void read_user_control(char *geometry,char *material, char *solution, char *sing
 	fscanf(import_control_inputs,"%s = %s\n",buffer, material);
 	fscanf(import_control_inputs,"%s = %lf\n", buffer, epsilon_ref);
 	fscanf(import_control_inputs,"%s = %d\n", buffer, number_omega);
+	fscanf(import_control_inputs,"%s = %c\n",buffer, uniform_spectra);
 	fscanf(import_control_inputs,"%s = %c\n",buffer, solution);
 	fscanf(import_control_inputs,"%s = %c\n",buffer, multithread);
 	fscanf(import_control_inputs,"%s = %c\n",buffer, single_spectrum_analysis);

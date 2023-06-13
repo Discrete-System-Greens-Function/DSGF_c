@@ -12,6 +12,7 @@
 int N_subvolumes_per_object; // Number of subvolumes per thermal object. Spheres: 1, 8, 32, 136, 280, 552, 912, 1472. Flat surfaces: 320, 640, 1280
 int N_bulk_objects; //Number of bulk objects: 2 
 int N_omega; //  Number of frequencies to evaluate
+char uniform_spectra;
 
 // %%%%%%  Material, geometry and temperature %%%%%%%%%%%
 
