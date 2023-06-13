@@ -59,8 +59,7 @@ int main()
 	const double epsilon_0 = 8.8542e-12;		 // Permittivity of free space [F/m]
 	const double c_0 = 299792458;				 // Speed of light in vacuum [m/s]
 	const double mu_0 = (4. * pi) * pow(10, -7); // Permeability of free space [H/m]
-	const double epsilon_ref = 1.;				 // dielectric function of the background reference medium
-
+	
 	long baseline = get_mem_usage(); // measure baseline memory usage
 	long calculation_memory, total_memory;
 
@@ -70,7 +69,7 @@ int main()
 
 	char wave_type, multithread;
 
-	read_user_control(geometry, material, &solution, &single_spectrum_analysis, &save_spectral_conductance, &save_spectral_transmissivity, &save_power_dissipated, &N_bulk_objects, &N_omega, &N_subvolumes_per_object, &wave_type, &multithread);
+	read_user_control(geometry, material, &solution, &single_spectrum_analysis, &save_spectral_conductance, &save_spectral_transmissivity, &save_power_dissipated, &N_bulk_objects, &N_omega, &N_subvolumes_per_object, &wave_type, &multithread, &epsilon_ref);
 
 	printf("%c\n", multithread);
 
