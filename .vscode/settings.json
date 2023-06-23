@@ -3,6 +3,11 @@
         "functions_dsgf.h": "c",
         "file_utils.h": "c",
         "user_inputs.h": "c",
-        "errno.h": "c"
+        "errno.h": "c",
+        "cmath": "c",
+        "complex": "c",
+        "stdlib.h": "c",
+        "greensfunction.h": "c",
+        "lapacke.h": "c"
     }
 }
