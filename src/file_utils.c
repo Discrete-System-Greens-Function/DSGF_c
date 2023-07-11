@@ -10,7 +10,7 @@
 #include <time.h>
 #include <file_utils.h>
 
-void read_user_control(char *geometry,char *material, char *solution, char *single_spectrum_analysis, char *save_spectral_conductance, char *save_spectral_transmissivity, char *save_power_dissipated, int *number_bulk_objects, int *number_omega, int *number_subvolumes_per_object, char* wave_type, char *multithread, double *epsilon_ref, char *uniform_spectra){
+void read_user_control(char *geometry,char *material, char *solution, char *single_spectrum_analysis, int *number_bulk_objects, int *number_omega, int *number_subvolumes_per_object, char* wave_type, char *multithread, double *epsilon_ref, char *uniform_spectra, char *save_spectral_conductance, char *save_total_conductance, char *save_power_dissipated_spectral_subvolumes,char *save_power_dissipated_total_subvolumes, char *save_power_dissipated_spectral_bulk, char *save_power_dissipated_total_bulk, char *save_power_density_total_subvolumes, char *save_spectral_transmissivity){
 
 	char dirPathUserControl[260] = "user_inputs/control.txt";
 	FILE *import_control_inputs = fopen(dirPathUserControl, "r"); 
@@ -28,8 +28,13 @@ void read_user_control(char *geometry,char *material, char *solution, char *sing
 	fscanf(import_control_inputs,"%s = %c\n",buffer, single_spectrum_analysis);
 	fscanf(import_control_inputs,"%s = %c\n",buffer, wave_type);
 	fscanf(import_control_inputs,"%s = %c\n",buffer, save_spectral_conductance);
+	fscanf(import_control_inputs,"%s = %c\n",buffer, save_total_conductance);
+	fscanf(import_control_inputs,"%s = %c\n",buffer, save_power_dissipated_spectral_subvolumes);
+	fscanf(import_control_inputs,"%s = %c\n",buffer, save_power_dissipated_total_subvolumes);
+	fscanf(import_control_inputs,"%s = %c\n",buffer, save_power_dissipated_spectral_bulk);
+	fscanf(import_control_inputs,"%s = %c\n",buffer, save_power_dissipated_total_bulk);
+	fscanf(import_control_inputs,"%s = %c\n",buffer, save_power_density_total_subvolumes);
 	fscanf(import_control_inputs,"%s = %c\n",buffer, save_spectral_transmissivity); 
-	fscanf(import_control_inputs,"%s = %c\n",buffer, save_power_dissipated);
 	fclose(import_control_inputs);
 }
 

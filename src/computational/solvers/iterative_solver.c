@@ -381,6 +381,7 @@ void iterative_solver(int tot_sub_vol, double complex epsilon, double complex ep
 	double complex (*G_sys_new)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys_new));
     
 	core_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys_new, G_sys_old);
+	
 	free(G_sys_old);
 	memcpy(G_sys,G_sys_new,3*tot_sub_vol*3*tot_sub_vol*sizeof(double complex)); //Populate G_sys with G_new
 	free(G_sys_new);
