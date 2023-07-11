@@ -1,0 +1,1 @@
+frequency_file_name = SiO2_non_uniform_spectra_20_split_1

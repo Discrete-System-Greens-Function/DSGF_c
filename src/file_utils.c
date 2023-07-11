@@ -88,6 +88,15 @@ void read_calculation_temperatures(int N_Tcalc, double Tcalc_vector[]){
 	fclose(import_T_calc);
 }
 
+void read_calculation_split(char *frequency_set){
+
+	char dirPathCalculation_Split[260] = "user_inputs/calculation_split.txt";
+	FILE *import_calculation_split = fopen(dirPathCalculation_Split, "r"); 
+	char buffer[256]; 
+	fscanf(import_calculation_split,"%s = %s",buffer, frequency_set);	
+	fclose(import_calculation_split);
+}
+
 void create_folder(char folder_name[]){
 
 	struct stat st = {0};

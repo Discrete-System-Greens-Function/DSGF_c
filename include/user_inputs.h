@@ -36,6 +36,8 @@ double T2; // Temperature in K
 double T_calc; // Temperature at which conductance is calculated [K]
 int const N_Tcalc = 5;
 double Tcalc_vector[N_Tcalc]; // Multiple temperatures at which conductance is calculated [K]
+
+
 // %%%%%%%%%%%%%%%%%%% Solution %%%%%%%%%%%%%%%%%%%%%
 
 char solution; // Solution method: D for "direct" or I for "iterative"

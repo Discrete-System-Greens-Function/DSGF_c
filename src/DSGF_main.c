@@ -73,6 +73,10 @@ int main()
 	
 	read_calculation_temperatures(N_Tcalc, Tcalc_vector);
 
+	
+	char frequency_set[260]; // definition for the file with the frequencies 
+	read_calculation_split(frequency_set); 
+
 	int const const_N_subvolumes_per_object = N_subvolumes_per_object; // Number of subvolumes per object
 
 	int const const_N_bulk_objects = N_bulk_objects; // Number of objects
@@ -176,6 +180,21 @@ int main()
 			}
 			fclose(non_uniform_spectra);
 		}	
+		
+		if (uniform_spectra == 'S')
+		{
+			FILE *spectra_split; // Import non-uniform spectra
+			char dirPathFileNameSpectraSplit[260];
+
+			sprintf(dirPathFileNameSpectraSplit, "library/Non_uniform_spectra/%s.csv", frequency_set);
+			spectra_split = fopen(dirPathFileNameSpectraSplit, "r");
+			for (int i = 0; i < const_N_omega; i++)
+			{
+				fscanf(spectra_split, "%lf", &omega[i]); //
+			}
+			fclose(spectra_split);
+		}
+		
 	}
 
 	else if (strcmp(material, "SiC") == 0)
@@ -201,6 +220,8 @@ int main()
 			fclose(non_uniform_spectra);
 		}	
 	}
+
+	
 
 	else if (strcmp(material, "SiN") == 0) // cannot compare strings in C with ==; source: https://ideone.com/BrFA00
 	{

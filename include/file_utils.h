@@ -14,6 +14,8 @@ void read_geometry_user_defined(double *d, char file_name_ud[], double *T1, doub
 
 void read_calculation_temperatures(int N_Tcalc, double Tcalc_vector[]);
 
+void read_calculation_split(char *frequency_set);
+
 void create_folder(char folder_name[]);
 
 // this returns the final folder for all the variables and where the matrices will be stored
