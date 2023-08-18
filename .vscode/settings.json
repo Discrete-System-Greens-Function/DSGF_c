@@ -8,6 +8,7 @@
         "complex": "c",
         "stdlib.h": "c",
         "greensfunction.h": "c",
-        "lapacke.h": "c"
+        "lapacke.h": "c",
+        "sphere.h": "c"
     }
 }
