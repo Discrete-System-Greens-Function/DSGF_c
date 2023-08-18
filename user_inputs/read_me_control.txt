@@ -1,7 +1,6 @@
 The user can modify inputs and select outputs in the control.txt file.
 
 geometry = user_defined             Choose between sphere or user_defined
-number_subvolumes_per_object = 36   Number of subvolumes per thermal object, restricted by the .txt discretization files
 number_bulk_objects = 2             Number of thermal objects
 material = SiO2                     Choose between SiO2, SiC, SiN, or u-SiC
 epsilon_ref = 1                     Background reference medium
@@ -25,6 +24,7 @@ save_spectral_transmissivity = N
 
 For the geometry file,
     - inputs in user_inputs/Geometry/sphere.txt for spheres	
+    number_subvolumes_per_object_1 = '8';
 		d = 150.e-9			--- distance between the bulk objects
 		radius = 50.e-9		--- radius of the bulk objects
 		T1 = 300			--- Temperature for bulk object 1
