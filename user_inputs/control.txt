@@ -1,5 +1,5 @@
-geometry = user_defined
-number_subvolumes_per_object = 36
+geometry = sphere
+number_subvolumes_per_object = 8
 number_bulk_objects = 2
 material = SiO2
 epsilon_ref = 1

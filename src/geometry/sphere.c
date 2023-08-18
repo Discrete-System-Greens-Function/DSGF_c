@@ -37,7 +37,7 @@ void set_up_sphere_geometry(double pi, int tot_sub_vol, int subvol_per_object, d
 	subvol shape_file[subvol_per_object];
 	
 	char file_name[256];
-	sprintf(file_name, "library/discretizations/sphere/sphere_subvol_%d.txt",subvol_per_object); // path where the file is stored
+	sprintf(file_name, "library/discretizations/sphere/sphere_%d.txt",subvol_per_object); // path where the file is stored
 	populate_subvol_struct(file_name, subvol_per_object, shape_file);	
 
 	double origin1[3] = {radius1,radius1,radius1};
