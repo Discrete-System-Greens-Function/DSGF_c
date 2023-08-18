@@ -1,0 +1,9 @@
+geometry_1 = sphere
+number_subvolumes_per_object_1 = 8
+radius_1 = 50.e-9
+geometry_2 = sphere
+number_subvolumes_per_object_2 = 8
+radius_2 = 50.e-9
+d = 10.e-9
+T1 = 300.
+T2 = 400.
