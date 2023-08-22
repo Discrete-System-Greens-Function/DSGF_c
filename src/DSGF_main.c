@@ -27,8 +27,8 @@
 #include "time.h"
 
 #include "geometry/sample.h"
-#include "geometry/sphere.h"
-#include "geometry/thin_film.h"
+//#include "geometry/sphere.h"
+//#include "geometry/thin_film.h"
 #include "geometry/shared.h"
 #include "geometry/user_defined.h"
 
@@ -108,11 +108,11 @@ int main()
 		set_up_sample_geometry(pi, tot_sub_vol, const_N_subvolumes_per_object, const_N_subvolumes_per_object_2, &T1, &T2, &d, &delta_V_1, &delta_V_2, R, geometry_1, geometry_2);
 	}
 	
+	/*
 	if (strcmp(geometry, "sphere") == 0)
 	{
 		set_up_sphere_geometry(pi, tot_sub_vol, const_N_subvolumes_per_object, &T1, &T2, &d, &delta_V_1, &delta_V_2, R);
 	}
-	/*
 	if (strcmp(geometry, "thin-films") == 0)
 	{
 		set_up_thin_film_geometry(tot_sub_vol, const_N_subvolumes_per_object, const_N_bulk_objects, &T1, &T2, &d, &delta_V_1, &delta_V_2, R);
