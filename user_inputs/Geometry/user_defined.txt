@@ -1,3 +1,4 @@
+number_subvolumes_per_object = 8
 d = 500.e-9
 file_name = 2_thin_films_Lx500nm_Ly500nm_Lz500nm_d500nm_N72
 T1 = 400

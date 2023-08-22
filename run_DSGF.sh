@@ -21,7 +21,7 @@ echo "Compilation in process..."
 
 export OMP_THREADS=4 # use multiple cores during the calculation
 
-icc -Ofast -qopenmp -Wall -std=c99 -I include/ src/computational/GreensFunction.c src/array_functions.c src/geometry/sphere.c src/geometry/thin_film.c src/geometry/user_defined.c src/material/u_SiC.c src/material/SiN.c src/material/SiO2.c src/material/SiC.c src/DSGF_main.c src/file_utils.c src/functions_DSGF.c src/computational/solvers/iterative_solver.c src/computational/solvers/direct_solver.c src/computational/ThermalPower.c src/geometry/shared.c -o DSGF -mcmodel=medium  -L${MKLROOT}/lib/intel64 -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread -lm -ldl  -I"${MKLROOT}/include" # -openmp 
+icc -Ofast -qopenmp -Wall -std=c99 -I include/ src/computational/GreensFunction.c src/array_functions.c src/geometry/sample.c src/geometry/sphere.c src/geometry/thin_film.c src/geometry/user_defined.c src/material/u_SiC.c src/material/SiN.c src/material/SiO2.c src/material/SiC.c src/DSGF_main.c src/file_utils.c src/functions_DSGF.c src/computational/solvers/iterative_solver.c src/computational/solvers/direct_solver.c src/computational/ThermalPower.c src/geometry/shared.c -o DSGF -mcmodel=medium  -L${MKLROOT}/lib/intel64 -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread -lm -ldl  -I"${MKLROOT}/include" # -openmp 
  
 
 echo "Compilation complete"

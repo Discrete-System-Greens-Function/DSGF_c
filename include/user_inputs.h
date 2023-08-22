@@ -9,6 +9,9 @@
 
 // %%%%%%%%%%%% Simulations parameters %%%%%%%%%%%%%%%%%%
 
+int N_subvolumes_per_object_1; // Number of subvolumes per thermal object. Spheres: 1, 8, 32, 136, 280, 552, 912, 1472. Flat surfaces: 320, 640, 1280
+int N_subvolumes_per_object_2; //Number of bulk objects: 2 
+
 int N_subvolumes_per_object; // Number of subvolumes per thermal object. Spheres: 1, 8, 32, 136, 280, 552, 912, 1472. Flat surfaces: 320, 640, 1280
 int N_bulk_objects; //Number of bulk objects: 2 
 int N_omega; //  Number of frequencies to evaluate
@@ -25,6 +28,11 @@ char discretization_thin_film[260]; //discretization_thin_film = 2_thin_films_Lx
 double d; // Separation distance
 
 double radius; // Perfect same-sized spheres
+
+//double radius1; // Perfect same-sized spheres
+//double radius2; // Perfect same-sized spheres
+char geometry_1[]; //Geometry options: sphere, thin-films or user-defined
+char geometry_2[]; //Geometry options: sphere, thin-films or user-defined
 
 // Dimensions for membranes/thin films 
 double Lx; // Depth: 200.e-9

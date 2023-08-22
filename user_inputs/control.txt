@@ -1,6 +1,6 @@
-geometry = sphere
-number_subvolumes_per_object = 8
-number_bulk_objects = 2
+discretization_type = sample
+number_subvolumes_per_object_1 = 125
+number_subvolumes_per_object_2 = 125
 material = SiO2
 epsilon_ref = 1
 number_omega = 100

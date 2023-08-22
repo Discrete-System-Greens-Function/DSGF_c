@@ -26,6 +26,7 @@
 
 #include "time.h"
 
+#include "geometry/sample.h"
 #include "geometry/sphere.h"
 #include "geometry/thin_film.h"
 #include "geometry/shared.h"
@@ -69,21 +70,18 @@ int main()
 
 	char wave_type, multithread;
 
-	read_user_control(geometry, material, &solution, &single_spectrum_analysis, &N_bulk_objects, &N_omega, &N_subvolumes_per_object, &wave_type, &multithread, &epsilon_ref, &uniform_spectra, &save_spectral_conductance, &save_total_conductance, &save_power_dissipated_spectral_subvolumes, &save_power_dissipated_total_subvolumes, &save_power_dissipated_spectral_bulk, &save_power_dissipated_total_bulk, &save_power_density_total_subvolumes, &save_spectral_transmissivity);
-	
+	read_user_control(geometry, material, &solution, &single_spectrum_analysis, &N_subvolumes_per_object_1, &N_subvolumes_per_object_2, &N_omega, &wave_type, &multithread, &epsilon_ref, &uniform_spectra, &save_spectral_conductance, &save_total_conductance, &save_power_dissipated_spectral_subvolumes, &save_power_dissipated_total_subvolumes, &save_power_dissipated_spectral_bulk, &save_power_dissipated_total_bulk, &save_power_density_total_subvolumes, &save_spectral_transmissivity);
 	read_calculation_temperatures(N_Tcalc, Tcalc_vector);
-
 	
 	char frequency_set[260]; // definition for the file with the frequencies 
 	read_calculation_split(frequency_set); 
-
-	int const const_N_subvolumes_per_object = N_subvolumes_per_object; // Number of subvolumes per object
-
+	
 	int const const_N_bulk_objects = N_bulk_objects; // Number of objects
-
 	int const const_N_omega = N_omega; // Number of frequencies to be computed 
 
-	int tot_sub_vol = const_N_subvolumes_per_object * const_N_bulk_objects; // Assign tot_sub_vol: Computes the total number of subvolumes in the system. tot_sub_vol is defined this way because it must be a non-variable parameter due to the computations perfomed in the code. Previously, it was defined as #define tot_sub_vol const_N_subvolumes_per_object*const_N_bulk_objects
+	int const const_N_subvolumes_per_object = N_subvolumes_per_object_1; // Number of subvolumes per object
+	int const const_N_subvolumes_per_object_2 = N_subvolumes_per_object_2;
+	int tot_sub_vol = const_N_subvolumes_per_object + const_N_subvolumes_per_object_2; // Assign tot_sub_vol: Computes the total number of subvolumes in the system. tot_sub_vol is defined this way because it must be a non-variable parameter due to the computations perfomed in the code. Previously, it was defined as #define tot_sub_vol const_N_subvolumes_per_object*const_N_bulk_objects
 
 	// ####################################
 	// #### Dynamic memory allocation: ####
@@ -101,17 +99,25 @@ int main()
 	double(*Q_subvol)[const_N_omega] = calloc(tot_sub_vol, sizeof(*Q_subvol));
 
 	// ######### Properties for thermal objects ###########
-	printf("Simulation for a total of %d subvolumes in %d thermal objects\n", tot_sub_vol, const_N_bulk_objects);
-
+	printf("Simulation for a total of %d subvolumes \n", tot_sub_vol);
+	
 	double delta_V_1, delta_V_2;
+	
+	if (strcmp(geometry, "sample") == 0)
+	{ 
+		set_up_sample_geometry(pi, tot_sub_vol, const_N_subvolumes_per_object, const_N_subvolumes_per_object_2, &T1, &T2, &d, &delta_V_1, &delta_V_2, R, geometry_1, geometry_2);
+	}
+	
 	if (strcmp(geometry, "sphere") == 0)
 	{
 		set_up_sphere_geometry(pi, tot_sub_vol, const_N_subvolumes_per_object, &T1, &T2, &d, &delta_V_1, &delta_V_2, R);
 	}
+	/*
 	if (strcmp(geometry, "thin-films") == 0)
 	{
 		set_up_thin_film_geometry(tot_sub_vol, const_N_subvolumes_per_object, const_N_bulk_objects, &T1, &T2, &d, &delta_V_1, &delta_V_2, R);
 	}
+	*/
 	if(strcmp(geometry,"user_defined")==0)
 	{
 		//char file_name;
@@ -122,7 +128,6 @@ int main()
 	{	
 		set_delta_V_vector_T_vector(T1, T2, delta_V_1, delta_V_2, tot_sub_vol, const_N_subvolumes_per_object, T_vector, delta_V_vector);	
 	}
-	printf("d = %e m \n",d);
 	
 	char *results_folder = set_up_results(material, geometry, tot_sub_vol, d); // Folders for results 
 
@@ -131,9 +136,7 @@ int main()
 	system(copy_control);
 		
 	char copy_geometry[260];
-	if(strcmp(geometry,"sphere")==0) sprintf(copy_geometry, "cp ./user_inputs/Geometry/sphere.txt  ./%s\n",results_folder);
-	if(strcmp(geometry,"thin-films")==0) sprintf(copy_geometry, "cp ./user_inputs/Geometry/thin_films.txt  ./%s\n",results_folder);
-	if(strcmp(geometry,"user_defined")==0) sprintf(copy_geometry, "cp ./user_inputs/Geometry/user_defined.txt  ./%s\n",results_folder);
+	sprintf(copy_geometry, "cp ./user_inputs/Geometry/%s.txt  ./%s\n",geometry,results_folder);
 	system(copy_geometry);	
 
 	if ( save_power_dissipated_spectral_subvolumes == 'Y' ||
