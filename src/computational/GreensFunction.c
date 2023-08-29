@@ -84,13 +84,16 @@ void get_G0_A_matrices(int tot_sub_vol, double complex G_0[tot_sub_vol][tot_sub_
 			const_1 = cexp(k_0*sqrt(epsilon_ref)*modulo_r_i_j[ig_0][jg_0]*I)/(4.*pi*modulo_r_i_j[ig_0][jg_0]); 
 			denom_1 = epsilon_ref*pow(k_0*modulo_r_i_j[ig_0][jg_0],2);
 			denom_2 = k_0*sqrt(epsilon_ref)*modulo_r_i_j[ig_0][jg_0];
-			//const_2 = (1. - 1./denom_1 + 1.*I/denom_2 ) ;
-			//const_3 = (1. - 3./denom_1 + 3.*I/denom_2) ;
+			const_2 = (1. - 1./denom_1 + 1.*I/denom_2 ) ;
+			const_3 = (1. - 3./denom_1 + 3.*I/denom_2) ;
 			
 			//split of G_0:
-			
+			/*
 			if (jg_0<tot_sub_vol/2 && ig_0>=tot_sub_vol/2) //subvolumes in different objects
 			{
+				const_2 = (1. - 1./denom_1 + 1.*I/denom_2 ) ; // total 
+				const_3 = (1. - 3./denom_1 + 3.*I/denom_2) ;  // total 
+				
 				if(wave_type == 'T')  
 				{ 
 					const_2 = (1. - 1./denom_1 + 1.*I/denom_2 ) ; // total 
@@ -115,7 +118,7 @@ void get_G0_A_matrices(int tot_sub_vol, double complex G_0[tot_sub_vol][tot_sub_
 				const_2 = (1. - 1./denom_1 + 1.*I/denom_2 ) ;
 				const_3 = (1. - 3./denom_1 + 3.*I/denom_2) ; 
 			}
-
+			*/
 			for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
 			{
 				for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions
@@ -181,11 +184,11 @@ void get_G0_matrix(int tot_sub_vol, double complex G_0[tot_sub_vol][tot_sub_vol]
 			const_1 = cexp(k_0*sqrt(epsilon_ref)*modulo_r_i_j[ig_0][jg_0]*I)/(4.*pi*modulo_r_i_j[ig_0][jg_0]); 
 			denom_NF = epsilon_ref*pow(k_0*modulo_r_i_j[ig_0][jg_0],2);
 			denom_IF = k_0*sqrt(epsilon_ref)*modulo_r_i_j[ig_0][jg_0];
-			//const_2 = (1. - 1./denom_NF + 1.*I/denom_IF ) ;
-			//const_3 = (1. - 3./denom_NF + 3.*I/denom_IF) ;
+			const_2 = (1. - 1./denom_NF + 1.*I/denom_IF ) ;
+			const_3 = (1. - 3./denom_NF + 3.*I/denom_IF) ;
 			
 			//split of G_0:
-			
+			/*
 			if (jg_0<tot_sub_vol/2 && ig_0>=tot_sub_vol/2) //subvolumes in different objects
 			{
 				if(wave_type == 'T')  
@@ -214,7 +217,7 @@ void get_G0_matrix(int tot_sub_vol, double complex G_0[tot_sub_vol][tot_sub_vol]
 				const_2 = (1. - 1./denom_NF + 1.*I/denom_IF ) ;
 				const_3 = (1. - 3./denom_NF + 3.*I/denom_IF) ; 
 			}
-
+			*/
 			for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
 			{
 				for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions

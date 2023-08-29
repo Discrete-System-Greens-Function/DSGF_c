@@ -4,7 +4,7 @@
 #include <complex.h>
 #include <functions_DSGF.h>
 
-void read_user_control(char *geometry,char *material, char *solution, char *single_spectrum_analysis, int *number_subvolumes_per_object_1, int *number_subvolumes_per_object_2, int *number_omega, char* wave_type, char *multithread, double *epsilon_ref, char *uniform_spectra, char *save_spectral_conductance, char *save_total_conductance, char *save_power_dissipated_spectral_subvolumes,char *save_power_dissipated_total_subvolumes, char *save_power_dissipated_spectral_bulk, char *save_power_dissipated_total_bulk, char *save_power_density_total_subvolumes, char *save_spectral_transmissivity);
+void read_user_control(char *geometry,char *material, char *solution, char *single_spectrum_analysis, int *number_subvolumes_per_object_1, int *number_subvolumes_per_object_2, int *number_omega, char *multithread, double *epsilon_ref, char *uniform_spectra, char *save_spectral_conductance, char *save_total_conductance, char *save_power_dissipated_spectral_subvolumes,char *save_power_dissipated_total_subvolumes, char *save_power_dissipated_spectral_bulk, char *save_power_dissipated_total_bulk, char *save_power_density_total_subvolumes, char *save_spectral_transmissivity);
 
 void read_geometry_sample(char *geometry_1, double *radius1, char *geometry_2, double *radius2, double *d, double *T1, double *T2);
 

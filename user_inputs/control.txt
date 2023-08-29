@@ -8,7 +8,6 @@ uniform_spectra = Y
 solution = D
 multithread = N
 single_spectrum_analysis = N
-wave_type = T
 save_spectral_conductance = Y
 save_total_conductance = Y
 save_power_dissipated_spectral_subvolumes = N

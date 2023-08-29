@@ -51,12 +51,11 @@ void set_up_sample_geometry(double pi, int tot_sub_vol, int subvol_per_object, i
 	sprintf(file_name2, "library/discretizations/%s/%s_%d.txt",geometry_2,geometry_2,N_subvolumes_per_object_2); // path where the file is stored
 	populate_subvol_struct(file_name2, N_subvolumes_per_object_2, shape_file2);
 
-	
-	//double origin1[3] = {radius1,radius1,radius1};
-	//double origin2[3]= {origin1[0]+radius1+(*d)+radius2,origin1[1]+radius2-radius1,origin1[2]+radius2-radius1};
-	double origin1[3] = {0,0,0};
+	double origin1[3] =  {0,0,0};
 	double origin_x; 
-	if (strcmp(geometry_2, "sphere") == 0){ origin_x = radius1+*d+radius2; } // calls function that calculates the volume for the sphere 2
+	if (strcmp(geometry_2, "sphere") == 0){ 
+		origin_x = radius1+*d + radius2; 
+	} // calls function that calculates the volume for the sphere 2
 	if (strcmp(geometry_2, "cube") == 0){ origin_x = radius1/2+*d+radius2/2; } // calls function that calculates the volume for the sphere 1
 	double origin2[3]= {origin_x,0,0};
 
