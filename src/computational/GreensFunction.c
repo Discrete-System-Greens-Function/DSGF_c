@@ -173,11 +173,11 @@ void get_G0_matrix(int tot_sub_vol, double complex G_0[tot_sub_vol][tot_sub_vol]
 
 	// eq. 25 from Lindsay's paper 
 
-	//for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++)//
-	for (int jg_0 = 0; jg_0 < tot_sub_vol-1; jg_0++) //tot_sub_vol
+	for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++)//
+	//for (int jg_0 = 0; jg_0 < tot_sub_vol-1; jg_0++) //tot_sub_vol
 	{
-		//for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++)//
-		for (int ig_0 = jg_0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
+		for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++)//
+		//for (int ig_0 = jg_0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 		{
 			//if (ig_0!=jg_0)
 			//{

@@ -250,12 +250,10 @@ int main()
 		}
 	}
 	// ################## FREE-SPACE GREEN'S FUNCTION AND INTERACTION A MATRIX #####################
-	//  Fill terms for G^0:
+	//  Fill terms for G^0:		
 
-	// Definitions for G^0:
 	double complex(*r_i_j_outer_r_i_j)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*r_i_j_outer_r_i_j));
 	setup_G_0_matrices(tot_sub_vol, modulo_r_i_j, r_i_j_outer_r_i_j, R);
-
 	// #################################################################
 	// ################## FREQUENCY RANGE ANALYSIS #####################
 	// #################################################################
@@ -316,22 +314,25 @@ int main()
 				
 		// ######### Calculation of SGF ###########
 
+
 		double complex (*G_sys)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys));
 		
 		if(solution =='D')
 		{	
 			// Solves the linear system AG=G^0, where G^0 and A are 3N X 3N matrices. 
-			printf("Direct inversion status: ");
+			printf("Direct inversion in progress. \n");
 			
-			//direct_solver(tot_sub_vol, A_direct, b_direct, G_sys); // we noticed an memory improved from the old function 
+			//direct_solver(tot_sub_vol, A_direct, b_direct, G_sys);  
 			//direct_solver(tot_sub_vol, A, G_0, G_sys);
-			direct_solver(tot_sub_vol, G_sys, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type, alpha_0);
-			printf("concluded\n");
-			
+			direct_solver(tot_sub_vol, G_sys, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type, alpha_0); // we noticed an memory improved from the old function
+						
 		}
 
 		if(solution =='I')
-		{ 	
+		{ 
+			
+			//printf("\n Iterative solver status: m= ");
+			printf("Iterative solver in progress. \n");	
 			/*
 			double complex (*G_0)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_0)); 
 			get_G0_matrix(tot_sub_vol, G_0, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type);
@@ -340,15 +341,15 @@ int main()
 			matrix_reshape(3, tot_sub_vol, G_sys_old, G_0); // this reshapes 2 4D matrices to 2 2D matrices, where G0 and eyeA are 4D and G_sys_old and eyeA_2d are the respective 2D matrices
 			free(G_0);
 			*/
-			printf("\n Iterative solver status: m= ");
+
 			//iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys_old, G_sys); //  we noticed an memory improved from the old function iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_0, G_sys);
 			iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type);
-			//free(G_sys_old);
-			printf("concluded\n");	
 			
 		}
 		
 		calculation_memory = get_mem_usage()-baseline;
+
+		
 
 		// #################################################################
 		// ################### Spectral post-processing ####################
@@ -400,8 +401,8 @@ int main()
 
 	free(R);
 	free(modulo_r_i_j);
-	free(r_i_j_outer_r_i_j);
 	free(T_vector);
+	free(r_i_j_outer_r_i_j);
 
 
 	// #################################################################
