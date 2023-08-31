@@ -166,8 +166,6 @@ void offdiagonal_solver(int tot_sub_vol, int mm, double k, double complex alpha_
 		} // if(ig_0 != mm)              	
 	} // ig_0    
 
-	//free(G_sys_prod);
-	
 /*
 	int N = tot_sub_vol;
 	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) {
@@ -222,7 +220,7 @@ void remaining_pertubations(int tot_sub_vol, int mm, double complex G_sys_old[3*
 		G_sys_new_populator(tot_sub_vol, mm, jg_0, G_sys_new, b_iterative);
 
 	} // end jg_0					
-
+	
 }
 
 
@@ -296,12 +294,13 @@ void iterative_solver(int tot_sub_vol, double complex epsilon, double complex ep
 	matrix_reshape(3, tot_sub_vol, G_sys_old, G_0); // this reshapes 2 4D matrices to 2 2D matrices, where G0 and eyeA are 4D and G_sys_old and eyeA_2d are the respective 2D matrices
 	free(G_0);
 
-	double complex (*G_sys_new)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys_new));
+	//double complex (*G_sys_new)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys_new));
     
-	core_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys_new, G_sys_old);
-	
+	//core_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys_new, G_sys_old);
+	core_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys, G_sys_old);
+
 	free(G_sys_old);
-	memcpy(G_sys,G_sys_new,3*tot_sub_vol*3*tot_sub_vol*sizeof(double complex)); //Populate G_sys with G_new
-	free(G_sys_new);
+	//memcpy(G_sys,G_sys_new,3*tot_sub_vol*3*tot_sub_vol*sizeof(double complex)); //Populate G_sys with G_new
+	//free(G_sys_new);
 
 }
