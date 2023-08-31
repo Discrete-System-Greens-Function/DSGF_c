@@ -1,6 +1,7 @@
 #include "computational/solvers/direct_solver.h"
 #include <lapacke.h>
 #include "computational/GreensFunction.h"
+#include "functions_DSGF.h" // Definitions of functions used in DSGF
 
 void A_b_direct_populator(int tot_sub_vol, double complex A[tot_sub_vol][tot_sub_vol][3][3], double complex G_0[tot_sub_vol][tot_sub_vol][3][3], double complex A_direct[3*3*tot_sub_vol*tot_sub_vol], double complex b_direct[3*3*tot_sub_vol*tot_sub_vol]){
 
@@ -106,8 +107,8 @@ void direct_solver(int tot_sub_vol, double complex A[tot_sub_vol][tot_sub_vol][3
 */
 
 //void direct_solver(int tot_sub_vol, double complex A_direct[3*3*tot_sub_vol*tot_sub_vol],double complex b_direct[3*3*tot_sub_vol*tot_sub_vol], double complex G_sys[3*tot_sub_vol][3*tot_sub_vol]){
+//void direct_solver(int tot_sub_vol, double complex G_sys[3*tot_sub_vol][3*tot_sub_vol],double k_0, double pi, double epsilon_ref, double modulo_r_i_j[tot_sub_vol][tot_sub_vol], double complex r_i_j_outer_r_i_j[tot_sub_vol][tot_sub_vol][3][3], double delta_V_vector[tot_sub_vol],char wave_type, double complex alpha_0[tot_sub_vol]){
 void direct_solver(int tot_sub_vol, double complex G_sys[3*tot_sub_vol][3*tot_sub_vol],double k_0, double pi, double epsilon_ref, double modulo_r_i_j[tot_sub_vol][tot_sub_vol], double complex r_i_j_outer_r_i_j[tot_sub_vol][tot_sub_vol][3][3], double delta_V_vector[tot_sub_vol],char wave_type, double complex alpha_0[tot_sub_vol]){
-
 	double complex (*G_0)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_0)); 		
 	double complex (*A)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*A));
 	
@@ -127,7 +128,7 @@ void direct_solver(int tot_sub_vol, double complex G_sys[3*tot_sub_vol][3*tot_su
 	// F08ANF (ZGELS) solves linear least-squares problems using a QR or LQ factorization of A
 	//Description of ZGELS: https://extras.csc.fi/math/nag/mark21/pdf/F08/f08anf.pdf
 	int info = LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',3*tot_sub_vol,3*tot_sub_vol,3*tot_sub_vol,A_direct,3*tot_sub_vol,b_direct,3*tot_sub_vol); 
-
+	
 	free(A_direct);
 
 	populate_G_sys(tot_sub_vol, b_direct, G_sys);

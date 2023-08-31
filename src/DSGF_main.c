@@ -23,6 +23,7 @@
 #include "file_utils.h"		// header with definitions of read_user_inputs and read_calculation_temperatures functions
 #include "computational/solvers/iterative_solver.h"
 #include "array_functions.h"
+#include "memory.h"
 
 #include "time.h"
 
@@ -61,10 +62,10 @@ int main()
 	const double c_0 = 299792458;				 // Speed of light in vacuum [m/s]
 	const double mu_0 = (4. * pi) * pow(10, -7); // Permeability of free space [H/m]
 	
-	long baseline = get_mem_usage(); // measure baseline memory usage
-	long calculation_memory, total_memory;
-
-	clock_t begin = clock();  /* set timer here, do your time-consuming job */
+	baseline = get_mem_usage(); // measure baseline memory usage
+	
+	time_t simulation_start;
+	time(&simulation_start);
 
 	int N_subvolumes_per_object, N_bulk_objects, N_omega;
 
@@ -325,7 +326,6 @@ int main()
 			//direct_solver(tot_sub_vol, A_direct, b_direct, G_sys);  
 			//direct_solver(tot_sub_vol, A, G_0, G_sys);
 			direct_solver(tot_sub_vol, G_sys, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type, alpha_0); // we noticed an memory improved from the old function
-						
 		}
 
 		if(solution =='I')
@@ -346,9 +346,7 @@ int main()
 			iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type);
 			
 		}
-		
 		calculation_memory = get_mem_usage()-baseline;
-
 		
 
 		// #################################################################
@@ -586,15 +584,15 @@ int main()
 	
 	free(Q_subvol);
 	
-	clock_t end = clock(); //end timer
-	double time_spent = (double)(end - begin) / CLOCKS_PER_SEC; //calculate time for the code
+	time_t simulation_time;
+	time(&simulation_time);
 	total_memory = get_mem_usage(); // measure post-processing memory usage
 	{
 		FILE * memory; //append
 		char dirPathMemory_FileName[260];
 		sprintf(dirPathMemory_FileName, "matlab_scripts/memory/memory_analysis.csv"); // path where the file is stored
 		memory = fopen(dirPathMemory_FileName, "a"); //append
-		fprintf(memory,"%d,%c,%ld,%ld,%ld,%f s\n",tot_sub_vol,solution,baseline,calculation_memory,total_memory,time_spent); // matrices_memory
+		fprintf(memory,"%d,%c,%ld,%ld,%ld,%ld s\n",tot_sub_vol,solution,baseline, calculation_memory, total_memory,simulation_time-simulation_start); // matrices_memory
 		fclose(memory);
 	}
 	 
