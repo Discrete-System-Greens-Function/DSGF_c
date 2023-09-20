@@ -10,7 +10,17 @@
         "greensfunction.h": "c",
         "lapacke.h": "c",
         "sphere.h": "c",
-        "sample.h": "c"
+        "sample.h": "c",
+        "array": "c",
+        "*.tcc": "c",
+        "optional": "c",
+        "ratio": "c",
+        "system_error": "c",
+        "functional": "c",
+        "regex": "c",
+        "tuple": "c",
+        "type_traits": "c",
+        "utility": "c"
     },
     "C_Cpp.errorSquiggles": "enabled"
 }

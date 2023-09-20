@@ -317,8 +317,7 @@ void get_G0_matrix_memory(int tot_sub_vol, double complex G_0[tot_sub_vol][tot_s
 
 }
 
-
-void get_G0_triangular_matrix(int tot_sub_vol, int size, double complex upperTriangularMatrix[size], double k_0, double pi, double epsilon_ref, double modulo_r_i_j[tot_sub_vol][tot_sub_vol], double complex r_i_j_outer_r_i_j[tot_sub_vol][tot_sub_vol][3][3], double delta_V_vector[tot_sub_vol],char wave_type){
+void get_G_old_matrix_memory(int tot_sub_vol, double complex G_old[3*tot_sub_vol][3*tot_sub_vol], double k_0, double pi, double epsilon_ref, double modulo_r_i_j[tot_sub_vol][tot_sub_vol], double complex r_i_j_outer_r_i_j[tot_sub_vol][tot_sub_vol][3][3], double delta_V_vector[tot_sub_vol],char wave_type){
 
 	// ################### MATRICES STRUCTURE LOOPS ###########################
 	// 3N X 3N Matrices structure loops for G^0 and A:
@@ -330,18 +329,10 @@ void get_G0_triangular_matrix(int tot_sub_vol, int size, double complex upperTri
 	double a_j, part1ii;
 	double complex part2ii, part2iiexp,part3ii;
 	
-	for (int ig_0 = 0; ig_0 < 3*tot_sub_vol; ig_0++) //tot_sub_vol
+	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 	{
-		for (int jg_0 = ig_0; jg_0 < 3*tot_sub_vol; jg_0++)//
+		for (int jg_0 = ig_0; jg_0 < tot_sub_vol; jg_0++)//
 		{
-			
-			int submatrix_i = ig_0 / 3; // Row index of the 3x3 submatrix
-            int submatrix_j = jg_0 / 3; // Column index of the 3x3 submatrix
-
-            int row_in_submatrix = ig_0 % 3; // Row index within the submatrix
-            int col_in_submatrix = jg_0 % 3; // Column index within the submatrix
-			int index = ig_0 * tot_sub_vol + jg_0 - (ig_0 * (ig_0 + 1) / 2);
-
 			if (ig_0!=jg_0) // eq. 25 from Walter et al., PRB 2021
 			{
 			const_1 = cexp(k_0*sqrt(epsilon_ref)*modulo_r_i_j[ig_0][jg_0]*I)/(4.*pi*modulo_r_i_j[ig_0][jg_0]); 
@@ -349,19 +340,16 @@ void get_G0_triangular_matrix(int tot_sub_vol, int size, double complex upperTri
 			denom_IF = k_0*sqrt(epsilon_ref)*modulo_r_i_j[ig_0][jg_0];
 			const_2 = (1. - 1./denom_NF + 1.*I/denom_IF ) ;
 			const_3 = (1. - 3./denom_NF + 3.*I/denom_IF) ;
-
-            // Calculate the index in the 1D array
-            int index = 9 * (submatrix_i * tot_sub_vol + submatrix_j) + 3 * row_in_submatrix + col_in_submatrix;
-
-			//for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
-			//{
-			//	for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions
-			//	{
-					//G_0[ig_0][jg_0][i_subG_0][j_subG_0] = const_1*((const_2*eyeG_0[i_subG_0][j_subG_0])-(const_3*r_i_j_outer_r_i_j[ig_0][jg_0][i_subG_0][j_subG_0]));  
-					//G_0[jg_0][ig_0][i_subG_0][j_subG_0] = G_0[ig_0][jg_0][i_subG_0][j_subG_0];
-					upperTriangularMatrix[index] = const_1*((const_2*eyeG_0[row_in_submatrix][col_in_submatrix])-(const_3*r_i_j_outer_r_i_j[ig_0][jg_0][row_in_submatrix][col_in_submatrix]));  
-				//}    
-			//}
+			for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
+			{
+				int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
+				for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions
+				{
+					int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
+					G_old[ig_0_2d][jg_0_2d] = const_1*((const_2*eyeG_0[i_subG_0][j_subG_0])-(const_3*r_i_j_outer_r_i_j[ig_0][jg_0][i_subG_0][j_subG_0]));  
+					G_old[jg_0_2d][ig_0_2d] = G_old[ig_0_2d][jg_0_2d];
+				}    
+			}
 			}//end if (ig_0!=jg_0)
 			else //if (ig_0==jg_0) // eq. 26 from Walter et al., PRB 2021 
 			{
@@ -370,16 +358,98 @@ void get_G0_triangular_matrix(int tot_sub_vol, int size, double complex upperTri
 				part2ii = a_j*k_0*sqrt(epsilon_ref)*I; // com i term 
 				part2iiexp = cexp(0. + a_j*k_0*sqrt(epsilon_ref)*I); 
 				part3ii = part2iiexp*(1-part2ii) - 1. ; // part3ii is inside brackets
-				//for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
-				//{
-				//	for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions
-				//	{
-						upperTriangularMatrix[index] = eyeG_0[row_in_submatrix][col_in_submatrix]*part1ii*(2.*part3ii-1.); 
-				//	}
-				//} //end i_subG_0
+				for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
+				{
+					int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
+					for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions
+					{
+						int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
+						G_old[ig_0_2d][jg_0_2d] = eyeG_0[i_subG_0][j_subG_0]*part1ii*(2.*part3ii-1.); 
+					}
+				} //end i_subG_0
 			}//end if (ig_0=jg_0)	
 		}    
 	} //end j_subG_0
+
+}
+
+
+void get_G0_triangular_matrix(int tot_sub_vol, int size, double complex upperTriangularMatrix[size], double k_0, double pi, double epsilon_ref, double modulo_r_i_j[tot_sub_vol][tot_sub_vol], double complex r_i_j_outer_r_i_j[tot_sub_vol][tot_sub_vol][3][3], double delta_V_vector[tot_sub_vol],char wave_type){
+	//printf("G_0: ");
+	// ################### MATRICES STRUCTURE LOOPS ###########################
+	// 3N X 3N Matrices structure loops for G^0 and A:
+	double denom_NF, denom_IF ; // used in G^0_ij function
+	double complex const_1, const_2, const_3;
+
+	double eyeG_0[3][3] = {{1,0,0}, {0,1,0}, {0,0,1}};
+
+	double a_j, part1ii;
+	double complex part2ii, part2iiexp,part3ii;
+	int index = 0;
+	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
+	{
+		for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
+		{
+			for (int jg_0 = ig_0; jg_0 < tot_sub_vol; jg_0++)//
+			{
+				if (ig_0!=jg_0) // eq. 25 from Walter et al., PRB 2021
+				{
+					const_1 = cexp(k_0*sqrt(epsilon_ref)*modulo_r_i_j[ig_0][jg_0]*I)/(4.*pi*modulo_r_i_j[ig_0][jg_0]); 
+					denom_NF = epsilon_ref*pow(k_0*modulo_r_i_j[ig_0][jg_0],2);
+					denom_IF = k_0*sqrt(epsilon_ref)*modulo_r_i_j[ig_0][jg_0];
+					const_2 = (1. - 1./denom_NF + 1.*I/denom_IF ) ;
+					const_3 = (1. - 3./denom_NF + 3.*I/denom_IF) ;
+
+					for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions
+					{
+						//printf("%d -",index );
+						//G_0[ig_0][jg_0][i_subG_0][j_subG_0] = const_1*((const_2*eyeG_0[i_subG_0][j_subG_0])-(const_3*r_i_j_outer_r_i_j[ig_0][jg_0][i_subG_0][j_subG_0]));  
+						//G_0[jg_0][ig_0][i_subG_0][j_subG_0] = G_0[ig_0][jg_0][i_subG_0][j_subG_0];
+						upperTriangularMatrix[index] = const_1*((const_2*eyeG_0[i_subG_0][j_subG_0])-(const_3*r_i_j_outer_r_i_j[ig_0][jg_0][i_subG_0][j_subG_0]));  
+						//printf(" G_0[%d]= (%e + i%e) ",index, creal(upperTriangularMatrix[index]),cimag(upperTriangularMatrix[index]));
+						index++;
+					}    
+				}
+				else //if (ig_0==jg_0) // eq. 26 from Walter et al., PRB 2021 
+				{
+					a_j = a_j_function(delta_V_vector[ig_0], pi);
+					part1ii = 1./(3.*delta_V_vector[ig_0]*epsilon_ref*pow(k_0,2));
+					part2ii = a_j*k_0*sqrt(epsilon_ref)*I; // com i term 
+					part2iiexp = cexp(0. + a_j*k_0*sqrt(epsilon_ref)*I); 
+					part3ii = part2iiexp*(1-part2ii) - 1. ; // part3ii is inside brackets
+					//for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions
+					for(int j_subG_0 = i_subG_0; j_subG_0 < 3; j_subG_0++) // modified loop
+					{
+						//printf("%d -",index );
+						upperTriangularMatrix[index] = eyeG_0[i_subG_0][j_subG_0]*part1ii*(2.*part3ii-1.); 
+						//printf(" G_0[%d]= (%e + i%e) ",index, creal(upperTriangularMatrix[index]),cimag(upperTriangularMatrix[index]));
+						index++;
+					}
+				}	
+			}//end jg_0
+			//printf("\n"); 
+		}   //end i_subG_0
+	} //end ig_0
+
+/*
+	index =0;
+	printf("\n");
+	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
+	{
+		for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
+			{
+		for (int jg_0 = ig_0; jg_0 < tot_sub_vol; jg_0++)//
+		{
+				for(int j_subG_0 = i_subG_0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions
+				{
+					printf(" G_0[%d]= (%e + i%e) ",index, creal(upperTriangularMatrix[index]),cimag(upperTriangularMatrix[index]));
+					index++;
+				}
+			}
+			printf("\n");
+		}
+	}
+*/
 
 }
 

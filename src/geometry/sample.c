@@ -30,7 +30,7 @@ void set_up_sample_geometry(double pi, int tot_sub_vol, int subvol_per_object, i
 	
 	//read_geometry_sphere(d, &radius, T1, T2);
 	read_geometry_sample(geometry_1, &radius1, geometry_2, &radius2, d, T1, T2);
-	printf("sample simulation");
+	//printf("sample simulation");
 	double vol1; 
 	if (strcmp(geometry_1, "sphere") == 0){ vol1 = vol_sphere(radius1, pi); } // calls function that calculates the volume for the sphere 1
 	if (strcmp(geometry_1, "cube") == 0){ vol1 = pow(radius1, 3); } // calls function that calculates the volume for the sphere 1

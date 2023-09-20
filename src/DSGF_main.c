@@ -25,6 +25,8 @@
 #include "array_functions.h"
 #include "memory.h"
 
+#include <malloc.h>
+
 #include "time.h"
 
 #include "geometry/sample.h"
@@ -112,7 +114,7 @@ int main()
 	
 
 	// ######### Properties for thermal objects ###########
-	printf("Simulation for a total of %d subvolumes \n", tot_sub_vol);
+	printf("%s simulation for a total of %d subvolumes \n", geometry, tot_sub_vol);
 	
 	double delta_V_1, delta_V_2;
 	
@@ -271,7 +273,10 @@ int main()
 	// ################## FREQUENCY RANGE ANALYSIS #####################
 	// #################################################################
 	// Loop to analyze a range of desired frequencies
-	printf("----- Spectrum range calculation -----\n");
+	//printf("----- Spectrum range calculation -----\n");
+
+	if(solution =='D'){printf("spectrum range calculation using direct inversion: \n");}
+	if(solution =='I'){printf("spectrum range calculation using iterative solver: \n");}
 
 	int omega_range;
 	if (single_spectrum_analysis == 'Y')
@@ -290,8 +295,8 @@ int main()
 		}
 
 		double omega_value = omega[i_omega]; // omega definition is on line 212
-		printf("%d) omega = %e. ", i_omega + 1, omega_value);
-
+		//printf("%d) omega = %e. ", i_omega + 1, omega_value);
+		printf("%d)\n", i_omega + 1);
 		double complex epsilon;
 		if (strcmp(material, "SiO2") == 0) // cannot compare strings in C with ==; source: https://ideone.com/BrFA00
 		{
@@ -325,123 +330,212 @@ int main()
 
 		}
 				
-		// ######### Calculation of SGF ###########
-
-
-		
-		double complex (*G_sys)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys));
-    	
-		if(solution =='D')
-		{	
-			//double complex (*G_sys)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys));
-			// Solves the linear system AG=G^0, where G^0 and A are 3N X 3N matrices. 
-			printf("Direct inversion in progress. \n");
-			
-			//direct_solver(tot_sub_vol, A_direct, b_direct, G_sys);  
-			//direct_solver(tot_sub_vol, A, G_0, G_sys);
-			direct_solver(tot_sub_vol, G_sys, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type, alpha_0); // we noticed an memory improved from the old function
-		
-		
-		
-		
-		
-		
-		
-		}
-
-		if(solution =='I')
-		{ 
-			//double complex (*G_sys)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys));
-			//printf("\n Iterative solver status: m= ");
-			printf("Iterative solver in progress. \n");	
-			/*
-			double complex (*G_0)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_0)); 
-			get_G0_matrix(tot_sub_vol, G_0, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type);
-			
-			double complex (*G_sys_old)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys_old));
-			matrix_reshape(3, tot_sub_vol, G_sys_old, G_0); // this reshapes 2 4D matrices to 2 2D matrices, where G0 and eyeA are 4D and G_sys_old and eyeA_2d are the respective 2D matrices
-			free(G_0);
-			*/
-
-			//iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys_old, G_sys); //  we noticed an memory improved from the old function iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_0, G_sys);
-			//iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type);
-			iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type);
-			
-		}
-		calculation_memory = get_mem_usage()-baseline;
-		
-
-		// #################################################################
-		// ################### Spectral post-processing ####################
-		// #################################################################
-
-		// Transmissivity to calculate spectral conductance and spectral power in subvolumes
-		double sum_trans_coeff = 0;
-
-		//spectral_post_processing(tot_sub_vol, i_omega, const_N_omega, k_0, h_bar, k_b, epsilon, omega_value, T_vector, delta_V_vector, const_N_subvolumes_per_object, pi, G_sys, &sum_trans_coeff, Q_subvol);
+		// ######### Calculation of SGF and post-processing ###########
 
 		double complex trans_coeff;
 		double inner_sum;
 		double complex G_element;
 		double complex Q_omega_subvol;
-		for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
-		{
-			Q_omega_subvol = 0;
-			for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //tot_sub_vol
+		double sum_trans_coeff = 0; // Transmissivity to calculate spectral conductance and spectral power in subvolumes
+
+    	
+		if(solution =='D') // Solves the linear system AG=G^0, where G^0 and A are 3N X 3N matrices. 
+		{	
+			//printf("Direct inversion in progress. \n");
+			double complex (*G_sys)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys));
+			
+			//direct_solver(tot_sub_vol, A_direct, b_direct, G_sys);  
+			//direct_solver(tot_sub_vol, A, G_0, G_sys);
+			direct_solver(tot_sub_vol, G_sys, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type, alpha_0); // we noticed an memory improved from the old function
+			calculation_memory = get_mem_usage()-baseline;
+			//spectral_post_processing(tot_sub_vol, i_omega, const_N_omega, k_0, h_bar, k_b, epsilon, omega_value, T_vector, delta_V_vector, const_N_subvolumes_per_object, pi, G_sys, &sum_trans_coeff, Q_subvol);
+
+			for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 			{
-				G_element = 0;
-				for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
+				Q_omega_subvol = 0;
+				for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //tot_sub_vol
+				{
+					G_element = 0;
+					for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
+					{
+						int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
+						for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
+						{
+							int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
+							// Extract one Green's function component: G_sys[ig_0][jg_0][i_subG_0]
+							double complex transpose_G_sys = G_sys[ig_0_2d][jg_0_2d];
+							double complex G_sys_cross = conj(transpose_G_sys);
+							G_element+=G_sys[ig_0_2d][jg_0_2d]*G_sys_cross; 
+						}    
+					}
+					// Transmissivity coefficient matrix tau(omega) for comparison with Czapla Mathematica output [dimensionless]
+					trans_coeff = 4.*pow(k_0,4)*delta_V_vector[ig_0]*delta_V_vector[jg_0]*cimag(epsilon)*cimag(epsilon)*G_element; 
+			
+					//Trans_bulk: Transmission coefficient between two bulk objects
+					// This function calculates the transmission coefficient between bulk objects given the transmission coefficient between every pair of dipoles for a given frequency.
+					if(ig_0 < const_N_subvolumes_per_object && jg_0 >= const_N_subvolumes_per_object)// bulk 1 -> 2
+					{
+						sum_trans_coeff += trans_coeff;
+					} 
+					// Thermal power dissipated calculation, based on the matlab code (Using Tervo's Eq. 26)
+					if (ig_0 != jg_0) 
+					{
+						inner_sum = (theta_function(omega_value, T_vector[jg_0], h_bar, k_b) - theta_function(omega_value, T_vector[ig_0], h_bar, k_b)) * trans_coeff;
+					}
+					else {inner_sum = 0; }
+					Q_omega_subvol += (1 / (2 * pi)) * inner_sum; // calculates the thermal power dissipated per subvolume
+				}
+				if ( save_power_dissipated_spectral_subvolumes == 'Y' ||
+ 		 		save_power_dissipated_total_subvolumes == 'Y' ||
+ 				save_power_dissipated_spectral_bulk == 'Y' ||
+ 		 		save_power_dissipated_total_bulk == 'Y' ||
+ 		 		save_power_density_total_subvolumes == 'Y' )
+				{ Q_subvol[ig_0][i_omega] = Q_omega_subvol; }
+			}	
+			free(G_sys);
+		} // end if (solution =='D')
+
+		if(solution =='I')
+		{ 
+			//printf("Iterative solver in progress. \n");
+
+			//full matrix definition
+			//double complex (*G_sys)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys));
+			    	
+			/*
+			//triangular matrix definition
+			int size = 9*tot_sub_vol*(tot_sub_vol+1)/2; // Calculate the size of the 1D array to store the upper triangular matrix, via chatgpt
+			double complex* G_sys_TriangularMatrix = (double complex*)malloc(size * sizeof(double complex)); // Allocate memory for the 1D array
+			*/
+
+			//old versions
+			//iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys_old, G_sys); //  we noticed an memory improved from the old function iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_0, G_sys);
+			//iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type);
+			
+			//full matrix solution
+			//iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type);
+			
+			
+			char G_old_file_name[260];
+			char G_sys_file_name[260];
+
+			char G_sys_test_file_name[260];
+			sprintf(G_sys_test_file_name,"%s/G_new_test.csv",results_folder);
+			
+			FILE* G_new_test = fopen(G_sys_test_file_name, "w");
+			for(int numberRow = 0; numberRow < 3*tot_sub_vol; numberRow++) // 3D coordinate positions 
+			{
+				for(int numberColumn = 0; numberColumn < 3*tot_sub_vol; numberColumn++) // 3D coordinate positions 
+				{
+					fprintf(G_new_test, " , ");
+				}
+				fprintf(G_new_test, "\n");
+			}	
+			fclose(G_new_test); // Close the file	
+			
+			if (multithread =='Y')
+			{
+				sprintf(G_old_file_name,"%s/G_old_%d.csv",results_folder,i_omega);
+				sprintf(G_sys_file_name,"%s/G_sys_%d.csv",results_folder,i_omega);
+			}
+			else
+			{
+				sprintf(G_old_file_name,"%s/G_old.csv",results_folder);
+				sprintf(G_sys_file_name,"%s/G_sys.csv",results_folder);
+			}
+						
+			//iterative_solver_store(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type,G_sys_file_name);
+			iterative_solver_with_data(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type,G_old_file_name, G_sys_file_name, results_folder,G_sys_test_file_name);
+						
+			double complex (*G_sys)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys));			
+			FILE* G_sys_import = fopen(G_sys_file_name, "r"); // Write the array elements to the file
+			//double complex (*G_sys)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys));
+			double realPart, imagPart;
+			for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //lower triangular
+    		{
+				for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions 
 				{
 					int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
-					for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
+					for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //upper triangular matrix
 					{
-						int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
-						// Extract one Green's function component: G_sys[ig_0][jg_0][i_subG_0]
-						double complex transpose_G_sys = G_sys[ig_0_2d][jg_0_2d];
-						double complex G_sys_cross = conj(transpose_G_sys);
-						G_element+=G_sys[ig_0_2d][jg_0_2d]*G_sys_cross; 
-					}    
+						for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
+						{
+							int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
+							if(fscanf(G_sys_import, "%lf + i %lf ,", &realPart, &imagPart)==2)
+							{
+								G_sys[ig_0_2d][jg_0_2d] = realPart + imagPart*I;
+								//G_sys[jg_0_2d][ig_0_2d] = G_sys[ig_0_2d][jg_0_2d];
+							}
+						}
+					}
 				}
-			// Transmissivity coefficient matrix tau(omega) for comparison with Czapla Mathematica output [dimensionless]
-			trans_coeff = 4.*pow(k_0,4)*delta_V_vector[ig_0]*delta_V_vector[jg_0]*cimag(epsilon)*cimag(epsilon)*G_element; 
-			
-			//Trans_bulk: Transmission coefficient between two bulk objects
-			// This function calculates the transmission coefficient between bulk objects given the transmission coefficient between every pair of dipoles for a given frequency.
-			if(ig_0 < const_N_subvolumes_per_object && jg_0 >= const_N_subvolumes_per_object)// bulk 1 -> 2
-			{
-				sum_trans_coeff += trans_coeff;
-			} 
-			
-			
-			// Thermal power dissipated calculation, based on the matlab code (Using Tervo's Eq. 26)
-			if (ig_0 != jg_0) 
-			{
-				inner_sum = (theta_function(omega_value, T_vector[jg_0], h_bar, k_b) - theta_function(omega_value, T_vector[ig_0], h_bar, k_b)) * trans_coeff;
+				fscanf(G_sys_import, "\n");
 			}
-			else {
-				inner_sum = 0;
+			fclose(G_sys_import); // Close the file
+			
+
+			//triangular matrix solution
+			//iterative_solver_memory(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, size, G_sys_TriangularMatrix,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type);
+			
+			//spectral_post_processing(tot_sub_vol, i_omega, const_N_omega, k_0, h_bar, k_b, epsilon, omega_value, T_vector, delta_V_vector, const_N_subvolumes_per_object, pi, G_sys, &sum_trans_coeff, Q_subvol);
+			
+			for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
+			{
+			Q_omega_subvol = 0;
+				//for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) // original
+				for (int jg_0 = ig_0; jg_0 < tot_sub_vol; jg_0++) // mod: Sept.6,2023
+				{
+					G_element = 0;
+					for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
+					{
+						int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
+						for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
+						{
+							int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
+							int index = 9 * (ig_0 * tot_sub_vol + jg_0) + 3 * i_subG_0 + j_subG_0;
+							// Extract one Green's function component: G_sys[ig_0][jg_0][i_subG_0]
+							double complex transpose_G_sys = G_sys[ig_0_2d][jg_0_2d]; // full matrix
+							//double complex transpose_G_sys = G_sys_TriangularMatrix[index]; // triangular matrix
+							double complex G_sys_cross = conj(transpose_G_sys);
+							G_element+=G_sys[ig_0_2d][jg_0_2d]*G_sys_cross; // full matrix
+							//G_element+=G_sys_TriangularMatrix[index]*G_sys_cross; // triangular matrix
+						}    
+					}
+					// Transmissivity coefficient matrix tau(omega) for comparison with Czapla Mathematica output [dimensionless]
+					trans_coeff = 4.*pow(k_0,4)*delta_V_vector[ig_0]*delta_V_vector[jg_0]*cimag(epsilon)*cimag(epsilon)*G_element; 
+			
+					//Trans_bulk: Transmission coefficient between two bulk objects
+					// This function calculates the transmission coefficient between bulk objects given the transmission coefficient between every pair of dipoles for a given frequency.
+					if(ig_0 < const_N_subvolumes_per_object && jg_0 >= const_N_subvolumes_per_object)// bulk 1 -> 2
+					{
+						sum_trans_coeff += trans_coeff;
+					} 
+					// Thermal power dissipated calculation, based on the matlab code (Using Tervo's Eq. 26)
+					if (ig_0 != jg_0){ inner_sum = (theta_function(omega_value, T_vector[jg_0], h_bar, k_b) - theta_function(omega_value, T_vector[ig_0], h_bar, k_b)) * trans_coeff; }
+					else { inner_sum = 0; }
+					Q_omega_subvol += (1 / (2 * pi)) * inner_sum; // calculates the thermal power dissipated per subvolume
+				}
+				if ( save_power_dissipated_spectral_subvolumes == 'Y' ||
+ 		 		save_power_dissipated_total_subvolumes == 'Y' ||
+ 				save_power_dissipated_spectral_bulk == 'Y' ||
+ 		 		save_power_dissipated_total_bulk == 'Y' ||
+ 		 		save_power_density_total_subvolumes == 'Y' )
+				{
+					if (ig_0 < const_N_subvolumes_per_object)
+					{
+						Q_subvol[ig_0][i_omega] = Q_omega_subvol;
+						Q_subvol[tot_sub_vol-ig_0-1][i_omega] = -Q_omega_subvol;
+					}
+				}
 			}
-			Q_omega_subvol += (1 / (2 * pi)) * inner_sum; // calculates the thermal power dissipated per subvolume
-
-		}
-
-		if ( save_power_dissipated_spectral_subvolumes == 'Y' ||
- 		 save_power_dissipated_total_subvolumes == 'Y' ||
- 		 save_power_dissipated_spectral_bulk == 'Y' ||
- 		 save_power_dissipated_total_bulk == 'Y' ||
- 		 save_power_density_total_subvolumes == 'Y' )
-		{
-			Q_subvol[ig_0][i_omega] = Q_omega_subvol;
-		}
-	}       
-
-	//if(solution =='D'){free(G_sys);}
-	//if(solution =='I'){free(G_sys);}
-	free(G_sys);
-
+			//free(G_sys_TriangularMatrix);
+			free(G_sys);
+		}	//end if (solution =='I')
+			
+	       	
+		// save spectral transmissivity
 		if (save_spectral_transmissivity == 'Y')
 		{
-
 			sprintf(spectral_transmissivity_folder, "%s/spectral_transmissivity", results_folder);
 			create_folder(spectral_transmissivity_folder);
 			FILE *spectral_transmissivity;
@@ -452,6 +546,7 @@ int main()
 			fclose(spectral_transmissivity);
 		}
 
+		// save spectral conductance
 		for (int iTcalc = 0; iTcalc < N_Tcalc; iTcalc++) // EDIT VALUE :: change 1 to N_Tcalc for the temperature loop
 		{
 			double dtheta_dT = dtheta_dT_function(omega_value, Tcalc_vector[iTcalc], h_bar, k_b);
@@ -482,14 +577,13 @@ int main()
 	free(T_vector);
 	free(r_i_j_outer_r_i_j);
 
-
 	// #################################################################
 	// ################### Total-Post processing #######################
 	// #################################################################
 	
 	if (const_N_omega > 1)
 	{
-		printf("\nEnd of frequency loop\n");
+		printf("end. \n");
 
 		// implementation of trapezoidal numerical integration in C // https://stackoverflow.com/questions/25124569/implementation-of-trapezoidal-numerical-integration-in-c
 		double step = 0.;
@@ -681,13 +775,16 @@ int main()
 	
 	time_t simulation_time;
 	time(&simulation_time);
+				
+
 	total_memory = get_mem_usage(); // measure post-processing memory usage
 	{
 		FILE * memory; //append
 		char dirPathMemory_FileName[260];
 		sprintf(dirPathMemory_FileName, "matlab_scripts/memory/memory_analysis.csv"); // path where the file is stored
 		memory = fopen(dirPathMemory_FileName, "a"); //append
-		fprintf(memory,"%d,%c,%ld,%ld,%ld,%ld s\n",tot_sub_vol,solution,baseline, calculation_memory, total_memory,simulation_time-simulation_start); // matrices_memory
+		if  (multithread == 'Y') {fprintf(memory,"%d,%c,Parallel,%ld,%ld,%ld,%ld s\n",tot_sub_vol,solution,baseline, calculation_memory, total_memory,simulation_time-simulation_start); }
+		else if (multithread == 'N'){ fprintf(memory,"%d,%c,Serial,%ld,%ld,%ld,%ld s\n",tot_sub_vol,solution,baseline, calculation_memory, total_memory,simulation_time-simulation_start);}
 		fclose(memory);
 	}
 	 
