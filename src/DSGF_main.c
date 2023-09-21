@@ -420,6 +420,7 @@ int main()
 			char G_sys_file_name[260];
 
 			char G_sys_test_file_name[260];
+			//sprintf(G_sys_test_file_name,"%s/G_new_test.bin",results_folder); //
 			sprintf(G_sys_test_file_name,"%s/G_new_test.csv",results_folder);
 			
 			FILE* G_new_test = fopen(G_sys_test_file_name, "w");
@@ -435,17 +436,21 @@ int main()
 			
 			if (multithread =='Y')
 			{
+				//sprintf(G_old_file_name,"%s/G_old_%d.bin",results_folder,i_omega); //
 				sprintf(G_old_file_name,"%s/G_old_%d.csv",results_folder,i_omega);
+				//sprintf(G_sys_file_name,"%s/G_sys_%d.bin",results_folder,i_omega); //
 				sprintf(G_sys_file_name,"%s/G_sys_%d.csv",results_folder,i_omega);
 			}
 			else
 			{
-				sprintf(G_old_file_name,"%s/G_old.csv",results_folder);
+				sprintf(G_old_file_name,"%s/G_old.bin",results_folder); //
+				//sprintf(G_old_file_name,"%s/G_old.csv",results_folder);
+				//sprintf(G_sys_file_name,"%s/G_sys.bin",results_folder); //
 				sprintf(G_sys_file_name,"%s/G_sys.csv",results_folder);
 			}
-						
+				
 			//iterative_solver_store(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type,G_sys_file_name);
-			iterative_solver_with_data(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type,G_old_file_name, G_sys_file_name, results_folder,G_sys_test_file_name);
+			iterative_solver_with_data(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type,G_old_file_name, G_sys_file_name, G_sys_test_file_name);
 						
 			double complex (*G_sys)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys));			
 			FILE* G_sys_import = fopen(G_sys_file_name, "r"); // Write the array elements to the file

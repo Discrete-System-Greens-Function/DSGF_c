@@ -6,7 +6,7 @@
 #include <lapacke.h>
 #include <cblas.h>
 #include <stdbool.h>
-
+#include <complex.h>
 #include <math.h>
 #include "functions_DSGF.h"
 //#include "mkl.h" // if uncommented, a series of warning are shown when compiling.
@@ -306,38 +306,99 @@ void iterative_solver_store(int tot_sub_vol, double complex epsilon, double comp
 
 }
 
-void iterative_solver_with_data(int tot_sub_vol, double complex epsilon, double complex epsilon_ref, double k, double delta_V_vector[], double complex alpha_0[],double k_0, double pi,double modulo_r_i_j[tot_sub_vol][tot_sub_vol], double complex r_i_j_outer_r_i_j[tot_sub_vol][tot_sub_vol][3][3],char wave_type, char* G_old_file_name, char* G_sys_file_name, char* results_folder, char* G_sys_test_file_name){
+void write_bin(int tot_sub_vol, double complex G_array[][3*tot_sub_vol], char* file_name)
+{
+	FILE* G_file = fopen(file_name, "wb");
+	// Write the entire array to the file
+    size_t numElements = 3 * tot_sub_vol * 3 * tot_sub_vol;
+	fwrite(G_array, sizeof(double complex), numElements, G_file);
+	fclose(G_file); // Close the file
+}
 
-			
-	double complex (*G_old)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_old));
-	get_G_old_matrix_memory(tot_sub_vol, G_old, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type);
-	FILE* G_old_file = fopen(G_old_file_name, "w");
-  	 // Write the array elements to the file
-	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //lower triangular
+void write_csv(int tot_sub_vol, double complex G_array[][3*tot_sub_vol], char* file_name)
+{
+	FILE* G_file = fopen(file_name, "w");
+	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //rows
     {
 		for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions 
 		{
 			int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
-			for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //upper triangular matrix
+			for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //columns
 			{
 				for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
 				{
 					int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
-					fprintf(G_old_file, "%e + i %e , ", creal(G_old[ig_0_2d][jg_0_2d]), cimag(G_old[ig_0_2d][jg_0_2d]));
+					fprintf(G_file, "%e + i %e , ", creal(G_array[ig_0_2d][jg_0_2d]), cimag(G_array[ig_0_2d][jg_0_2d]));
    				}
 			}
-			fprintf(G_old_file, "\n");
+			fprintf(G_file, "\n");
 		}
-	}			
-    fclose(G_old_file); // Close the file
+	}
+	fclose(G_file); // Close the file
+}
+
+void read_bin(int tot_sub_vol, double complex G_array[][3*tot_sub_vol], char* file_name)
+{
+		FILE* G_file = fopen(file_name, "rb"); //
+		// Determine the size of the binary file
+    	fseek(G_file, 0, SEEK_END);
+    	long fileSize = ftell(G_file);
+    	rewind(G_file);
+		
+    	// Calculate the number of complex numbers in the file
+    	size_t numComplexNumbers = fileSize / sizeof(double complex);
+
+		// Read the entire array from the file
+		fread(G_array, sizeof(double complex), numComplexNumbers, G_file);
+
+		fclose(G_file); // Close the file
+}
+
+
+void read_csv(int tot_sub_vol, double complex G_array[][3*tot_sub_vol], char* file_name)
+{
+	FILE* G_file = fopen(file_name, "r"); 
+	double realPart, imagPart;
+	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //rows
+    {
+		for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions 
+		{
+			int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
+			for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //columns
+			{
+				for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
+				{
+					int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
+					if(fscanf(G_file, "%lf + i %lf ,", &realPart, &imagPart)==2)
+					{
+						G_array[ig_0_2d][jg_0_2d] = realPart + imagPart*I;
+					}
+				}
+			}
+			fscanf(G_file, "\n");
+		}
+	}
+	fclose(G_file); // Close the file
+}
+
+
+
+void iterative_solver_with_data(int tot_sub_vol, double complex epsilon, double complex epsilon_ref, double k, double delta_V_vector[], double complex alpha_0[],double k_0, double pi,double modulo_r_i_j[tot_sub_vol][tot_sub_vol], double complex r_i_j_outer_r_i_j[tot_sub_vol][tot_sub_vol][3][3],char wave_type, char* G_old_file_name, char* G_sys_file_name, char* G_sys_test_file_name){
+
+	double complex (*G_old)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_old));
+	get_G_old_matrix_memory(tot_sub_vol, G_old, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type);
+	
+	// Write the array elements to the file
+	//write_csv(tot_sub_vol, G_old, G_old_file_name);
+	write_bin(tot_sub_vol, G_old, G_old_file_name);
 	
 	free(G_old);
 
-	//older versions
+	//older versions of core solver:
 	//core_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys_new, G_sys_old);
 	//core_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys, G_old);
 	
-	//store G_old and G_sys
+	//core solver storing G_old and G_sys without memory improvement:
 	//core_solver_store(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys, G_old, G_sys_file_name);
 	
 	double complex A_2d[3][3];
@@ -349,39 +410,19 @@ void iterative_solver_with_data(int tot_sub_vol, double complex epsilon, double 
 		double complex epsilon_s = (epsilon - epsilon_ref); // Scattering dielectric function
 
 		double complex (*G_old)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_old));
-		FILE* G_old_import;
-		G_old_import = fopen(G_old_file_name, "r"); // Write the array elements to the file
-		double realPart, imagPart;
-		for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //lower triangular
-    	{
-			for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions 
-			{
-				int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
-				for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //upper triangular matrix
-				{
-					for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
-					{
-						int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
-						if(fscanf(G_old_import, "%lf + i %lf ,", &realPart, &imagPart)==2)
-						{
-							G_old[ig_0_2d][jg_0_2d] = realPart + imagPart*I;
-						}
-					}
-				}
-			fscanf(G_old_import, "\n");
-			}
-		}
-		fclose(G_old_import); // Close the file
+		
+		// Read file into array elements
+		//read_csv(tot_sub_vol, G_old, G_old_file_name);
+		read_bin(tot_sub_vol, G_old, G_old_file_name);
 
-		
+		//This function generates Amm and uses G_old, but we do not need all the terms to generate Amm. 
 		A2d_solver(epsilon_s, mm, tot_sub_vol, delta_V_vector[mm], G_old, A_2d, k);
-					
 		
-		//void A2d_solver(double complex epsilon, int mm, int tot_sub_vol, double delta_V, double complex G_sys_old[][3*tot_sub_vol], double complex A_2d[3][3], double k){
+		//I copied the body of the A2d_solver function into the code as an attempt to use the minimum of terms needed (9). 
 		double eyeA_2d[3][3] = {{1,0,0}, {0,1,0}, {0,0,1}};
-		G_old_import = fopen(G_old_file_name, "r"); 
+		FILE * G_old_import = fopen(G_old_file_name, "r"); 
 		char line[256]; // Assuming a maximum line length of 256 characters
-		//double realPart, imagPart;
+		double realPart, imagPart;
 		// Loop through the file to locate the target position
         int targetRow = 3 * mm;
         int targetColumn = 3 * mm;
@@ -444,21 +485,20 @@ void iterative_solver_with_data(int tot_sub_vol, double complex epsilon, double 
 
     	fclose(G_old_import); // Close the file
 
-		//}
-
-		
+	
+	/*
+	// Print values for verification
 	 if (mm==0)
 	 { 
 		//for (int i = 0; i < 3; i++){for (int j = 0; j < 3; j++){printf("A_2d[%d,%d] = %e + %e i , ", i, j, creal(A_2d[i][j]), cimag(A_2d[i][j]));}}
 
-		/*
 		printf("\nPrint what was imported\n");
-		for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //lower triangular
+		for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //rows
     	{
 			for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions 
 			{
 				int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
-				for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //upper triangular matrix
+				for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //columns
 				{
 					for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
 					{
@@ -468,14 +508,16 @@ void iterative_solver_with_data(int tot_sub_vol, double complex epsilon, double 
 				}
 				printf("\n");
 			}
-		}
-		*/
-		
+		}	
 	 }
-		//
+	 */
+		// Ideally, we would not need to store this 3Nx3N array.
 		double complex (*G_sys_new)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys_new));
+				
+		//This function calculates the first G_new for when i=m. It uses G_old, but we do not need all the terms. 
+		//I copied the body of the function into the code as an attempt to use the minimum of terms needed (9N).
 		//remaining_pertubations(tot_sub_vol, mm, G_old, G_sys_new, A_2d);
-
+	
 		double complex A_iterative[3*3];
 		double complex b_iterative[3*3];
 		#define MAX_LINE_LENGTH 1024
@@ -484,73 +526,55 @@ void iterative_solver_with_data(int tot_sub_vol, double complex epsilon, double 
 		
 			A_b_iterative_populator(tot_sub_vol, A_iterative, b_iterative, A_2d, G_old, mm, jg_0); // Populate Amm as A_iterative and G_sys_old as b_iterative
 			int info = LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',3,3,3,A_iterative,3,b_iterative,3); // G_new using Linear inversion using LAPACK
+			
+			//Ideally, instead of using this function, we would store b_iterative directly in a file, according to the term's position.
 			G_sys_new_populator(tot_sub_vol, mm, jg_0, G_sys_new, b_iterative);
 			
-			//idea: instead of storing G_new in code, write it in the .txt file.
-			FILE* G_new_test = fopen(G_sys_test_file_name, "r+");
-  		 	// Write the array elements to the file
-			//for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //lower triangular
-    		//{
-				int itest =0; 
-				char buffer[1024];
- 				
-				while (fgets(buffer,1024, G_new_test)) {
-					
-		        	int row = 0;
-        			int column = 0;
-					for(int mm_sub = 0; mm_sub < 3; mm_sub++) // 3D coordinate positions 
-					{
-						int mm_2d = (3*mm + mm_sub); // Set indices
-						//for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //upper triangular matrix
-						//{
-							for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
-							{
-								int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
-
-				            	char* value = strtok(buffer, " ,"); // Splitting the data
-								while (value) {
-                			
-                					if (row == mm_2d && column == jg_0_2d) { 
-										fprintf(G_new_test, "%e + i %e , ", creal(b_iterative[itest]), cimag(b_iterative[itest]));
-										printf("row %d and column %d: %e + i %e , ", row, column, creal(b_iterative[itest]), cimag(b_iterative[itest]));
-										itest++; 
-										//break;
-									}
-									value = strtok(NULL, ", ");
-									column++;
-								}
-							}
-
-							//printf("G_new[%d,%d] = %e + i %e , ",ig_0_2d, jg_0_2d, creal(G_sys_new[ig_0_2d][jg_0_2d]), cimag(G_sys_new[ig_0_2d][jg_0_2d]));
-    				
-					row++;
-					}
-					
-					//}
-					//fprintf(G_new_test, "\n");
-					//printf("\n");
-				
-				}
-				
-            
-			//}			
-    		fclose(G_new_test); // Close the file
-			
-
 		} // end jg_0
 
-
-		offdiagonal_solver(tot_sub_vol, mm, k, alpha_0, G_old, G_sys_new);
+		//This function calculates the remaining G_new for when i!=m. It uses G_old, but we do not need all the terms. 
+		//I copied the body of the function into the code as an attempt to use the minimum of terms needed (9N^2 - 9N).
+		//offdiagonal_solver(tot_sub_vol, mm, k, alpha_0, G_old, G_sys_new);
+		
+		// Next, solve all systems of equations for ii not equal to mm		
+		//for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //complete system
+		for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //upper triangular matrix
+		{
+			for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
+			{
+				int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
+				//for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //complete system
+				for (int ig_0 = jg_0; ig_0 < tot_sub_vol; ig_0++) //lower triangular
+				{ 
+					if(ig_0 != mm)
+					{
+						for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
+						{
+							int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
+							double complex G_sys_prod = 0.;
+							for(int m_sub = 0;  m_sub < 3;  m_sub++)//loop for matricial multiplication
+							{
+								int mm_2d = (3*mm + m_sub);
+								G_sys_prod += G_old[ig_0_2d][mm_2d]*pow(k,2)*alpha_0[mm]*G_sys_new[mm_2d][jg_0_2d];
+							}
+							G_sys_new[ig_0_2d][jg_0_2d] = G_old[ig_0_2d][jg_0_2d] + G_sys_prod; //alpha_0[mm]*[ig_0_2d][jg_0_2d]
+							G_sys_new[jg_0_2d][ig_0_2d] = G_sys_new[ig_0_2d][jg_0_2d]; // reciprocity
+						} // i_subG_0    
+					} //  if(ig_0 != mm) 	
+				}// ig_0 	        				
+			} // j_subG_0                 	
+		} // jg_0    
 		
 		memcpy(G_old,G_sys_new,3*tot_sub_vol*3*tot_sub_vol*sizeof(double complex)); // Update G_old = G_new for next iteration.
+	
 	/*
 		printf("\nPrint what will be exported\n");
-		for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //lower triangular
+		for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //rows
     	{
 			for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions 
 			{
 				int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
-				for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //upper triangular matrix
+				for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //columns
 				{
 					for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
 					{
@@ -563,59 +587,21 @@ void iterative_solver_with_data(int tot_sub_vol, double complex epsilon, double 
 		}
 	*/
 
-		//printf("\nPrint what was exported\n");
-		//char update_G_old[260];
-		if (mm<tot_sub_vol-1) // update G_old
-		{
-			
-			//sprintf(update_G_old, "cp ./%s/G_sys.txt  ./%s/G_old.txt\n",results_folder,results_folder);
-			//system(update_G_old);
-			
-			G_old_file = fopen(G_old_file_name, "w"); // Write the array elements to the file
-  		 	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //lower triangular
-    		{
-				for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions 
-				{
-					int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
-					for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //upper triangular matrix
-					{
-						for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
-						{
-							int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
-							fprintf(G_old_file, "%e + i %e , ", creal(G_old[ig_0_2d][jg_0_2d]), cimag(G_old[ig_0_2d][jg_0_2d]));
-							//printf("G_old[%d,%d] = %e + i %e , ",ig_0_2d, jg_0_2d, creal(G_old[ig_0_2d][jg_0_2d]), cimag(G_old[ig_0_2d][jg_0_2d]));
-    					}
-					}
-					fprintf(G_old_file, "\n");
-					//printf("\n");
-				}
-			}			
-    		fclose(G_old_file); // Close the file
-			
+		if (mm<tot_sub_vol-1) {
+			// Update G_old 
+			//write_csv(tot_sub_vol, G_old, G_old_file_name); // 19s for 100 frequencies and 16 subvolumes
+			write_bin(tot_sub_vol, G_old, G_old_file_name); // 12s for 100 frequencies and 16 subvolumes
+			/*
+			//another strategy to update G_old
+			char update_G_old[260];
+			//sprintf(update_G_old, "cp ./%s/G_sys.csv  ./%s/G_old.csv\n",results_folder,results_folder);
+			sprintf(update_G_old, "cp ./%s ./%s",G_sys_file_name,G_old_file_name);
+			system(update_G_old);	
+			*/
 		}
-		else // write G_new
-		{
-			FILE* G_sys_file = fopen(G_sys_file_name, "w");
-  		 // Write the array elements to the file
-		for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //lower triangular
-    	{
-			for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions 
-			{
-				int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
-				for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //upper triangular matrix
-				{
-					for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
-					{
-						int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
-						fprintf(G_sys_file, "%e + i %e , ", creal(G_sys_new[ig_0_2d][jg_0_2d]), cimag(G_sys_new[ig_0_2d][jg_0_2d]));
-						//printf("G_new[%d,%d] = %e + i %e , ",ig_0_2d, jg_0_2d, creal(G_sys_new[ig_0_2d][jg_0_2d]), cimag(G_sys_new[ig_0_2d][jg_0_2d]));
-    				}
-				}
-				fprintf(G_sys_file, "\n");
-				//printf("\n");
-			}
-		}			
-    	fclose(G_sys_file); // Close the file
+		else {
+			// write G_new 
+			write_csv(tot_sub_vol, G_sys_new,G_sys_file_name); 
 		}
 
 		free(G_old);
@@ -623,9 +609,6 @@ void iterative_solver_with_data(int tot_sub_vol, double complex epsilon, double 
 		
 	}
 	
-	//memcpy(G_sys,G_sys_new,3*tot_sub_vol*3*tot_sub_vol*sizeof(double complex)); //Populate G_sys with G_new
-	
-
 }
 
 
