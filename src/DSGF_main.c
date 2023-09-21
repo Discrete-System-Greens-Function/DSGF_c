@@ -416,9 +416,6 @@ int main()
 			//iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type);
 			
 			
-			char G_old_file_name[260];
-			char G_sys_file_name[260];
-
 			char G_sys_test_file_name[260];
 			//sprintf(G_sys_test_file_name,"%s/G_new_test.bin",results_folder); //
 			sprintf(G_sys_test_file_name,"%s/G_new_test.csv",results_folder);
@@ -433,52 +430,31 @@ int main()
 				fprintf(G_new_test, "\n");
 			}	
 			fclose(G_new_test); // Close the file	
-			
+
+
+			char G_old_file_name[260];
+			char G_sys_file_name[260];
 			if (multithread =='Y')
 			{
-				//sprintf(G_old_file_name,"%s/G_old_%d.bin",results_folder,i_omega); //
-				sprintf(G_old_file_name,"%s/G_old_%d.csv",results_folder,i_omega);
-				//sprintf(G_sys_file_name,"%s/G_sys_%d.bin",results_folder,i_omega); //
-				sprintf(G_sys_file_name,"%s/G_sys_%d.csv",results_folder,i_omega);
+				sprintf(G_old_file_name,"%s/G_old_%d.bin",results_folder,i_omega); //
+				//sprintf(G_old_file_name,"%s/G_old_%d.csv",results_folder,i_omega);
+				sprintf(G_sys_file_name,"%s/G_sys_%d.bin",results_folder,i_omega); //
+				//sprintf(G_sys_file_name,"%s/G_sys_%d.csv",results_folder,i_omega);
 			}
 			else
 			{
 				sprintf(G_old_file_name,"%s/G_old.bin",results_folder); //
 				//sprintf(G_old_file_name,"%s/G_old.csv",results_folder);
-				//sprintf(G_sys_file_name,"%s/G_sys.bin",results_folder); //
-				sprintf(G_sys_file_name,"%s/G_sys.csv",results_folder);
+				sprintf(G_sys_file_name,"%s/G_sys.bin",results_folder); //
+				//sprintf(G_sys_file_name,"%s/G_sys.csv",results_folder);
 			}
-				
+
 			//iterative_solver_store(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type,G_sys_file_name);
 			iterative_solver_with_data(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type,G_old_file_name, G_sys_file_name, G_sys_test_file_name);
 						
-			double complex (*G_sys)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys));			
-			FILE* G_sys_import = fopen(G_sys_file_name, "r"); // Write the array elements to the file
-			//double complex (*G_sys)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys));
-			double realPart, imagPart;
-			for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //lower triangular
-    		{
-				for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions 
-				{
-					int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
-					for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //upper triangular matrix
-					{
-						for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
-						{
-							int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
-							if(fscanf(G_sys_import, "%lf + i %lf ,", &realPart, &imagPart)==2)
-							{
-								G_sys[ig_0_2d][jg_0_2d] = realPart + imagPart*I;
-								//G_sys[jg_0_2d][ig_0_2d] = G_sys[ig_0_2d][jg_0_2d];
-							}
-						}
-					}
-				}
-				fscanf(G_sys_import, "\n");
-			}
-			fclose(G_sys_import); // Close the file
+			double complex (*G_sys)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys));	
+			read_bin(tot_sub_vol, G_sys, G_sys_file_name);
 			
-
 			//triangular matrix solution
 			//iterative_solver_memory(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, size, G_sys_TriangularMatrix,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type);
 			

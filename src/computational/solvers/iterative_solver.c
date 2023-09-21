@@ -389,8 +389,7 @@ void iterative_solver_with_data(int tot_sub_vol, double complex epsilon, double 
 	get_G_old_matrix_memory(tot_sub_vol, G_old, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type);
 	
 	// Write the array elements to the file
-	//write_csv(tot_sub_vol, G_old, G_old_file_name);
-	write_bin(tot_sub_vol, G_old, G_old_file_name);
+	write_bin(tot_sub_vol, G_old, G_old_file_name); //write_csv(tot_sub_vol, G_old, G_old_file_name);
 	
 	free(G_old);
 
@@ -412,8 +411,7 @@ void iterative_solver_with_data(int tot_sub_vol, double complex epsilon, double 
 		double complex (*G_old)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_old));
 		
 		// Read file into array elements
-		//read_csv(tot_sub_vol, G_old, G_old_file_name);
-		read_bin(tot_sub_vol, G_old, G_old_file_name);
+		read_bin(tot_sub_vol, G_old, G_old_file_name); //read_csv(tot_sub_vol, G_old, G_old_file_name);
 
 		//This function generates Amm and uses G_old, but we do not need all the terms to generate Amm. 
 		A2d_solver(epsilon_s, mm, tot_sub_vol, delta_V_vector[mm], G_old, A_2d, k);
@@ -515,7 +513,7 @@ void iterative_solver_with_data(int tot_sub_vol, double complex epsilon, double 
 		double complex (*G_sys_new)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys_new));
 				
 		//This function calculates the first G_new for when i=m. It uses G_old, but we do not need all the terms. 
-		//I copied the body of the function into the code as an attempt to use the minimum of terms needed (9N).
+		//I copied the body of the function into the code as an attempt to use the minimum of terms needed (9).
 		//remaining_pertubations(tot_sub_vol, mm, G_old, G_sys_new, A_2d);
 	
 		double complex A_iterative[3*3];
@@ -523,7 +521,6 @@ void iterative_solver_with_data(int tot_sub_vol, double complex epsilon, double 
 		#define MAX_LINE_LENGTH 1024
 		for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) // Only loop through remaining perturbations
 		{
-		
 			A_b_iterative_populator(tot_sub_vol, A_iterative, b_iterative, A_2d, G_old, mm, jg_0); // Populate Amm as A_iterative and G_sys_old as b_iterative
 			int info = LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',3,3,3,A_iterative,3,b_iterative,3); // G_new using Linear inversion using LAPACK
 			
@@ -533,7 +530,8 @@ void iterative_solver_with_data(int tot_sub_vol, double complex epsilon, double 
 		} // end jg_0
 
 		//This function calculates the remaining G_new for when i!=m. It uses G_old, but we do not need all the terms. 
-		//I copied the body of the function into the code as an attempt to use the minimum of terms needed (9N^2 - 9N).
+		//I copied the body of the function into the code as an attempt to use the minimum of terms needed. 
+		//Ideally, we would import the three terms needed for the calculations and store the result in the G_sys file.
 		//offdiagonal_solver(tot_sub_vol, mm, k, alpha_0, G_old, G_sys_new);
 		
 		// Next, solve all systems of equations for ii not equal to mm		
@@ -546,7 +544,8 @@ void iterative_solver_with_data(int tot_sub_vol, double complex epsilon, double 
 				//for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //complete system
 				for (int ig_0 = jg_0; ig_0 < tot_sub_vol; ig_0++) //lower triangular
 				{ 
-					if(ig_0 != mm)
+					//if(ig_0 != mm ) //condition without reciprocity
+					if(ig_0 != mm && jg_0 != mm) //using reciprocity, some terms would be calculated twice. The updated condition, each term is calculated one
 					{
 						for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
 						{
@@ -591,17 +590,19 @@ void iterative_solver_with_data(int tot_sub_vol, double complex epsilon, double 
 			// Update G_old 
 			//write_csv(tot_sub_vol, G_old, G_old_file_name); // 19s for 100 frequencies and 16 subvolumes
 			write_bin(tot_sub_vol, G_old, G_old_file_name); // 12s for 100 frequencies and 16 subvolumes
+			
 			/*
 			//another strategy to update G_old
 			char update_G_old[260];
 			//sprintf(update_G_old, "cp ./%s/G_sys.csv  ./%s/G_old.csv\n",results_folder,results_folder);
 			sprintf(update_G_old, "cp ./%s ./%s",G_sys_file_name,G_old_file_name);
-			system(update_G_old);	
-			*/
+			system(update_G_old);
+			*/	
 		}
 		else {
 			// write G_new 
-			write_csv(tot_sub_vol, G_sys_new,G_sys_file_name); 
+			//write_csv(tot_sub_vol, G_sys_new,G_sys_file_name); 
+			write_bin(tot_sub_vol, G_sys_new,G_sys_file_name);
 		}
 
 		free(G_old);
