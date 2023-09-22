@@ -386,6 +386,10 @@ void read_csv(int tot_sub_vol, double complex G_array[][3*tot_sub_vol], char* fi
 void iterative_solver_with_data(int tot_sub_vol, double complex epsilon, double complex epsilon_ref, double k, double delta_V_vector[], double complex alpha_0[],double k_0, double pi,double modulo_r_i_j[tot_sub_vol][tot_sub_vol], double complex r_i_j_outer_r_i_j[tot_sub_vol][tot_sub_vol][3][3],char wave_type, char* G_old_file_name, char* G_sys_file_name, char* G_sys_test_file_name){
 
 	double complex (*G_old)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_old));
+	if (G_old == NULL){
+			printf("Failure with memory in iterative solver.");
+			exit(1);
+	} 
 	get_G_old_matrix_memory(tot_sub_vol, G_old, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type);
 	
 	// Write the array elements to the file
@@ -409,7 +413,10 @@ void iterative_solver_with_data(int tot_sub_vol, double complex epsilon, double 
 		double complex epsilon_s = (epsilon - epsilon_ref); // Scattering dielectric function
 
 		double complex (*G_old)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_old));
-		
+		if (G_old == NULL){
+			printf("Failure with memory in iterative solver.");
+			exit(1);
+		}
 		// Read file into array elements
 		read_bin(tot_sub_vol, G_old, G_old_file_name); //read_csv(tot_sub_vol, G_old, G_old_file_name);
 
@@ -511,7 +518,10 @@ void iterative_solver_with_data(int tot_sub_vol, double complex epsilon, double 
 	 */
 		// Ideally, we would not need to store this 3Nx3N array.
 		double complex (*G_sys_new)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys_new));
-				
+		if (G_sys_new == NULL){
+			printf("Failure with memory in iterative solver.");
+			exit(1);
+		} 		
 		//This function calculates the first G_new for when i=m. It uses G_old, but we do not need all the terms. 
 		//I copied the body of the function into the code as an attempt to use the minimum of terms needed (9).
 		//remaining_pertubations(tot_sub_vol, mm, G_old, G_sys_new, A_2d);

@@ -111,18 +111,37 @@ void direct_solver(int tot_sub_vol, double complex A[tot_sub_vol][tot_sub_vol][3
 //void direct_solver(int tot_sub_vol, double complex G_sys[3*tot_sub_vol][3*tot_sub_vol],double k_0, double pi, double epsilon_ref, double modulo_r_i_j[tot_sub_vol][tot_sub_vol], double complex r_i_j_outer_r_i_j[tot_sub_vol][tot_sub_vol][3][3], double delta_V_vector[tot_sub_vol],char wave_type, double complex alpha_0[tot_sub_vol]){
 void direct_solver(int tot_sub_vol, double complex G_sys[3*tot_sub_vol][3*tot_sub_vol],double k_0, double pi, double epsilon_ref, double modulo_r_i_j[tot_sub_vol][tot_sub_vol], double complex r_i_j_outer_r_i_j[tot_sub_vol][tot_sub_vol][3][3], double delta_V_vector[tot_sub_vol],char wave_type, double complex alpha_0[tot_sub_vol]){
 	
-	double complex (*G_0)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_0)); 		
+	double complex (*G_0)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_0)); 	
+	if (G_0 == NULL){
+		printf("Failure with memory. Use iterative solver");
+		exit(1);
+	} 
+
 	double complex (*A)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*A));
+	if (A == NULL){
+		printf("Failure with memory. Use iterative solver");
+		exit(1);
+	}
 	
 	//get_G0_matrix(tot_sub_vol, G_0, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type);
 	get_G0_matrix_memory(tot_sub_vol, G_0, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type);
 	get_A_matrix(tot_sub_vol, G_0, A, k_0, alpha_0); // function applicable for uniform and non-uniform discretization
 
 	double complex (*A_direct) = calloc(3*3*tot_sub_vol*tot_sub_vol, sizeof(*A_direct));
+	// Check if memory allocation failed
+	if (A_direct == NULL){
+		printf("Failure with memory. Use iterative solver");
+		exit(1);
+	}
 	A_direct_populator(tot_sub_vol, A, A_direct);
 	free(A);
 			
 	double complex (*b_direct) = calloc(3*3*tot_sub_vol*tot_sub_vol, sizeof(*b_direct));
+	// Check if memory allocation failed
+	if (b_direct == NULL){
+		printf("Failure with memory. Use iterative solver");
+		exit(1);
+	}
 	b_direct_populator(tot_sub_vol, G_0, b_direct);
 	free(G_0);
 

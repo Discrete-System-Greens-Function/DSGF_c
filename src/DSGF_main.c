@@ -89,18 +89,42 @@ int main()
 	// ####################################
 	// #### Dynamic memory allocation: ####
 	double(*R)[3] = calloc(tot_sub_vol, sizeof(*R)); // center of subvolumes for thermal objects: info imported from a .txt file
-
+	if (R == NULL){
+			printf("Failure with memory before spectral analysis when the positions of subvolumes are defined. ");
+			return 1;
+	}
 	// radial frequency [rad/s]
 	double(*omega) = malloc(sizeof *omega * const_N_omega);
-
+	if (omega == NULL){
+			printf("Failure with memory before spectral analysis when frequencies are defined. ");
+			return 1;
+	}
 	double(*delta_V_vector) = malloc(sizeof *delta_V_vector * tot_sub_vol); // Vector of all subvolume size. Combines delta_V_1 and delta_V_2 in the same array
+	if (delta_V_vector == NULL){
+			printf("Failure with memory before spectral analysis when the size of subvolumes are defined. ");
+			return 1;
+	}
 	double *T_vector = (double *)malloc(sizeof(double) * tot_sub_vol);		// (N x 1) vector of all subvolume temperatures [K]
-
+	if (T_vector == NULL){
+			printf("Failure with memory before spectral analysis when the temperature vector is defined. ");
+			return 1;
+	}
 	double(*modulo_r_i_j)[tot_sub_vol] = malloc(sizeof *modulo_r_i_j * tot_sub_vol);
-
+	if (modulo_r_i_j == NULL){
+			printf("Failure with memory before spectral analysis when the distances between subvolumes are defined. ");
+			return 1;
+	}
 	double(*G_12_omega_SGF)[N_Tcalc] = calloc(const_N_omega, sizeof(*G_12_omega_SGF));
+	if (G_12_omega_SGF == NULL){
+			printf("Failure with memory before spectral analysis when conductance defined. ");
+			return 1;
+	}
 
 	double(*Q_subvol)[const_N_omega] = calloc(tot_sub_vol, sizeof(*Q_subvol));
+	if (Q_subvol == NULL){
+		printf("Failure with memory before spectral analysis when power dissipated is defined. ");
+		return 1;
+	}
 	
 	if ( save_power_dissipated_spectral_subvolumes == 'Y' ||
  		 save_power_dissipated_total_subvolumes == 'Y' ||
@@ -109,6 +133,10 @@ int main()
  		 save_power_density_total_subvolumes == 'Y' )
 	{
 		double(*Q_subvol)[const_N_omega] = calloc(tot_sub_vol, sizeof(*Q_subvol));
+		if (Q_subvol == NULL){
+			printf("Failure with memory before spectral analysis when power dissipated is defined. ");
+			return 1;
+		}
 	}
 	
 	
@@ -268,6 +296,10 @@ int main()
 	//  Fill terms for G^0:		
 
 	double complex(*r_i_j_outer_r_i_j)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*r_i_j_outer_r_i_j));
+	if (r_i_j_outer_r_i_j == NULL){
+			printf("Failure with memory before spectral analysis when the distances between subvolumes are defined. ");
+			return 1;
+	} 
 	setup_G_0_matrices(tot_sub_vol, modulo_r_i_j, r_i_j_outer_r_i_j, R);
 	// #################################################################
 	// ################## FREQUENCY RANGE ANALYSIS #####################
@@ -343,7 +375,10 @@ int main()
 		{	
 			//printf("Direct inversion in progress. \n");
 			double complex (*G_sys)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys));
-			
+			if (G_sys == NULL){
+			printf("Failure with memory. Use iterative solver");
+			exit(1);
+			} 
 			//direct_solver(tot_sub_vol, A_direct, b_direct, G_sys);  
 			//direct_solver(tot_sub_vol, A, G_0, G_sys);
 			direct_solver(tot_sub_vol, G_sys, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type, alpha_0); // we noticed an memory improved from the old function
@@ -638,6 +673,10 @@ int main()
 		{	
 				
 			double(*Q_density) = malloc(sizeof *Q_density * tot_sub_vol);
+			if (Q_density == NULL){
+				printf("Failure with memory when power dissipated density is defined. ");
+				return 1;
+			}
 			FILE *power_density; // append
 			char dirPathPower_density_FileName[260];
 			sprintf(dirPathPower_density_FileName, "%s/Q_density_subvol.csv", results_folder); // path where the file is stored
@@ -671,7 +710,15 @@ int main()
 		if (save_power_dissipated_total_bulk == 'Y')
 		{
 		double(*Q_omega_bulk_1) = malloc(sizeof *Q_omega_bulk_1 * const_N_omega);
+		if (Q_omega_bulk_1 == NULL){
+			printf("Failure with memory when bulk power dissipated is defined. ");
+			return 1;
+		}
 		double(*Q_omega_bulk_2) = malloc(sizeof *Q_omega_bulk_2 * const_N_omega);
+		if (Q_omega_bulk_2 == NULL){
+			printf("Failure with memory when bulk power dissipated is defined. ");
+			return 1;
+		}
 		FILE *power_dissipated_spectral_bulk; // append
 		char dirPathPower_dissipated_spectral_bulk_FileName[260];
 		sprintf(dirPathPower_dissipated_spectral_bulk_FileName, "%s/Q_omega_bulk.csv", results_folder); // path where the file is stored
@@ -706,6 +753,10 @@ int main()
 		if (save_total_conductance == 'Y') 
 		{
 		double(*Total_conductance) = malloc(sizeof *Total_conductance * N_Tcalc);
+		if (Total_conductance == NULL){
+			printf("Failure with memory when total conductance is defined. ");
+			return 1;
+		}
 		for (int iTcalc = 0; iTcalc < N_Tcalc; iTcalc++) // EDIT VALUE :: change 1 to N_Tcalc for the temperature loop
 		{
 			sum_conductance = 0.;
