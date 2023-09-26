@@ -317,6 +317,116 @@ void get_G0_matrix_memory(int tot_sub_vol, double complex G_0[tot_sub_vol][tot_s
 
 }
 
+void get_A_matrix(int tot_sub_vol, double complex G_0[tot_sub_vol][tot_sub_vol][3][3], double complex A[tot_sub_vol][tot_sub_vol][3][3], double k_0, double complex alpha_0[tot_sub_vol]){ //,char wave_type
+	
+	double complex (*alpha_0_matrix)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*alpha_0_matrix));
+	
+	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++)//
+	{
+		for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
+		{
+			for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++)//
+			{
+				for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions
+				{
+					if (ig_0==jg_0 && i_subG_0==j_subG_0)
+					{
+						alpha_0_matrix[ig_0][jg_0][i_subG_0][j_subG_0] = alpha_0[ig_0];
+					}
+					else
+					{
+						alpha_0_matrix[ig_0][jg_0][i_subG_0][j_subG_0] = 0.;
+					}
+				}
+			}
+		}
+	}
+	
+	double complex (*alpha_0_matrix_2D)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*alpha_0_matrix_2D));
+	matrix_reshape(3, tot_sub_vol, alpha_0_matrix_2D, alpha_0_matrix); // this reshapes 2 4D matrices to 2 2D matrices, where G0 and eyeA are 4D and G_sys_old and eyeA_2d are the respective 2D matrices
+	free(alpha_0_matrix);
+
+	double complex (*G_0_matrix_2D)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_0_matrix_2D));
+	matrix_reshape(3, tot_sub_vol, G_0_matrix_2D, G_0); // this reshapes 2 4D matrices to 2 2D matrices, where G0 and eyeA are 4D and G_sys_old and eyeA_2d are the respective 2D matrices
+	
+	double complex (*prod)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*prod));
+
+	double complex alpha_parameter = pow(k_0,2) + 0.0 * I;  // Scaling factor for A*B
+	double complex beta_parameter = 0.0 + 0.0 * I;   // Scaling factor for C
+	
+	//cblas_zgemm(CblasRowMajor,CblasNoTrans, CblasNoTrans, 3*tot_sub_vol, 3*tot_sub_vol, 3*tot_sub_vol,&alpha_parameter, G_0_matrix_2D,  3*tot_sub_vol, alpha_0_matrix_2D, 3*tot_sub_vol,&beta_parameter,prod, 3*tot_sub_vol);
+	cblas_zgemm(
+		CblasRowMajor,CblasNoTrans, CblasNoTrans, 
+		3*tot_sub_vol, 3*tot_sub_vol, 3*tot_sub_vol,  	// Dimensions of matrices
+		&alpha_parameter, 								// Scaling factor for A*B
+		G_0_matrix_2D,  3*tot_sub_vol, 					// Matrix A
+		alpha_0_matrix_2D, 3*tot_sub_vol, 				// Matrix B
+		&beta_parameter, 								// Scaling factor for C
+		prod, 3*tot_sub_vol								 // Matrix C
+	);
+	
+	free(alpha_0_matrix_2D);
+	free(G_0_matrix_2D);
+		
+	/*
+	// slow matrix multiplication 
+	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
+	{ 
+		for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
+		{
+			for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //lower triangular matrix
+			{
+				for(int j_subG_0 = 0;  j_subG_0 < 3;  j_subG_0++)//loop for matricial multiplication
+				{
+							double complex G_0_alpha_matrix_prod = 0.;
+							for (int object = 0; object < tot_sub_vol; object++) //slow part of the code!!!!!
+							{
+								for (int axis = 0; axis < 3; axis++)
+								{
+									G_0_alpha_matrix_prod += pow(k_0,2)*G_0[ig_0][object][i_subG_0][axis]*alpha_0_matrix[object][jg_0][axis][j_subG_0];
+									//G_0_alpha_matrix_prod += pow(k_0,2)*G_0[ig_0][object][i_subG_0][axis]*alpha_0_matrix_transpose[jg_0][object][j_subG_0][axis];
+								}
+							}
+							prod[ig_0][jg_0][i_subG_0][j_subG_0] = G_0_alpha_matrix_prod;	
+				}// j_subG_0  
+			} // jg_0   	
+		}// i_subG_0   	                	
+	} // ig_0    
+	*/
+
+	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++)//
+	{
+		for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
+		{
+			int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
+			for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++)//
+			{
+				for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions
+				{
+					int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
+					if (ig_0==jg_0 && i_subG_0==j_subG_0) // if i=j:
+					{
+						//A[ig_0][jg_0][i_subG_0][j_subG_0] = 1. - pow(k_0,2)*alpha_0_matrix[ig_0][jg_0][i_subG_0][j_subG_0]*G_0[ig_0][jg_0][i_subG_0][j_subG_0]; // eq. 26 from Lindsay's paper
+						//A[ig_0][jg_0][i_subG_0][j_subG_0] = 1. -  prod[ig_0][jg_0][i_subG_0][j_subG_0]; // eq. 26 from Lindsay's paper
+						A[ig_0][jg_0][i_subG_0][j_subG_0] = 1. -  prod[ig_0_2d][jg_0_2d]; // eq. 26 from Lindsay's paper
+					
+					}	
+					else
+					{
+						//A[ig_0][jg_0][i_subG_0][j_subG_0] = 0. - pow(k_0,2)*alpha_0_matrix[ig_0][jg_0][i_subG_0][j_subG_0]*G_0[ig_0][jg_0][i_subG_0][j_subG_0]; // eq. 26 from Lindsay's paper
+						//A[ig_0][jg_0][i_subG_0][j_subG_0] = 0. -  prod[ig_0][jg_0][i_subG_0][j_subG_0]; // eq. 26 from Lindsay's paper
+						A[ig_0][jg_0][i_subG_0][j_subG_0] = 0. -  prod[ig_0_2d][jg_0_2d]; // eq. 26 from Lindsay's paper
+					}
+				} //end j_subG_0 
+			} //end jg_0  
+		}  //end i_subG_0     
+	} //end ig_0    
+
+free(prod);
+
+}
+
+
 void get_G_old_matrix_memory(int tot_sub_vol, double complex G_old[3*tot_sub_vol][3*tot_sub_vol], double k_0, double pi, double epsilon_ref, double modulo_r_i_j[tot_sub_vol][tot_sub_vol], double complex r_i_j_outer_r_i_j[tot_sub_vol][tot_sub_vol][3][3], double delta_V_vector[tot_sub_vol],char wave_type){
 
 	// ################### MATRICES STRUCTURE LOOPS ###########################
@@ -456,115 +566,62 @@ void get_G0_triangular_matrix(int tot_sub_vol, int size, double complex upperTri
 
 
 
+void get_G_old_struct_matrix_memory(int tot_sub_vol, double complex G_old[3*tot_sub_vol][3*tot_sub_vol], double k_0, double pi, double epsilon_ref, double modulo_r_i_j[tot_sub_vol][tot_sub_vol], double complex r_i_j_outer_r_i_j[tot_sub_vol][tot_sub_vol][3][3], double delta_V_vector[tot_sub_vol],char wave_type){
 
+	// ################### MATRICES STRUCTURE LOOPS ###########################
+	// 3N X 3N Matrices structure loops for G^0 and A:
+	double denom_NF, denom_IF ; // used in G^0_ij function
+	double complex const_1, const_2, const_3;
 
+	double eyeG_0[3][3] = {{1,0,0}, {0,1,0}, {0,0,1}};
 
-
-void get_A_matrix(int tot_sub_vol, double complex G_0[tot_sub_vol][tot_sub_vol][3][3], double complex A[tot_sub_vol][tot_sub_vol][3][3], double k_0, double complex alpha_0[tot_sub_vol]){ //,char wave_type
+	double a_j, part1ii;
+	double complex part2ii, part2iiexp,part3ii;
 	
-	double complex (*alpha_0_matrix)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*alpha_0_matrix));
-	
-	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++)//
-	{
-		for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
-		{
-			for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++)//
-			{
-				for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions
-				{
-					if (ig_0==jg_0 && i_subG_0==j_subG_0)
-					{
-						alpha_0_matrix[ig_0][jg_0][i_subG_0][j_subG_0] = alpha_0[ig_0];
-					}
-					else
-					{
-						alpha_0_matrix[ig_0][jg_0][i_subG_0][j_subG_0] = 0.;
-					}
-				}
-			}
-		}
-	}
-	
-	double complex (*alpha_0_matrix_2D)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*alpha_0_matrix_2D));
-	matrix_reshape(3, tot_sub_vol, alpha_0_matrix_2D, alpha_0_matrix); // this reshapes 2 4D matrices to 2 2D matrices, where G0 and eyeA are 4D and G_sys_old and eyeA_2d are the respective 2D matrices
-	free(alpha_0_matrix);
-
-	double complex (*G_0_matrix_2D)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_0_matrix_2D));
-	matrix_reshape(3, tot_sub_vol, G_0_matrix_2D, G_0); // this reshapes 2 4D matrices to 2 2D matrices, where G0 and eyeA are 4D and G_sys_old and eyeA_2d are the respective 2D matrices
-	
-	double complex (*prod)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*prod));
-
-	double complex alpha_parameter = pow(k_0,2) + 0.0 * I;  // Scaling factor for A*B
-	double complex beta_parameter = 0.0 + 0.0 * I;   // Scaling factor for C
-	
-	//cblas_zgemm(CblasRowMajor,CblasNoTrans, CblasNoTrans, 3*tot_sub_vol, 3*tot_sub_vol, 3*tot_sub_vol,&alpha_parameter, G_0_matrix_2D,  3*tot_sub_vol, alpha_0_matrix_2D, 3*tot_sub_vol,&beta_parameter,prod, 3*tot_sub_vol);
-	cblas_zgemm(
-		CblasRowMajor,CblasNoTrans, CblasNoTrans, 
-		3*tot_sub_vol, 3*tot_sub_vol, 3*tot_sub_vol,  	// Dimensions of matrices
-		&alpha_parameter, 								// Scaling factor for A*B
-		G_0_matrix_2D,  3*tot_sub_vol, 					// Matrix A
-		alpha_0_matrix_2D, 3*tot_sub_vol, 				// Matrix B
-		&beta_parameter, 								// Scaling factor for C
-		prod, 3*tot_sub_vol								 // Matrix C
-	);
-	
-	free(alpha_0_matrix_2D);
-	free(G_0_matrix_2D);
-		
-	/*
-	// slow matrix multiplication 
 	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
-	{ 
-		for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
-		{
-			for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //lower triangular matrix
-			{
-				for(int j_subG_0 = 0;  j_subG_0 < 3;  j_subG_0++)//loop for matricial multiplication
-				{
-							double complex G_0_alpha_matrix_prod = 0.;
-							for (int object = 0; object < tot_sub_vol; object++) //slow part of the code!!!!!
-							{
-								for (int axis = 0; axis < 3; axis++)
-								{
-									G_0_alpha_matrix_prod += pow(k_0,2)*G_0[ig_0][object][i_subG_0][axis]*alpha_0_matrix[object][jg_0][axis][j_subG_0];
-									//G_0_alpha_matrix_prod += pow(k_0,2)*G_0[ig_0][object][i_subG_0][axis]*alpha_0_matrix_transpose[jg_0][object][j_subG_0][axis];
-								}
-							}
-							prod[ig_0][jg_0][i_subG_0][j_subG_0] = G_0_alpha_matrix_prod;	
-				}// j_subG_0  
-			} // jg_0   	
-		}// i_subG_0   	                	
-	} // ig_0    
-	*/
-
-	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++)//
 	{
-		for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
+		for (int jg_0 = ig_0; jg_0 < tot_sub_vol; jg_0++)//
 		{
-			int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
-			for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++)//
+			if (ig_0!=jg_0) // eq. 25 from Walter et al., PRB 2021
 			{
+			const_1 = cexp(k_0*sqrt(epsilon_ref)*modulo_r_i_j[ig_0][jg_0]*I)/(4.*pi*modulo_r_i_j[ig_0][jg_0]); 
+			denom_NF = epsilon_ref*pow(k_0*modulo_r_i_j[ig_0][jg_0],2);
+			denom_IF = k_0*sqrt(epsilon_ref)*modulo_r_i_j[ig_0][jg_0];
+			const_2 = (1. - 1./denom_NF + 1.*I/denom_IF ) ;
+			const_3 = (1. - 3./denom_NF + 3.*I/denom_IF) ;
+			for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
+			{
+				int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
 				for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions
 				{
 					int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
-					if (ig_0==jg_0 && i_subG_0==j_subG_0) // if i=j:
+					//G_old[ig_0][jg_0][i_subG_0][j_subG_0]=const_1*((const_2*eyeG_0[i_subG_0][j_subG_0])-(const_3*r_i_j_outer_r_i_j[ig_0][jg_0][i_subG_0][j_subG_0]));  
+					//G_old[jg_0][ig_0][j_subG_0][i_subG_0]=G_old[ig_0][jg_0][i_subG_0][j_subG_0];
+					G_old[ig_0_2d][jg_0_2d] = const_1*((const_2*eyeG_0[i_subG_0][j_subG_0])-(const_3*r_i_j_outer_r_i_j[ig_0][jg_0][i_subG_0][j_subG_0]));  
+					G_old[jg_0_2d][ig_0_2d] = G_old[ig_0_2d][jg_0_2d];
+				}    
+			}
+			}//end if (ig_0!=jg_0)
+			else //if (ig_0==jg_0) // eq. 26 from Walter et al., PRB 2021 
+			{
+				a_j = a_j_function(delta_V_vector[ig_0], pi);
+				part1ii = 1./(3.*delta_V_vector[ig_0]*epsilon_ref*pow(k_0,2));
+				part2ii = a_j*k_0*sqrt(epsilon_ref)*I; // com i term 
+				part2iiexp = cexp(0. + a_j*k_0*sqrt(epsilon_ref)*I); 
+				part3ii = part2iiexp*(1-part2ii) - 1. ; // part3ii is inside brackets
+				for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
+				{
+					int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
+					for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions
 					{
-						//A[ig_0][jg_0][i_subG_0][j_subG_0] = 1. - pow(k_0,2)*alpha_0_matrix[ig_0][jg_0][i_subG_0][j_subG_0]*G_0[ig_0][jg_0][i_subG_0][j_subG_0]; // eq. 26 from Lindsay's paper
-						//A[ig_0][jg_0][i_subG_0][j_subG_0] = 1. -  prod[ig_0][jg_0][i_subG_0][j_subG_0]; // eq. 26 from Lindsay's paper
-						A[ig_0][jg_0][i_subG_0][j_subG_0] = 1. -  prod[ig_0_2d][jg_0_2d]; // eq. 26 from Lindsay's paper
-					
-					}	
-					else
-					{
-						//A[ig_0][jg_0][i_subG_0][j_subG_0] = 0. - pow(k_0,2)*alpha_0_matrix[ig_0][jg_0][i_subG_0][j_subG_0]*G_0[ig_0][jg_0][i_subG_0][j_subG_0]; // eq. 26 from Lindsay's paper
-						//A[ig_0][jg_0][i_subG_0][j_subG_0] = 0. -  prod[ig_0][jg_0][i_subG_0][j_subG_0]; // eq. 26 from Lindsay's paper
-						A[ig_0][jg_0][i_subG_0][j_subG_0] = 0. -  prod[ig_0_2d][jg_0_2d]; // eq. 26 from Lindsay's paper
+						int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
+						//G_old[ig_0][jg_0][i_subG_0][j_subG_0]=eyeG_0[i_subG_0][j_subG_0]*part1ii*(2.*part3ii-1.);
+						G_old[ig_0_2d][jg_0_2d] = eyeG_0[i_subG_0][j_subG_0]*part1ii*(2.*part3ii-1.); 
 					}
-				} //end j_subG_0 
-			} //end jg_0  
-		}  //end i_subG_0     
-	} //end ig_0    
-
-free(prod);
+				} //end i_subG_0
+			}//end if (ig_0=jg_0)	
+		}    
+	} //end j_subG_0
 
 }
+

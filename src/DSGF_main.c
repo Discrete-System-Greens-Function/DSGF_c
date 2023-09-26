@@ -88,22 +88,31 @@ int main()
 
 	// ####################################
 	// #### Dynamic memory allocation: ####
+	
+	double(*omega) = malloc(sizeof *omega * const_N_omega); // radial frequency [rad/s]
+	if (omega == NULL){
+			printf("Failure with memory before spectral analysis when frequencies are defined. ");
+			return 1;
+	}
+
+	double(*G_12_omega_SGF)[N_Tcalc] = calloc(const_N_omega, sizeof(*G_12_omega_SGF)); // spectral conductance
+	if (G_12_omega_SGF == NULL){
+			printf("Failure with memory before spectral analysis when conductance defined. ");
+			return 1;
+	}
+
 	double(*R)[3] = calloc(tot_sub_vol, sizeof(*R)); // center of subvolumes for thermal objects: info imported from a .txt file
 	if (R == NULL){
 			printf("Failure with memory before spectral analysis when the positions of subvolumes are defined. ");
 			return 1;
 	}
-	// radial frequency [rad/s]
-	double(*omega) = malloc(sizeof *omega * const_N_omega);
-	if (omega == NULL){
-			printf("Failure with memory before spectral analysis when frequencies are defined. ");
-			return 1;
-	}
+	
 	double(*delta_V_vector) = malloc(sizeof *delta_V_vector * tot_sub_vol); // Vector of all subvolume size. Combines delta_V_1 and delta_V_2 in the same array
 	if (delta_V_vector == NULL){
 			printf("Failure with memory before spectral analysis when the size of subvolumes are defined. ");
 			return 1;
 	}
+	
 	double *T_vector = (double *)malloc(sizeof(double) * tot_sub_vol);		// (N x 1) vector of all subvolume temperatures [K]
 	if (T_vector == NULL){
 			printf("Failure with memory before spectral analysis when the temperature vector is defined. ");
@@ -112,11 +121,6 @@ int main()
 	double(*modulo_r_i_j)[tot_sub_vol] = malloc(sizeof *modulo_r_i_j * tot_sub_vol);
 	if (modulo_r_i_j == NULL){
 			printf("Failure with memory before spectral analysis when the distances between subvolumes are defined. ");
-			return 1;
-	}
-	double(*G_12_omega_SGF)[N_Tcalc] = calloc(const_N_omega, sizeof(*G_12_omega_SGF));
-	if (G_12_omega_SGF == NULL){
-			printf("Failure with memory before spectral analysis when conductance defined. ");
 			return 1;
 	}
 
@@ -405,7 +409,7 @@ int main()
 					}
 					// Transmissivity coefficient matrix tau(omega) for comparison with Czapla Mathematica output [dimensionless]
 					trans_coeff = 4.*pow(k_0,4)*delta_V_vector[ig_0]*delta_V_vector[jg_0]*cimag(epsilon)*cimag(epsilon)*G_element; 
-			
+				
 					//Trans_bulk: Transmission coefficient between two bulk objects
 					// This function calculates the transmission coefficient between bulk objects given the transmission coefficient between every pair of dipoles for a given frequency.
 					if(ig_0 < const_N_subvolumes_per_object && jg_0 >= const_N_subvolumes_per_object)// bulk 1 -> 2

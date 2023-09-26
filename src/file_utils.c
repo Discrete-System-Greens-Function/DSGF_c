@@ -247,3 +247,82 @@ void create_pos_processing(char file_name[], char material[], double initial, do
 	
 	fclose(pos_processing_summary);
 }
+
+void write_bin(int tot_sub_vol, double complex G_array[][3*tot_sub_vol], char* file_name)
+//void write_bin(int tot_sub_vol, double complex G_array[][tot_sub_vol][3][3], char* file_name)
+{
+	FILE* G_file = fopen(file_name, "wb");
+	// Write the entire array to the file
+    size_t numElements = 3 * tot_sub_vol * 3 * tot_sub_vol;
+	fwrite(G_array, sizeof(double complex), numElements, G_file);
+	fclose(G_file); // Close the file
+}
+
+void write_csv(int tot_sub_vol, double complex G_array[][3*tot_sub_vol], char* file_name)
+{
+	FILE* G_file = fopen(file_name, "w");
+	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //rows
+    {
+		for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions 
+		{
+			int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
+			for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //columns
+			{
+				for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
+				{
+					int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
+					fprintf(G_file, "%e + i %e , ", creal(G_array[ig_0_2d][jg_0_2d]), cimag(G_array[ig_0_2d][jg_0_2d]));
+   				}
+			}
+			fprintf(G_file, "\n");
+		}
+	}
+	fclose(G_file); // Close the file
+}
+
+void read_bin(int tot_sub_vol, double complex G_array[][3*tot_sub_vol], char* file_name)
+{
+		FILE* G_file = fopen(file_name, "rb"); //
+		// Determine the size of the binary file
+    	fseek(G_file, 0, SEEK_END);
+    	long fileSize = ftell(G_file);
+    	rewind(G_file);
+		
+    	// Calculate the number of complex numbers in the file
+    	size_t numComplexNumbers = fileSize / sizeof(double complex);
+
+		// Read the entire array from the file
+		fread(G_array, sizeof(double complex), numComplexNumbers, G_file);
+
+		fclose(G_file); // Close the file
+}
+
+
+void read_csv(int tot_sub_vol, double complex G_array[][3*tot_sub_vol], char* file_name)
+{
+	FILE* G_file = fopen(file_name, "r"); 
+	double realPart, imagPart;
+	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //rows
+    {
+		for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions 
+		{
+			int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
+			for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //columns
+			{
+				for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
+				{
+					int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
+					if(fscanf(G_file, "%lf + i %lf ,", &realPart, &imagPart)==2)
+					{
+						G_array[ig_0_2d][jg_0_2d] = realPart + imagPart*I;
+					}
+				}
+			}
+			fscanf(G_file, "\n");
+		}
+	}
+	fclose(G_file); // Close the file
+}
+
+
+

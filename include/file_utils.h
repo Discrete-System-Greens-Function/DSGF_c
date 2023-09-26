@@ -35,4 +35,16 @@ void populate_subvol_delta_v(char file_name[], int array_length, double delta_V_
 
 void create_pos_processing(char file_name[], char material[], double initial, double end, double time_spent, double T_calc_vector[], double Total_conductance[], int N_Tcalc);
 
+void write_bin(int tot_sub_vol, double complex G_array[][3*tot_sub_vol], char* file_name);
+
+void write_csv(int tot_sub_vol, double complex G_array[][3*tot_sub_vol], char* file_name);
+
+void read_bin(int tot_sub_vol, double complex G_array[][3*tot_sub_vol], char* file_name);
+
+void read_csv(int tot_sub_vol, double complex G_array[][3*tot_sub_vol], char* file_name);
+
+
+
+
+
 #endif

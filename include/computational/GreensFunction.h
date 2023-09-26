@@ -17,4 +17,6 @@ void get_G_old_matrix_memory(int tot_sub_vol, double complex G_old[3*tot_sub_vol
 
 void get_A_matrix(int tot_sub_vol, double complex G_0[tot_sub_vol][tot_sub_vol][3][3], double complex A[tot_sub_vol][tot_sub_vol][3][3], double k_0, double complex alpha_0[tot_sub_vol]);
 
+void get_G_old_struct_matrix_memory(int tot_sub_vol, double complex G_old[3*tot_sub_vol][3*tot_sub_vol], double k_0, double pi, double epsilon_ref, double modulo_r_i_j[tot_sub_vol][tot_sub_vol], double complex r_i_j_outer_r_i_j[tot_sub_vol][tot_sub_vol][3][3], double delta_V_vector[tot_sub_vol],char wave_type);
+
 #endif /* GREENSFUNCTION_H */

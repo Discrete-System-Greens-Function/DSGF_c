@@ -32,10 +32,6 @@ void iterative_solver_memory(int tot_sub_vol, double complex epsilon, double com
 void iterative_solver_store(int tot_sub_vol, double complex epsilon, double complex epsilon_ref, double k, double delta_V_vector[], double complex alpha_0[], double complex G_sys[3*tot_sub_vol][3*tot_sub_vol],double k_0, double pi,double modulo_r_i_j[tot_sub_vol][tot_sub_vol], double complex r_i_j_outer_r_i_j[tot_sub_vol][tot_sub_vol][3][3],char wave_type, char* G_sys_file_name);
 void iterative_solver_with_data(int tot_sub_vol, double complex epsilon, double complex epsilon_ref, double k, double delta_V_vector[], double complex alpha_0[],double k_0, double pi,double modulo_r_i_j[tot_sub_vol][tot_sub_vol], double complex r_i_j_outer_r_i_j[tot_sub_vol][tot_sub_vol][3][3],char wave_type, char* G_old_file_name, char* G_sys_file_name, char* G_sys_test_file_name);
 
-void write_bin(int tot_sub_vol, double complex G_array[][3*tot_sub_vol], char* file_name);
-void write_csv(int tot_sub_vol, double complex G_array[][3*tot_sub_vol], char* file_name);
-void read_bin(int tot_sub_vol, double complex G_array[][3*tot_sub_vol], char* file_name);
-void read_csv(int tot_sub_vol, double complex G_array[][3*tot_sub_vol], char* file_name);
 
 void iterative_solver_integrated(int tot_sub_vol, double complex epsilon, double complex epsilon_ref, double k, double delta_V_vector[], double complex alpha_0[], double complex G_sys[3*tot_sub_vol][3*tot_sub_vol], double k_0, double pi,double modulo_r_i_j[tot_sub_vol][tot_sub_vol], double complex r_i_j_outer_r_i_j[tot_sub_vol][tot_sub_vol][3][3],char wave_type);
 
