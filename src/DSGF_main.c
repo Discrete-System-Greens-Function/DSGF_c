@@ -3,7 +3,7 @@
 // Near-field radiative heat transfer framework between thermal objects
 // Developed by RETL group at the University of Utah, USA
 
-// LAST UPDATE: June 01, 2023
+// LAST UPDATE: September 27, 2023
 // 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // General c libraries
@@ -85,22 +85,25 @@ int main()
 	int const const_N_subvolumes_per_object = N_subvolumes_per_object_1; // Number of subvolumes per object
 	int const const_N_subvolumes_per_object_2 = N_subvolumes_per_object_2;
 	int tot_sub_vol = const_N_subvolumes_per_object + const_N_subvolumes_per_object_2; // Assign tot_sub_vol: Computes the total number of subvolumes in the system. tot_sub_vol is defined this way because it must be a non-variable parameter due to the computations perfomed in the code. Previously, it was defined as #define tot_sub_vol const_N_subvolumes_per_object*const_N_bulk_objects
-
-	// ####################################
-	// #### Dynamic memory allocation: ####
+	
+	/*
+	double(*G_12_omega_SGF)[N_Tcalc] = calloc(const_N_omega, sizeof(*G_12_omega_SGF)); // spectral conductance
+	if (G_12_omega_SGF == NULL){
+			printf("Failure with memory before spectral analysis when conductance defined. ");
+			return 1;
+	}
+	*/
+	
+	// ######### Properties for thermal objects ###########
+	printf("%s simulation for a total of %d subvolumes \n", geometry, tot_sub_vol);
 	
 	double(*omega) = malloc(sizeof *omega * const_N_omega); // radial frequency [rad/s]
 	if (omega == NULL){
 			printf("Failure with memory before spectral analysis when frequencies are defined. ");
 			return 1;
 	}
-
-	double(*G_12_omega_SGF)[N_Tcalc] = calloc(const_N_omega, sizeof(*G_12_omega_SGF)); // spectral conductance
-	if (G_12_omega_SGF == NULL){
-			printf("Failure with memory before spectral analysis when conductance defined. ");
-			return 1;
-	}
 	
+	double delta_V_1, delta_V_2;
 	double(*delta_V_vector) = malloc(sizeof *delta_V_vector * tot_sub_vol); // Vector of all subvolume size. Combines delta_V_1 and delta_V_2 in the same array
 	if (delta_V_vector == NULL){
 			printf("Failure with memory before spectral analysis when the size of subvolumes are defined. ");
@@ -111,44 +114,13 @@ int main()
 	if (R == NULL){
 			printf("Failure with memory before spectral analysis when the positions of subvolumes are defined. ");
 			return 1;
-	}
-	double(*modulo_r_i_j)[tot_sub_vol] = malloc(sizeof *modulo_r_i_j * tot_sub_vol);
-	if (modulo_r_i_j == NULL){
-			printf("Failure with memory before spectral analysis when the distances between subvolumes are defined. ");
-			return 1;
-	}
-
-	double(*Q_subvol)[const_N_omega] = calloc(tot_sub_vol, sizeof(*Q_subvol));
-	if (Q_subvol == NULL){
-		printf("Failure with memory before spectral analysis when power dissipated is defined. ");
-		return 1;
-	}
-	
-	if ( save_power_dissipated_spectral_subvolumes == 'Y' ||
- 		 save_power_dissipated_total_subvolumes == 'Y' ||
- 		 save_power_dissipated_spectral_bulk == 'Y' ||
- 		 save_power_dissipated_total_bulk == 'Y' ||
- 		 save_power_density_total_subvolumes == 'Y' )
-	{
-		double(*Q_subvol)[const_N_omega] = calloc(tot_sub_vol, sizeof(*Q_subvol));
-		if (Q_subvol == NULL){
-			printf("Failure with memory before spectral analysis when power dissipated is defined. ");
-			return 1;
-		}
-	}
-	
-	
-
-	// ######### Properties for thermal objects ###########
-	printf("%s simulation for a total of %d subvolumes \n", geometry, tot_sub_vol);
-	
-	double delta_V_1, delta_V_2;
+	}	
 	
 	if (strcmp(geometry, "sample") == 0)
 	{ 
+		// R is populated here!
 		set_up_sample_geometry(pi, tot_sub_vol, const_N_subvolumes_per_object, const_N_subvolumes_per_object_2, &T1, &T2, &d, &delta_V_1, &delta_V_2, R, geometry_1, geometry_2);
 	}
-	
 	/*
 	if (strcmp(geometry, "sphere") == 0)
 	{
@@ -164,10 +136,7 @@ int main()
 		//char file_name;
 		set_up_user_defined_geometry(tot_sub_vol,const_N_subvolumes_per_object,const_N_bulk_objects, &d, &T1, &T2, R, delta_V_vector);//T_vector,delta_V_vector, file_name_ud
 	}
-	else
-	{	
-		set_delta_V_vector(delta_V_1, delta_V_2, tot_sub_vol, const_N_subvolumes_per_object, delta_V_vector);
-	}
+	else{ set_delta_V_vector(delta_V_1, delta_V_2, tot_sub_vol, const_N_subvolumes_per_object, delta_V_vector);}
 	
 	char *results_folder = set_up_results(material, geometry, tot_sub_vol, d); // Folders for results 
 
@@ -177,7 +146,8 @@ int main()
 		
 	char copy_geometry[260];
 	sprintf(copy_geometry, "cp ./user_inputs/Geometry/%s.txt  ./%s\n",geometry,results_folder);
-	system(copy_geometry);	
+	system(copy_geometry);
+
 
 	if ( save_power_dissipated_spectral_subvolumes == 'Y' ||
  		 save_power_dissipated_total_subvolumes == 'Y' ||
@@ -196,6 +166,9 @@ int main()
 		write_to_csv_double_array(dirPathVector_subvolumes_volume_FileName, tot_sub_vol, delta_V_vector);
 	} // end if save_power_dissipated
 
+	
+	
+	
 	if(strcmp(material,"SiO2")==0 || strcmp(material,"u-SiC")==0)  // removed strcmp(material,"SiC")==0 || from uniform
 	{
 		if (uniform_spectra == 'Y')
@@ -239,7 +212,6 @@ int main()
 		}
 		
 	}
-
 	else if (strcmp(material, "SiC") == 0)
 	{
 		if (uniform_spectra == 'Y')
@@ -263,9 +235,6 @@ int main()
 			fclose(non_uniform_spectra);
 		}	
 	}
-
-	
-
 	else if (strcmp(material, "SiN") == 0) // cannot compare strings in C with ==; source: https://ideone.com/BrFA00
 	{
 		if (uniform_spectra == 'Y')
@@ -289,15 +258,22 @@ int main()
 			fclose(non_uniform_spectra);
 		}
 	}
+
 	// ################## FREE-SPACE GREEN'S FUNCTION AND INTERACTION A MATRIX #####################
 	//  Fill terms for G^0:		
 
+	double(*modulo_r_i_j)[tot_sub_vol] = malloc(sizeof *modulo_r_i_j * tot_sub_vol);
+	if (modulo_r_i_j == NULL){
+			printf("Failure with memory before spectral analysis when the distances between subvolumes are defined. ");
+			return 1;
+	}
 	double complex(*r_i_j_outer_r_i_j)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*r_i_j_outer_r_i_j));
 	if (r_i_j_outer_r_i_j == NULL){
 			printf("Failure with memory before spectral analysis when the distances between subvolumes are defined. ");
 			return 1;
 	} 
 	setup_G_0_matrices(tot_sub_vol, modulo_r_i_j, r_i_j_outer_r_i_j, R);
+	free(R);
 	// #################################################################
 	// ################## FREQUENCY RANGE ANALYSIS #####################
 	// #################################################################
@@ -364,7 +340,7 @@ int main()
 		double complex trans_coeff;
 		double inner_sum;
 		double complex G_element;
-		double complex Q_omega_subvol;
+		double Q_omega_subvol;
 		double sum_trans_coeff = 0; // Transmissivity to calculate spectral conductance and spectral power in subvolumes
 
     	
@@ -428,7 +404,29 @@ int main()
  				save_power_dissipated_spectral_bulk == 'Y' ||
  		 		save_power_dissipated_total_bulk == 'Y' ||
  		 		save_power_density_total_subvolumes == 'Y' )
+				{
+					FILE *power_dissipated_spectral; // append
+					char dirPathPower_dissipated_spectral_subvolumes_FileName[260];
+					sprintf(dirPathPower_dissipated_spectral_subvolumes_FileName, "%s/Q_omega_subvol.csv", results_folder); // path where the file is stored
+					if (ig_0 == 0 && i_omega ==0){ power_dissipated_spectral = fopen(dirPathPower_dissipated_spectral_subvolumes_FileName, "w");} // write
+					else if (ig_0 == 0 && i_omega!=0)
+					{
+						power_dissipated_spectral = fopen(dirPathPower_dissipated_spectral_subvolumes_FileName, "a"); // append
+						fprintf(power_dissipated_spectral, "\n");
+					}
+					else { power_dissipated_spectral = fopen(dirPathPower_dissipated_spectral_subvolumes_FileName, "a"); }// append
+					fprintf(power_dissipated_spectral, "%e,", Q_omega_subvol);					
+					fclose(power_dissipated_spectral);
+				
+				}
+				/*
+				if ( save_power_dissipated_spectral_subvolumes == 'Y' ||
+ 		 		save_power_dissipated_total_subvolumes == 'Y' ||
+ 				save_power_dissipated_spectral_bulk == 'Y' ||
+ 		 		save_power_dissipated_total_bulk == 'Y' ||
+ 		 		save_power_density_total_subvolumes == 'Y' )
 				{ Q_subvol[ig_0][i_omega] = Q_omega_subvol; }
+				*/
 			}	
 			free(G_sys);
 		} // end if (solution =='D')
@@ -486,8 +484,8 @@ int main()
 			for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 			{
 			Q_omega_subvol = 0;
-				//for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) // original
-				for (int jg_0 = ig_0; jg_0 < tot_sub_vol; jg_0++) // mod: Sept.6,2023
+				for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) // original
+				//for (int jg_0 = ig_0; jg_0 < tot_sub_vol; jg_0++) // mod: Sept.6,2023
 				{
 					G_element = 0;
 					for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
@@ -534,12 +532,38 @@ int main()
  		 		save_power_dissipated_total_bulk == 'Y' ||
  		 		save_power_density_total_subvolumes == 'Y' )
 				{
-					if (ig_0 < const_N_subvolumes_per_object)
+				
+					FILE *power_dissipated_spectral; // append
+					char dirPathPower_dissipated_spectral_subvolumes_FileName[260];
+					sprintf(dirPathPower_dissipated_spectral_subvolumes_FileName, "%s/Q_omega_subvol.csv", results_folder); // path where the file is stored
+					if (ig_0 == 0 && i_omega ==0){ power_dissipated_spectral = fopen(dirPathPower_dissipated_spectral_subvolumes_FileName, "w");} // write
+					else if (ig_0 == 0 && i_omega!=0)
 					{
-						Q_subvol[ig_0][i_omega] = Q_omega_subvol;
-						Q_subvol[tot_sub_vol-ig_0-1][i_omega] = -Q_omega_subvol;
+						power_dissipated_spectral = fopen(dirPathPower_dissipated_spectral_subvolumes_FileName, "a"); // append
+						fprintf(power_dissipated_spectral, "\n");
 					}
+					else { power_dissipated_spectral = fopen(dirPathPower_dissipated_spectral_subvolumes_FileName, "a"); }// append
+					fprintf(power_dissipated_spectral, "%e,", Q_omega_subvol);					
+					fclose(power_dissipated_spectral);
+				
 				}
+				/*
+				if ( save_power_dissipated_spectral_subvolumes == 'Y' ||
+ 		 		save_power_dissipated_total_subvolumes == 'Y' ||
+ 				save_power_dissipated_spectral_bulk == 'Y' ||
+ 		 		save_power_dissipated_total_bulk == 'Y' ||
+ 		 		save_power_density_total_subvolumes == 'Y' )
+				{
+					Q_subvol[ig_0][i_omega] = Q_omega_subvol;
+					
+					//if (ig_0 < const_N_subvolumes_per_object)
+					//{
+					//	Q_subvol[ig_0][i_omega] = Q_omega_subvol;
+					//	Q_subvol[tot_sub_vol-ig_0-1][i_omega] = -Q_omega_subvol;
+					//}
+					
+				}
+				*/
 			}
 			//free(G_sys_TriangularMatrix);
 			free(G_sys);
@@ -563,8 +587,9 @@ int main()
 		for (int iTcalc = 0; iTcalc < N_Tcalc; iTcalc++) // EDIT VALUE :: change 1 to N_Tcalc for the temperature loop
 		{
 			double dtheta_dT = dtheta_dT_function(omega_value, Tcalc_vector[iTcalc], h_bar, k_b);
-			G_12_omega_SGF[i_omega][iTcalc] = dtheta_dT * sum_trans_coeff;
-			if (save_spectral_conductance == 'Y')
+			//G_12_omega_SGF[i_omega][iTcalc] = dtheta_dT * sum_trans_coeff;
+			double G_12_omega_SGF = dtheta_dT * sum_trans_coeff;
+			if (save_spectral_conductance == 'Y' || save_total_conductance == 'Y')
 			{
 				FILE *spectral_conductance; // append
 				char dirPathSpectral_cond_FileName[260];
@@ -573,7 +598,8 @@ int main()
 					spectral_conductance = fopen(dirPathSpectral_cond_FileName, "w"); // write
 				else
 					spectral_conductance = fopen(dirPathSpectral_cond_FileName, "a"); // append
-				fprintf(spectral_conductance, "%e , %e\n", omega_value, G_12_omega_SGF[i_omega][iTcalc]);
+				//fprintf(spectral_conductance, "%e , %e\n", omega_value, G_12_omega_SGF[i_omega][iTcalc]);
+				fprintf(spectral_conductance, "%e , %e\n", omega_value, G_12_omega_SGF);
 				fclose(spectral_conductance);
 			} // end if save_spectral_conductance
 
@@ -585,7 +611,6 @@ int main()
 
 	} // END OMEGA VALUE LOOP FOR FREQUENCY RANGE ANALYSIS
 
-	free(R);
 	free(modulo_r_i_j);
 	free(r_i_j_outer_r_i_j);
 
@@ -600,26 +625,48 @@ int main()
 		// implementation of trapezoidal numerical integration in C // https://stackoverflow.com/questions/25124569/implementation-of-trapezoidal-numerical-integration-in-c
 		double step = 0.;
 		double trapz = 0.;
-		if ( save_power_dissipated_spectral_subvolumes == 'Y' ||
- 		 save_power_dissipated_total_subvolumes == 'Y' ||
+		if ( save_power_dissipated_total_subvolumes == 'Y' ||
  		 save_power_dissipated_spectral_bulk == 'Y' ||
  		 save_power_dissipated_total_bulk == 'Y' ||
  		 save_power_density_total_subvolumes == 'Y' )
 		{
-		
-		double(*trapz_Q) = malloc(sizeof *trapz_Q * tot_sub_vol); // Definition for trapezoidal integration. Used in total power dissipated
-		double sum_Q = 0.;
-		double Q_bulk_1=0;
-		double Q_bulk_2=0;
-		
-		for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) // tot_sub_vol
-		{
-			trapz_Q[ig_0] = 0.;
-			for (int i = 1; i < const_N_omega; ++i)
-			{
-				step = omega[i] - omega[i - 1];
-				trapz_Q[ig_0] += ((Q_subvol[ig_0][i] + Q_subvol[ig_0][i - 1]) / 2) * step;
+			double(*Q_subvol)[const_N_omega] = calloc(tot_sub_vol, sizeof(*Q_subvol));
+			if (Q_subvol == NULL){
+				printf("Failure with memory after spectral analysis when spectral power dissipated is defined. ");
+				return 1;
 			}
+			FILE *power_dissipated_spectral; // append
+			char dirPathPower_dissipated_spectral_subvolumes_FileName[260];
+			sprintf(dirPathPower_dissipated_spectral_subvolumes_FileName, "%s/Q_omega_subvol.csv", results_folder); // path where the file is stored
+			power_dissipated_spectral = fopen(dirPathPower_dissipated_spectral_subvolumes_FileName, "r"); // read
+			
+			for (int i_omega = 0; i_omega < const_N_omega; i_omega++)
+			{
+				for (int i_subvol = 0; i_subvol < tot_sub_vol; i_subvol++)
+				{
+					fscanf(power_dissipated_spectral,"%lf ,", &Q_subvol[i_subvol][i_omega]);
+				}
+				fscanf(power_dissipated_spectral,"\n");	
+			}
+			fclose(power_dissipated_spectral);
+					
+			double(*trapz_Q) = malloc(sizeof *trapz_Q * tot_sub_vol); // Definition for trapezoidal integration. Used in total power dissipated
+			if (trapz_Q == NULL){
+				printf("Failure with memory after spectral analysis when spectral power dissipated is defined. ");
+				return 1;
+			}
+			double sum_Q = 0.;
+			double Q_bulk_1=0;
+			double Q_bulk_2=0;
+		
+			for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) // tot_sub_vol
+			{
+				trapz_Q[ig_0] = 0.;
+				for (int i = 1; i < const_N_omega; ++i)
+				{
+					step = omega[i] - omega[i - 1];
+					trapz_Q[ig_0] += ((Q_subvol[ig_0][i] + Q_subvol[ig_0][i - 1]) / 2) * step;
+				}
 				if (ig_0<const_N_subvolumes_per_object)
 				{
 					Q_bulk_1 = Q_bulk_1+ trapz_Q[ig_0];
@@ -628,29 +675,9 @@ int main()
 				{
 					Q_bulk_2 = Q_bulk_2+ trapz_Q[ig_0];
 				}
-				
-
-			if (save_power_dissipated_spectral_subvolumes == 'Y')
-			{
-				{
-					FILE *power_dissipated_spectral; // append
-					char dirPathPower_dissipated_spectral_subvolumes_FileName[260];
-					sprintf(dirPathPower_dissipated_spectral_subvolumes_FileName, "%s/Q_omega_subvol.csv", results_folder); // path where the file is stored
-					if (ig_0 == 0)
-						power_dissipated_spectral = fopen(dirPathPower_dissipated_spectral_subvolumes_FileName, "w"); // write
-					else
-						power_dissipated_spectral = fopen(dirPathPower_dissipated_spectral_subvolumes_FileName, "a"); // append
-					for (int i = 0; i < const_N_omega; ++i)
-					{
-						fprintf(power_dissipated_spectral, "%e,", Q_subvol[ig_0][i]);
-					}
-					fprintf(power_dissipated_spectral, "\n");
-					fclose(power_dissipated_spectral);
-				}
-			}
-			if (save_power_dissipated_total_subvolumes == 'Y')
-			{	
-				{
+							
+				if (save_power_dissipated_total_subvolumes == 'Y')
+				{	
 					FILE *power_dissipated_total; // append
 					char dirPathPower_dissipated_FileName[260];
 					sprintf(dirPathPower_dissipated_FileName, "%s/Q_total_subvol.csv", results_folder); // path where the file is stored
@@ -661,90 +688,79 @@ int main()
 					fprintf(power_dissipated_total, "%e\n", trapz_Q[ig_0]);
 					fclose(power_dissipated_total);
 				}
-			}
-			
-		} // end for  tot_sub_vol
+						
+			} // end for ig_0 = 0 to  tot_sub_vol
 
-		if (save_power_density_total_subvolumes == 'Y')
-		{	
-				
-			double(*Q_density) = malloc(sizeof *Q_density * tot_sub_vol);
-			if (Q_density == NULL){
-				printf("Failure with memory when power dissipated density is defined. ");
-				return 1;
-			}
-			FILE *power_density; // append
-			char dirPathPower_density_FileName[260];
-			sprintf(dirPathPower_density_FileName, "%s/Q_density_subvol.csv", results_folder); // path where the file is stored
-			for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) // tot_sub_vol
-			{
-				if (ig_0 == 0)
-					power_density = fopen(dirPathPower_density_FileName, "w"); // write
-				else
-					power_density = fopen(dirPathPower_density_FileName, "a"); // append
-				Q_density[ig_0] = trapz_Q[ig_0]/delta_V_vector[ig_0];
-				fprintf(power_density, "%e\n", Q_density[ig_0]);
-				fclose(power_density);
-			}
-			free(Q_density);
-		} // end if save_power_dissipated
-		
-		free(trapz_Q);
-		
-		if (save_power_dissipated_total_bulk == 'Y')
-		{
-			{
-			FILE *power_dissipated_total_bulk; // append
-			char dirPathPower_dissipated_bulk_FileName[260];
-			sprintf(dirPathPower_dissipated_bulk_FileName, "%s/Q_total_bulk.csv", results_folder); // path where the file is stored
-			power_dissipated_total_bulk = fopen(dirPathPower_dissipated_bulk_FileName, "w"); // write
-			fprintf(power_dissipated_total_bulk, "%e,%e\n", Q_bulk_1,Q_bulk_2);
-			fclose(power_dissipated_total_bulk);
-			}
-		}
-		
-		if (save_power_dissipated_total_bulk == 'Y')
-		{
-		double(*Q_omega_bulk_1) = malloc(sizeof *Q_omega_bulk_1 * const_N_omega);
-		if (Q_omega_bulk_1 == NULL){
-			printf("Failure with memory when bulk power dissipated is defined. ");
-			return 1;
-		}
-		double(*Q_omega_bulk_2) = malloc(sizeof *Q_omega_bulk_2 * const_N_omega);
-		if (Q_omega_bulk_2 == NULL){
-			printf("Failure with memory when bulk power dissipated is defined. ");
-			return 1;
-		}
-		FILE *power_dissipated_spectral_bulk; // append
-		char dirPathPower_dissipated_spectral_bulk_FileName[260];
-		sprintf(dirPathPower_dissipated_spectral_bulk_FileName, "%s/Q_omega_bulk.csv", results_folder); // path where the file is stored
-			
-		for (int i_omega = 0; i_omega < const_N_omega; ++i_omega)
-		{
-			Q_omega_bulk_1[i_omega] = 0;
-			Q_omega_bulk_2[i_omega] = 0;
-			if (i_omega == 0)
-			power_dissipated_spectral_bulk = fopen(dirPathPower_dissipated_spectral_bulk_FileName, "w"); // write
-			else
-			power_dissipated_spectral_bulk = fopen(dirPathPower_dissipated_spectral_bulk_FileName, "a"); // append
-			
-			for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
-			{
-				if (ig_0<const_N_subvolumes_per_object)
-				{
-					Q_omega_bulk_1[i_omega] = Q_omega_bulk_1[i_omega] + Q_subvol[ig_0][i_omega];
+			if (save_power_density_total_subvolumes == 'Y')
+			{		
+				double(*Q_density) = malloc(sizeof *Q_density * tot_sub_vol);
+				if (Q_density == NULL){
+					printf("Failure with memory when power dissipated density is defined. ");
+					return 1;
 				}
-				else
+				FILE *power_density; // append
+				char dirPathPower_density_FileName[260];
+				sprintf(dirPathPower_density_FileName, "%s/Q_density_subvol.csv", results_folder); // path where the file is stored
+				for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) // tot_sub_vol
 				{
-					Q_omega_bulk_2[i_omega] = Q_omega_bulk_2[i_omega] + Q_subvol[ig_0][i_omega];
+					if (ig_0 == 0)
+						power_density = fopen(dirPathPower_density_FileName, "w"); // write
+					else
+						power_density = fopen(dirPathPower_density_FileName, "a"); // append
+					Q_density[ig_0] = trapz_Q[ig_0]/delta_V_vector[ig_0];
+					fprintf(power_density, "%e\n", Q_density[ig_0]);
+					fclose(power_density);
+				}
+				free(Q_density);
+			} // end if save_power_density_total_subvolumes
+		
+			free(trapz_Q);
+		
+			if (save_power_dissipated_total_bulk == 'Y')
+			{
+				FILE *power_dissipated_total_bulk; // append
+				char dirPathPower_dissipated_bulk_FileName[260];
+				sprintf(dirPathPower_dissipated_bulk_FileName, "%s/Q_total_bulk.csv", results_folder); // path where the file is stored
+				power_dissipated_total_bulk = fopen(dirPathPower_dissipated_bulk_FileName, "w"); // write
+				fprintf(power_dissipated_total_bulk, "%e,%e\n", Q_bulk_1,Q_bulk_2);
+				fclose(power_dissipated_total_bulk);
+			}
+		
+			if (save_power_dissipated_spectral_bulk == 'Y')
+			{
+				double(*Q_omega_bulk_1) = malloc(sizeof *Q_omega_bulk_1 * const_N_omega);
+				if (Q_omega_bulk_1 == NULL){
+					printf("Failure with memory when bulk power dissipated is defined. ");
+					return 1;
+				}
+				double(*Q_omega_bulk_2) = malloc(sizeof *Q_omega_bulk_2 * const_N_omega);
+				if (Q_omega_bulk_2 == NULL){
+					printf("Failure with memory when bulk power dissipated is defined. ");
+					return 1;
+				}
+				FILE *power_dissipated_spectral_bulk; // append
+				char dirPathPower_dissipated_spectral_bulk_FileName[260];
+				sprintf(dirPathPower_dissipated_spectral_bulk_FileName, "%s/Q_omega_bulk.csv", results_folder); // path where the file is stored
+			
+				for (int i_omega = 0; i_omega < const_N_omega; ++i_omega)
+				{
+					Q_omega_bulk_1[i_omega] = 0;
+					Q_omega_bulk_2[i_omega] = 0;
+					if (i_omega == 0) power_dissipated_spectral_bulk = fopen(dirPathPower_dissipated_spectral_bulk_FileName, "w"); // write
+					else power_dissipated_spectral_bulk = fopen(dirPathPower_dissipated_spectral_bulk_FileName, "a"); // append
+					for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
+					{
+						if (ig_0<const_N_subvolumes_per_object)	Q_omega_bulk_1[i_omega] = Q_omega_bulk_1[i_omega] + Q_subvol[ig_0][i_omega];
+						else Q_omega_bulk_2[i_omega] = Q_omega_bulk_2[i_omega] + Q_subvol[ig_0][i_omega];
+					}
+					fprintf(power_dissipated_spectral_bulk, "%e, %e\n", Q_omega_bulk_1[i_omega],Q_omega_bulk_2[i_omega]);
+					fclose(power_dissipated_spectral_bulk);
 				}
 			}
-			fprintf(power_dissipated_spectral_bulk, "%e, %e\n", Q_omega_bulk_1[i_omega],Q_omega_bulk_2[i_omega]);
-			fclose(power_dissipated_spectral_bulk);
+		
+			free(Q_subvol);
+		} // if power
 
-		}
-		}
-		 } // if power
 		double sum_conductance = 0.;
 		if (save_total_conductance == 'Y') 
 		{
@@ -759,19 +775,35 @@ int main()
 			step = 0.;
 			trapz = 0.;
 			G_12_total_SGF_from_omega = 0.;
+			
+			double(*G_12_omega_SGF)[N_Tcalc] = calloc(const_N_omega, sizeof(*G_12_omega_SGF)); // spectral conductance
+			if (G_12_omega_SGF == NULL){
+				printf("Failure with memory before spectral analysis when conductance defined. ");
+				return 1;
+			}
+			FILE *spectral_conductance; // append
+			char dirPathSpectral_cond_FileName[260];
+			char buffer[260];
+			sprintf(dirPathSpectral_cond_FileName, "%s/G_omega_bulk_12_%eK.csv", results_folder, Tcalc_vector[iTcalc]); // path where the file is stored
+			spectral_conductance = fopen(dirPathSpectral_cond_FileName, "r"); // read	
+			for (int i_omega = 0; i_omega < const_N_omega; i_omega++)
+			{
+				//fprintf(spectral_conductance, "%e , %e\n", omega_value, G_12_omega_SGF[i_omega][iTcalc]);
+				fscanf(spectral_conductance, "%s , %lf\n", buffer, &G_12_omega_SGF[i_omega][iTcalc]);
+			}
+			fclose(spectral_conductance);
 
 			for (int i = 1; i < const_N_omega; ++i)
 			{
-
 				step = omega[i] - omega[i - 1];
 
 				sum_conductance = (G_12_omega_SGF[i][iTcalc] + G_12_omega_SGF[i - 1][iTcalc]) / 2;
 				trapz += sum_conductance * step;
 			}
+			free(G_12_omega_SGF);
 			G_12_total_SGF_from_omega = (fabs(trapz) / (2. * pi)); // Total conductance [W/K]
 			Total_conductance[iTcalc] = G_12_total_SGF_from_omega;
 			
-			{
 			FILE *Total_conductance_file; // append
 			char dirPath_Total_conductance_FileName[260];
 			sprintf(dirPath_Total_conductance_FileName, "%s/G_bulk_12.csv", results_folder); // path where the file is stored
@@ -781,26 +813,17 @@ int main()
 				Total_conductance_file = fopen(dirPath_Total_conductance_FileName, "a"); // append
 			fprintf(Total_conductance_file, "%e, %e\n", Tcalc_vector[iTcalc], Total_conductance[iTcalc]);
 			fclose(Total_conductance_file);
-			}
-
+			
 		} // END FOR T_calc LOOP
 
 		printf("Total conductance at %e K= %e \n", Tcalc_vector[2], Total_conductance[2]);
 		free(Total_conductance);
+		
 		}
 
 	} // end if const_N_omega>1
-	
-	//free(Q_subvol);	
-	if ( save_power_dissipated_spectral_subvolumes == 'Y' ||
- 		 save_power_dissipated_total_subvolumes == 'Y' ||
- 		 save_power_dissipated_spectral_bulk == 'Y' ||
- 		 save_power_dissipated_total_bulk == 'Y' ||
- 		 save_power_density_total_subvolumes == 'Y' )
-	{	
-		free(Q_subvol);
-	}
-	
+		
+		
 	time_t simulation_time;
 	time(&simulation_time);
 				
@@ -821,7 +844,7 @@ int main()
 	free(omega);
 	free(delta_V_vector);
 
-	free(G_12_omega_SGF);
+	//free(G_12_omega_SGF);
 
 	free(results_folder);
 
