@@ -100,22 +100,16 @@ int main()
 			printf("Failure with memory before spectral analysis when conductance defined. ");
 			return 1;
 	}
-
-	double(*R)[3] = calloc(tot_sub_vol, sizeof(*R)); // center of subvolumes for thermal objects: info imported from a .txt file
-	if (R == NULL){
-			printf("Failure with memory before spectral analysis when the positions of subvolumes are defined. ");
-			return 1;
-	}
 	
 	double(*delta_V_vector) = malloc(sizeof *delta_V_vector * tot_sub_vol); // Vector of all subvolume size. Combines delta_V_1 and delta_V_2 in the same array
 	if (delta_V_vector == NULL){
 			printf("Failure with memory before spectral analysis when the size of subvolumes are defined. ");
 			return 1;
 	}
-	
-	double *T_vector = (double *)malloc(sizeof(double) * tot_sub_vol);		// (N x 1) vector of all subvolume temperatures [K]
-	if (T_vector == NULL){
-			printf("Failure with memory before spectral analysis when the temperature vector is defined. ");
+
+	double(*R)[3] = calloc(tot_sub_vol, sizeof(*R)); // center of subvolumes for thermal objects: info imported from a .txt file
+	if (R == NULL){
+			printf("Failure with memory before spectral analysis when the positions of subvolumes are defined. ");
 			return 1;
 	}
 	double(*modulo_r_i_j)[tot_sub_vol] = malloc(sizeof *modulo_r_i_j * tot_sub_vol);
@@ -169,11 +163,10 @@ int main()
 	{
 		//char file_name;
 		set_up_user_defined_geometry(tot_sub_vol,const_N_subvolumes_per_object,const_N_bulk_objects, &d, &T1, &T2, R, delta_V_vector);//T_vector,delta_V_vector, file_name_ud
-		set_T_vector(T1, T2, tot_sub_vol, const_N_subvolumes_per_object, T_vector);
 	}
 	else
 	{	
-		set_delta_V_vector_T_vector(T1, T2, delta_V_1, delta_V_2, tot_sub_vol, const_N_subvolumes_per_object, T_vector, delta_V_vector);	
+		set_delta_V_vector(delta_V_1, delta_V_2, tot_sub_vol, const_N_subvolumes_per_object, delta_V_vector);
 	}
 	
 	char *results_folder = set_up_results(material, geometry, tot_sub_vol, d); // Folders for results 
@@ -419,7 +412,13 @@ int main()
 					// Thermal power dissipated calculation, based on the matlab code (Using Tervo's Eq. 26)
 					if (ig_0 != jg_0) 
 					{
-						inner_sum = (theta_function(omega_value, T_vector[jg_0], h_bar, k_b) - theta_function(omega_value, T_vector[ig_0], h_bar, k_b)) * trans_coeff;
+						//inner_sum = (theta_function(omega_value, T_vector[jg_0], h_bar, k_b) - theta_function(omega_value, T_vector[ig_0], h_bar, k_b)) * trans_coeff;
+						double T_i,T_j;
+						if (ig_0<const_N_subvolumes_per_object){ T_i=T1;}
+						else{ T_i=T2;}
+						if (jg_0<const_N_subvolumes_per_object){ T_j=T1;}
+						else{ T_j=T2;}
+						inner_sum = (theta_function(omega_value, T_j, h_bar, k_b) - theta_function(omega_value, T_i, h_bar, k_b)) * trans_coeff;
 					}
 					else {inner_sum = 0; }
 					Q_omega_subvol += (1 / (2 * pi)) * inner_sum; // calculates the thermal power dissipated per subvolume
@@ -439,7 +438,7 @@ int main()
 			//printf("Iterative solver in progress. \n");
 
 			//full matrix definition
-			//double complex (*G_sys)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys));
+			double complex (*G_sys)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys));
 			    	
 			/*
 			//triangular matrix definition
@@ -452,25 +451,9 @@ int main()
 			//iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type);
 			
 			//full matrix solution
-			//iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type);
+			iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type);
 			
-			
-			char G_sys_test_file_name[260];
-			//sprintf(G_sys_test_file_name,"%s/G_new_test.bin",results_folder); //
-			sprintf(G_sys_test_file_name,"%s/G_new_test.csv",results_folder);
-			
-			FILE* G_new_test = fopen(G_sys_test_file_name, "w");
-			for(int numberRow = 0; numberRow < 3*tot_sub_vol; numberRow++) // 3D coordinate positions 
-			{
-				for(int numberColumn = 0; numberColumn < 3*tot_sub_vol; numberColumn++) // 3D coordinate positions 
-				{
-					fprintf(G_new_test, " , ");
-				}
-				fprintf(G_new_test, "\n");
-			}	
-			fclose(G_new_test); // Close the file	
-
-
+			/*
 			char G_old_file_name[260];
 			char G_sys_file_name[260];
 			if (multithread =='Y')
@@ -489,10 +472,11 @@ int main()
 			}
 
 			//iterative_solver_store(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type,G_sys_file_name);
-			iterative_solver_with_data(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type,G_old_file_name, G_sys_file_name, G_sys_test_file_name);
+			iterative_solver_with_data(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type,G_old_file_name, G_sys_file_name);
 						
 			double complex (*G_sys)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys));	
 			read_bin(tot_sub_vol, G_sys, G_sys_file_name);
+			*/
 			
 			//triangular matrix solution
 			//iterative_solver_memory(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, size, G_sys_TriangularMatrix,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type);
@@ -531,7 +515,16 @@ int main()
 						sum_trans_coeff += trans_coeff;
 					} 
 					// Thermal power dissipated calculation, based on the matlab code (Using Tervo's Eq. 26)
-					if (ig_0 != jg_0){ inner_sum = (theta_function(omega_value, T_vector[jg_0], h_bar, k_b) - theta_function(omega_value, T_vector[ig_0], h_bar, k_b)) * trans_coeff; }
+					if (ig_0 != jg_0){ 
+						//inner_sum = (theta_function(omega_value, T_vector[jg_0], h_bar, k_b) - theta_function(omega_value, T_vector[ig_0], h_bar, k_b)) * trans_coeff; 
+						double T_i,T_j;
+						if (ig_0<const_N_subvolumes_per_object){ T_i=T1;}
+						else{ T_i=T2;}
+						if (jg_0<const_N_subvolumes_per_object){ T_j=T1;}
+						else{ T_j=T2;}
+						//read file to use T_i and T_j;  !!!!!!!
+						inner_sum = (theta_function(omega_value, T_j, h_bar, k_b) - theta_function(omega_value, T_i, h_bar, k_b)) * trans_coeff;
+					}
 					else { inner_sum = 0; }
 					Q_omega_subvol += (1 / (2 * pi)) * inner_sum; // calculates the thermal power dissipated per subvolume
 				}
@@ -594,7 +587,6 @@ int main()
 
 	free(R);
 	free(modulo_r_i_j);
-	free(T_vector);
 	free(r_i_j_outer_r_i_j);
 
 	// #################################################################

@@ -310,7 +310,7 @@ void iterative_solver_store(int tot_sub_vol, double complex epsilon, double comp
 
 
 
-void iterative_solver_with_data(int tot_sub_vol, double complex epsilon, double complex epsilon_ref, double k, double delta_V_vector[], double complex alpha_0[],double k_0, double pi,double modulo_r_i_j[tot_sub_vol][tot_sub_vol], double complex r_i_j_outer_r_i_j[tot_sub_vol][tot_sub_vol][3][3],char wave_type, char* G_old_file_name, char* G_sys_file_name, char* G_sys_test_file_name){
+void iterative_solver_with_data(int tot_sub_vol, double complex epsilon, double complex epsilon_ref, double k, double delta_V_vector[], double complex alpha_0[],double k_0, double pi,double modulo_r_i_j[tot_sub_vol][tot_sub_vol], double complex r_i_j_outer_r_i_j[tot_sub_vol][tot_sub_vol][3][3],char wave_type, char* G_old_file_name, char* G_sys_file_name){
 
 	double complex (*G_old)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_old));
 	//double complex (*G_old)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_old)); 
@@ -649,6 +649,57 @@ void iterative_solver_with_data(int tot_sub_vol, double complex epsilon, double 
 			
 			*/
 
+			/*
+			FILE *newFile = fopen(G_sys_file_name, "rb");  // Open new binary file for reading
+			if (newFile == NULL) {
+    			perror("Error opening binary file");
+    			exit(1); // Exit with an error code
+			}
+
+			FILE *oldFile = fopen(G_old_file_name, "wb");  // Open old binary file for writing (this clears existing data)
+			if (oldFile == NULL) {
+    			perror("Error opening binary file");
+    			exit(1); // Exit with an error code
+			}
+			size_t dataSize = 9 * tot_sub_vol * tot_sub_vol * sizeof(double complex);
+			double complex *dataBuffer = (double complex *)malloc(dataSize); //
+			if (dataBuffer == NULL) {
+   			// Handle memory allocation error
+    		fclose(oldFile);
+    		fclose(newFile);
+    		exit(1); // Exit with an error code
+			}			
+			fread(dataBuffer, 1, dataSize, newFile);
+			fwrite(dataBuffer, 1, dataSize, oldFile);
+			
+			fclose(oldFile);
+			fclose(newFile);
+			free(dataBuffer);
+			*/
+
+			//CopyFile(G_sys_file_name, G_old_file_name);
+			//system("cp x.exe y.bas -f");
+
+			FILE *oldFile = fopen(G_old_file_name, "wb");  // Open old binary file for writing (this clears existing data)
+			if (oldFile == NULL) {
+    			perror("Error opening binary file");
+    			exit(1); // Exit with an error code
+			}
+			fclose(oldFile);
+
+			char copy_G_new_to_G_old[260];
+			sprintf(copy_G_new_to_G_old, "cp ./%s ./%s\n",G_sys_file_name,G_old_file_name);
+			system(copy_G_new_to_G_old);
+
+			FILE *newFile = fopen(G_sys_file_name, "wb");  // Open the new binary file in write mode (this clears existing data)
+			if (newFile == NULL) {
+    			perror("Error opening binary file");
+    			exit(1); // Exit with an error code
+			}
+			fclose(newFile);	
+
+
+			/*
 			
 			FILE *newFile = fopen(G_sys_file_name, "rb");  // Open new binary file for reading
 			if (newFile == NULL) {
@@ -663,18 +714,23 @@ void iterative_solver_with_data(int tot_sub_vol, double complex epsilon, double 
 			}
 			char buffer[1024]; // A buffer to hold data
 			size_t bytesRead;
-
-			while ((bytesRead = fread(buffer, 1, sizeof(buffer), newFile)) > 0) {
-    			fwrite(buffer, 1, bytesRead, oldFile); // Write data to the old binary file
-			}
+			int c;
+		
+			//while ((bytesRead = fread(buffer, 1, sizeof(buffer), newFile)) > 0) {
+			//	//size_t SGF_new_write = fwrite(&G_new_ij_value, sizeof(double complex), 1, G_new_import);
+    		//	fwrite(buffer, 1, bytesRead, oldFile); // Write data to the old binary file
+			//}
+			
+			while ((c = fgetc(newFile)) != EOF) fputc(c,oldFile);
 			
 			fclose(oldFile);
 			fclose(newFile);
+			*/
 
-			
-			
-			newFile = fopen(G_sys_file_name, "wb");  // Open the new binary file in write mode (this clears existing data)
+			/*	
+			FILE *newFile = fopen(G_sys_file_name, "wb");  // Open the new binary file in write mode (this clears existing data)
 			fclose(newFile);
+			*/			
 			
 			}
 
