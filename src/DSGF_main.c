@@ -115,6 +115,16 @@ int main()
 			printf("Failure with memory before spectral analysis when the positions of subvolumes are defined. ");
 			return 1;
 	}	
+	double(*modulo_r_i_j)[tot_sub_vol] = malloc(sizeof *modulo_r_i_j * tot_sub_vol);
+	if (modulo_r_i_j == NULL){
+			printf("Failure with memory before spectral analysis when the distances between subvolumes are defined. ");
+			return 1;
+	}
+	double complex(*r_i_j_outer_r_i_j)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*r_i_j_outer_r_i_j));
+	if (r_i_j_outer_r_i_j == NULL){
+			printf("Failure with memory before spectral analysis when the distances between subvolumes are defined. ");
+			return 1;
+	} 
 	
 	if (strcmp(geometry, "sample") == 0)
 	{ 
@@ -166,6 +176,9 @@ int main()
 		write_to_csv_double_array(dirPathVector_subvolumes_volume_FileName, tot_sub_vol, delta_V_vector);
 	} // end if save_power_dissipated
 
+	//  Fill terms for G^0:		
+	setup_G_0_matrices(tot_sub_vol, modulo_r_i_j, r_i_j_outer_r_i_j, R);
+	free(R);
 	
 	
 	
@@ -259,21 +272,6 @@ int main()
 		}
 	}
 
-	// ################## FREE-SPACE GREEN'S FUNCTION AND INTERACTION A MATRIX #####################
-	//  Fill terms for G^0:		
-
-	double(*modulo_r_i_j)[tot_sub_vol] = malloc(sizeof *modulo_r_i_j * tot_sub_vol);
-	if (modulo_r_i_j == NULL){
-			printf("Failure with memory before spectral analysis when the distances between subvolumes are defined. ");
-			return 1;
-	}
-	double complex(*r_i_j_outer_r_i_j)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*r_i_j_outer_r_i_j));
-	if (r_i_j_outer_r_i_j == NULL){
-			printf("Failure with memory before spectral analysis when the distances between subvolumes are defined. ");
-			return 1;
-	} 
-	setup_G_0_matrices(tot_sub_vol, modulo_r_i_j, r_i_j_outer_r_i_j, R);
-	free(R);
 	// #################################################################
 	// ################## FREQUENCY RANGE ANALYSIS #####################
 	// #################################################################
