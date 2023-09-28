@@ -3,6 +3,7 @@
 
 
 long baseline;
+long pre_solver_memory;
 long calculation_memory;
 long total_memory;
 long memoryMaxMatrix; 

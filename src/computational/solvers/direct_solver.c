@@ -116,15 +116,14 @@ void direct_solver(int tot_sub_vol, double complex G_sys[3*tot_sub_vol][3*tot_su
 		printf("Failure with memory. Use iterative solver");
 		exit(1);
 	} 
+	//get_G0_matrix(tot_sub_vol, G_0, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type);
+	get_G0_matrix_memory(tot_sub_vol, G_0, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type);
 
 	double complex (*A)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*A));
 	if (A == NULL){
 		printf("Failure with memory. Use iterative solver");
 		exit(1);
 	}
-	
-	//get_G0_matrix(tot_sub_vol, G_0, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type);
-	get_G0_matrix_memory(tot_sub_vol, G_0, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type);
 	get_A_matrix(tot_sub_vol, G_0, A, k_0, alpha_0); // function applicable for uniform and non-uniform discretization
 
 	double complex (*A_direct) = calloc(3*3*tot_sub_vol*tot_sub_vol, sizeof(*A_direct));
@@ -151,5 +150,14 @@ void direct_solver(int tot_sub_vol, double complex G_sys[3*tot_sub_vol][3*tot_su
 	free(A_direct);
 	populate_G_sys(tot_sub_vol, b_direct, G_sys);
 	free(b_direct);
+
+}
+
+
+
+void direct_solver_memory(int tot_sub_vol, double complex A_direct[3*tot_sub_vol*3*tot_sub_vol], double complex b_direct[3*tot_sub_vol*3*tot_sub_vol]){
+	
+	// F08ANF (ZGELS) solves linear least-squares problems using a QR or LQ factorization of A. Description of ZGELS: https://extras.csc.fi/math/nag/mark21/pdf/F08/f08anf.pdf
+	int info = LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',3*tot_sub_vol,3*tot_sub_vol,3*tot_sub_vol,A_direct,3*tot_sub_vol,b_direct,3*tot_sub_vol); 
 
 }

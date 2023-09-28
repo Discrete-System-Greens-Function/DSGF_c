@@ -326,7 +326,12 @@ int main()
 
 		double k = k_function(omega_value, epsilon_ref, epsilon_0, mu_0); // wave vector in reference medium
 
-		double complex alpha_0[tot_sub_vol];
+		//double complex alpha_0[tot_sub_vol];
+		double complex (*alpha_0) = malloc(sizeof *alpha_0 * tot_sub_vol); 
+		if (alpha_0 == NULL){
+			printf("Failure with memory when alpha_0 is defined. ");
+			exit(1);
+		}
 		for (int i_alpha = 0; i_alpha < tot_sub_vol; i_alpha++)
 		{
 			alpha_0[i_alpha] = delta_V_vector[i_alpha]*(epsilon - epsilon_ref); //Bare polarizability [m^3]
@@ -343,19 +348,57 @@ int main()
 		double Q_omega_subvol;
 		double sum_trans_coeff = 0; // Transmissivity to calculate spectral conductance and spectral power in subvolumes
 
-    	
+    	pre_solver_memory = get_mem_usage()-baseline;
 		if(solution =='D') // Solves the linear system AG=G^0, where G^0 and A are 3N X 3N matrices. 
 		{	
-			//printf("Direct inversion in progress. \n");
+			double complex (*G_0)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_0)); 	
+			if (G_0 == NULL){
+				printf("Failure with memory. Use iterative solver");
+				exit(1);
+			} 
+			//get_G0_matrix(tot_sub_vol, G_0, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type);
+			get_G0_matrix_memory(tot_sub_vol, G_0, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type);
+
+			double complex (*A)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*A));
+			if (A == NULL){
+				printf("Failure with memory. Use iterative solver");
+				exit(1);
+			}
+			get_A_matrix(tot_sub_vol, G_0, A, k_0, alpha_0); // function applicable for uniform and non-uniform discretization
+
+			double complex (*A_direct) = calloc(3*3*tot_sub_vol*tot_sub_vol, sizeof(*A_direct));
+			if (A_direct == NULL){
+				printf("Failure with memory. Use iterative solver");
+				exit(1);
+			}
+			A_direct_populator(tot_sub_vol, A, A_direct);
+			free(A);
+			
+			double complex (*b_direct) = calloc(3*3*tot_sub_vol*tot_sub_vol, sizeof(*b_direct));
+			if (b_direct == NULL){
+				printf("Failure with memory. Use iterative solver");
+				exit(1);
+			}
+			b_direct_populator(tot_sub_vol, G_0, b_direct);
+			free(G_0);
+
+			direct_solver_memory(tot_sub_vol, A_direct, b_direct); // we noticed an memory improved from the old function
+			
+			calculation_memory = get_mem_usage()-pre_solver_memory-baseline;
+			free(A_direct);
+
 			double complex (*G_sys)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys));
 			if (G_sys == NULL){
 			printf("Failure with memory. Use iterative solver");
 			exit(1);
 			} 
+			populate_G_sys(tot_sub_vol, b_direct, G_sys);
+			free(b_direct);
+
+			
 			//direct_solver(tot_sub_vol, A_direct, b_direct, G_sys);  
 			//direct_solver(tot_sub_vol, A, G_0, G_sys);
-			direct_solver(tot_sub_vol, G_sys, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type, alpha_0); // we noticed an memory improved from the old function
-			calculation_memory = get_mem_usage()-baseline;
+			//direct_solver(tot_sub_vol, G_sys, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type, alpha_0); // we noticed an memory improved from the old function
 			//spectral_post_processing(tot_sub_vol, i_omega, const_N_omega, k_0, h_bar, k_b, epsilon, omega_value, T_vector, delta_V_vector, const_N_subvolumes_per_object, pi, G_sys, &sum_trans_coeff, Q_subvol);
 
 			for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
@@ -568,7 +611,7 @@ int main()
 			//free(G_sys_TriangularMatrix);
 			free(G_sys);
 		}	//end if (solution =='I')
-			
+		free(alpha_0);	
 	       	
 		// save spectral transmissivity
 		if (save_spectral_transmissivity == 'Y')
@@ -756,6 +799,8 @@ int main()
 					fprintf(power_dissipated_spectral_bulk, "%e, %e\n", Q_omega_bulk_1[i_omega],Q_omega_bulk_2[i_omega]);
 					fclose(power_dissipated_spectral_bulk);
 				}
+				free(Q_omega_bulk_1);
+				free(Q_omega_bulk_2);
 			}
 		
 			free(Q_subvol);
@@ -834,8 +879,8 @@ int main()
 		char dirPathMemory_FileName[260];
 		sprintf(dirPathMemory_FileName, "matlab_scripts/memory/memory_analysis.csv"); // path where the file is stored
 		memory = fopen(dirPathMemory_FileName, "a"); //append
-		if  (multithread == 'Y') {fprintf(memory,"%d,%c,Parallel,%ld,%ld,%ld,%ld s\n",tot_sub_vol,solution,baseline, calculation_memory, total_memory,simulation_time-simulation_start); }
-		else if (multithread == 'N'){ fprintf(memory,"%d,%c,Serial,%ld,%ld,%ld,%ld s\n",tot_sub_vol,solution,baseline, calculation_memory, total_memory,simulation_time-simulation_start);}
+		if  (multithread == 'Y') {fprintf(memory,"%d,%c,Parallel,%ld,%ld,%ld,%ld,%ld s\n",tot_sub_vol,solution,baseline, pre_solver_memory, calculation_memory, total_memory,simulation_time-simulation_start); }
+		else if (multithread == 'N'){ fprintf(memory,"%d,%c,Serial,%ld,%ld,%ld,%ld,%ld s\n",tot_sub_vol,solution,baseline, pre_solver_memory, calculation_memory, total_memory,simulation_time-simulation_start);}
 		fclose(memory);
 	}
 	 
