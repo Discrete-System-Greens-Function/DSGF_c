@@ -756,10 +756,7 @@ void iterative_solver_with_files(int tot_sub_vol, double complex epsilon, double
     		exit(1); // Exit with an error code
 		}
 		
-		// Set the file pointer to the start of the matrix data
-    	//fseek(G_old_import, 0, SEEK_SET); // 0 bytes from the start of the file
-		//size_t elements_read = fread(&G_old_mm, sizeof(struct Matrix3x3), 1, G_old_import); // Read the matrix data from the binary file into the struct
-    	double complex cte = - pow(k, 2) * delta_V_vector[mm] * epsilon_s;
+		double complex cte = - pow(k, 2) * delta_V_vector[mm] * epsilon_s;
 		//printf("%e + i %e ,%e + i %e ,%e + i %e \n %e + i %e ,%e + i %e ,%e + i %e \n %e + i %e ,%e + i %e , %e + i %e \n",creal(G_old_mm.xx),cimag(G_old_mm.xx),creal(G_old_mm.xy),cimag(G_old_mm.xy),creal(G_old_mm.xz),cimag(G_old_mm.xz),creal(G_old_mm.yx),cimag(G_old_mm.yx),creal(G_old_mm.yy),cimag(G_old_mm.yy),creal(G_old_mm.yz),cimag(G_old_mm.yz),creal(G_old_mm.zx),cimag(G_old_mm.zx),creal(G_old_mm.zy),cimag(G_old_mm.zy),creal(G_old_mm.zz),cimag(G_old_mm.zz));
 		for (int row = 0; row < 3; row++)
 		{
@@ -816,8 +813,7 @@ void iterative_solver_with_files(int tot_sub_vol, double complex epsilon, double
 			//printf("\n");
 			int info = LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',3,3,3,A_iterative,3,b_iterative,3); // G_new using Linear inversion using LAPACK
 			
-			//Ideally, instead of using this function, we would store b_iterative directly in a file, according to the term's position.
-			//G_sys_new_populator(tot_sub_vol, mm, jg_0, G_sys_new, b_iterative);
+			//b_iterative is stored directly into a file, according to the term's position.
 			int gpack=0;     	
 			
 			for (int mm_sub = 0; mm_sub < 3; mm_sub++) // 3D coordinate positions
@@ -851,7 +847,6 @@ void iterative_solver_with_files(int tot_sub_vol, double complex epsilon, double
 		} // end jg_0
 		
 		//This part calculates the remaining G_new for when i!=m. It uses G_old, but we do not need all the terms.
-		// data version
 		double complex G_new_ij_value, G_old_ij_value;
 		double complex G_old_im_value,G_new_mj_value;
 		for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //upper triangular matrix
@@ -919,8 +914,6 @@ void iterative_solver_with_files(int tot_sub_vol, double complex epsilon, double
 		fclose(G_old_import);
 		fclose(G_new_import_export); // Close the file
 		
-		//memcpy(G_old,G_sys_new,3*tot_sub_vol*3*tot_sub_vol*sizeof(double complex)); // Update G_old = G_new for next iteration.
-
 		if (mm<tot_sub_vol-1) {
 			
     		// Open the old file for writing
