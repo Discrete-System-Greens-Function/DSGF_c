@@ -351,7 +351,7 @@ int main()
 		{	
 			double complex (*G_0)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_0)); 	
 			if (G_0 == NULL){
-				printf("Failure with memory. Use iterative solver");
+				printf("Failure with memory (G_0). Use iterative solver");
 				exit(1);
 			} 
 			//get_G0_matrix(tot_sub_vol, G_0, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type);
@@ -359,14 +359,14 @@ int main()
 
 			double complex (*A)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*A));
 			if (A == NULL){
-				printf("Failure with memory. Use iterative solver");
+				printf("Failure with memory (A). Use iterative solver");
 				exit(1);
 			}
 			get_A_matrix(tot_sub_vol, G_0, A, k_0, alpha_0); // function applicable for uniform and non-uniform discretization
 
 			double complex (*A_direct) = calloc(3*3*tot_sub_vol*tot_sub_vol, sizeof(*A_direct));
 			if (A_direct == NULL){
-				printf("Failure with memory. Use iterative solver");
+				printf("Failure with memory (A_direct). Use iterative solver");
 				exit(1);
 			}
 			A_direct_populator(tot_sub_vol, A, A_direct);
@@ -374,7 +374,7 @@ int main()
 			
 			double complex (*b_direct) = calloc(3*3*tot_sub_vol*tot_sub_vol, sizeof(*b_direct));
 			if (b_direct == NULL){
-				printf("Failure with memory. Use iterative solver");
+				printf("Failure with memory (b_direct). Use iterative solver");
 				exit(1);
 			}
 			b_direct_populator(tot_sub_vol, G_0, b_direct);
@@ -387,12 +387,11 @@ int main()
 
 			double complex (*G_sys)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys));
 			if (G_sys == NULL){
-			printf("Failure with memory. Use iterative solver");
+			printf("Failure with memory (G_sys). Use iterative solver");
 			exit(1);
 			} 
 			populate_G_sys(tot_sub_vol, b_direct, G_sys);
 			free(b_direct);
-
 			
 			//direct_solver(tot_sub_vol, A_direct, b_direct, G_sys);  
 			//direct_solver(tot_sub_vol, A, G_0, G_sys);
@@ -474,57 +473,73 @@ int main()
 
 		if(solution =='I')
 		{ 
-			//printf("Iterative solver in progress. \n");
-
-			//full matrix definition
-			double complex (*G_sys)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys));
-			    	
 			/*
-			//triangular matrix definition
+			//full matrix solution
+			double complex (*G_sys)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys));
+			iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type);
+			*/
+						    	
+			/*
+			//triangular matrix solution
 			int size = 9*tot_sub_vol*(tot_sub_vol+1)/2; // Calculate the size of the 1D array to store the upper triangular matrix, via chatgpt
 			double complex* G_sys_TriangularMatrix = (double complex*)malloc(size * sizeof(double complex)); // Allocate memory for the 1D array
+			//iterative_solver_memory(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, size, G_sys_TriangularMatrix,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type);
 			*/
 
-			//old versions
-			//iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys_old, G_sys); //  we noticed an memory improved from the old function iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_0, G_sys);
-			//iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type);
 			
-			//full matrix solution
-			iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type);
-			
-			/*
+			//Files reading/writing solution
 			char G_old_file_name[260];
 			char G_sys_file_name[260];
 			if (multithread =='Y')
 			{
-				sprintf(G_old_file_name,"%s/G_old_%d.bin",results_folder,i_omega); //
-				//sprintf(G_old_file_name,"%s/G_old_%d.csv",results_folder,i_omega);
-				sprintf(G_sys_file_name,"%s/G_sys_%d.bin",results_folder,i_omega); //
-				//sprintf(G_sys_file_name,"%s/G_sys_%d.csv",results_folder,i_omega);
+				sprintf(G_old_file_name,"%s/G_old_%d.bin",results_folder,i_omega); //sprintf(G_old_file_name,"%s/G_old_%d.csv",results_folder,i_omega);
+				sprintf(G_sys_file_name,"%s/G_sys_%d.bin",results_folder,i_omega); //sprintf(G_sys_file_name,"%s/G_sys_%d.csv",results_folder,i_omega);
 			}
 			else
 			{
-				sprintf(G_old_file_name,"%s/G_old.bin",results_folder); //
-				//sprintf(G_old_file_name,"%s/G_old.csv",results_folder);
-				sprintf(G_sys_file_name,"%s/G_sys.bin",results_folder); //
-				//sprintf(G_sys_file_name,"%s/G_sys.csv",results_folder);
+				sprintf(G_old_file_name,"%s/G_old.bin",results_folder); //sprintf(G_old_file_name,"%s/G_old.csv",results_folder);
+				sprintf(G_sys_file_name,"%s/G_sys.bin",results_folder); //sprintf(G_sys_file_name,"%s/G_sys.csv",results_folder);
 			}
 
 			//iterative_solver_store(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type,G_sys_file_name);
-			iterative_solver_with_data(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type,G_old_file_name, G_sys_file_name);
-						
+			//iterative_solver_with_data(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type,G_old_file_name, G_sys_file_name);
+			iterative_solver_with_files(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type,G_old_file_name, G_sys_file_name);
+			
+			calculation_memory = get_mem_usage()-pre_solver_memory-baseline;
+			/*
 			double complex (*G_sys)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys));	
 			read_bin(tot_sub_vol, G_sys, G_sys_file_name);
 			*/
 			
-			//triangular matrix solution
-			//iterative_solver_memory(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, size, G_sys_TriangularMatrix,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type);
-			
-			//spectral_post_processing(tot_sub_vol, i_omega, const_N_omega, k_0, h_bar, k_b, epsilon, omega_value, T_vector, delta_V_vector, const_N_subvolumes_per_object, pi, G_sys, &sum_trans_coeff, Q_subvol);
-			
+			/*
 			for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 			{
-			Q_omega_subvol = 0;
+				for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) // original
+				//for (int jg_0 = ig_0; jg_0 < tot_sub_vol; jg_0++) // mod: Sept.6,2023
+				{
+					for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
+					{
+						int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
+						for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
+						{
+							
+							int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
+							printf("G_sys[%d][%d] = %e +i%e, ",ig_0_2d, jg_0_2d, creal(G_sys[ig_0_2d][jg_0_2d]),cimag(G_sys[ig_0_2d][jg_0_2d]));
+						}
+					}
+				}
+			}
+			printf("\n");
+			*/
+			FILE * G_new_import = fopen(G_sys_file_name, "rb");
+			if (G_new_import == NULL) {
+    			perror("Error opening binary file");
+    			exit(1); // Exit with an error code
+			}
+			//spectral_post_processing(tot_sub_vol, i_omega, const_N_omega, k_0, h_bar, k_b, epsilon, omega_value, T_vector, delta_V_vector, const_N_subvolumes_per_object, pi, G_sys, &sum_trans_coeff, Q_subvol);
+			for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
+			{
+				Q_omega_subvol = 0;
 				for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) // original
 				//for (int jg_0 = ig_0; jg_0 < tot_sub_vol; jg_0++) // mod: Sept.6,2023
 				{
@@ -535,13 +550,30 @@ int main()
 						for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
 						{
 							int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
-							int index = 9 * (ig_0 * tot_sub_vol + jg_0) + 3 * i_subG_0 + j_subG_0;
+							
 							// Extract one Green's function component: G_sys[ig_0][jg_0][i_subG_0]
-							double complex transpose_G_sys = G_sys[ig_0_2d][jg_0_2d]; // full matrix
-							//double complex transpose_G_sys = G_sys_TriangularMatrix[index]; // triangular matrix
+							/*
+							// full matrix using classic solution
+							double complex transpose_G_sys = G_sys[ig_0_2d][jg_0_2d]; 
 							double complex G_sys_cross = conj(transpose_G_sys);
 							G_element+=G_sys[ig_0_2d][jg_0_2d]*G_sys_cross; // full matrix
-							//G_element+=G_sys_TriangularMatrix[index]*G_sys_cross; // triangular matrix
+							*/
+							
+							int position_ij = 9*tot_sub_vol*ig_0+3*tot_sub_vol*i_subG_0+3*jg_0+j_subG_0; //seems to be correct
+							double complex G_sysValue;  //definition for files-solution 
+							fseek(G_new_import, position_ij * sizeof(double complex), SEEK_SET); // Set the file position to the specified position
+        					size_t elements_read = fread(&G_sysValue, sizeof(double complex), 1, G_new_import); // Read the matrix data from the binary file into the struct
+				
+							double complex transpose_G_sys = G_sysValue; // full matrix using files solution
+							double complex G_sys_cross = conj(transpose_G_sys);
+							G_element+=G_sysValue*G_sys_cross; // full matrix using files solution
+							
+							/*
+							// triangular matrix
+							int index = 9 * (ig_0 * tot_sub_vol + jg_0) + 3 * i_subG_0 + j_subG_0;
+							double complex transpose_G_sys = G_sys_TriangularMatrix[index];
+							G_element+=G_sys_TriangularMatrix[index]*G_sys_cross; // triangular matrix
+							*/
 						}    
 					}
 					// Transmissivity coefficient matrix tau(omega) for comparison with Czapla Mathematica output [dimensionless]
@@ -605,9 +637,10 @@ int main()
 					
 				}
 				*/
-			}
+			} // end ig_0
 			//free(G_sys_TriangularMatrix);
-			free(G_sys);
+			//free(G_sys);
+			fclose(G_new_import);
 		}	//end if (solution =='I')
 		free(alpha_0);	
 	       	
