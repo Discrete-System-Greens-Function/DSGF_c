@@ -280,6 +280,7 @@ int main()
 
 	if(solution =='D'){printf("spectrum range calculation using direct inversion: \n");}
 	if(solution =='I'){printf("spectrum range calculation using iterative solver: \n");}
+	if(solution =='H'){printf("spectrum range calculation using iterative solver with flie handling: \n");}
 
 	int omega_range;
 	if (single_spectrum_analysis == 'Y')
@@ -603,8 +604,7 @@ int main()
 			}
 
 			//iterative_solver_store(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type,G_sys_file_name);
-			//iterative_solver_with_data(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type,G_old_file_name, G_sys_file_name);
-			iterative_solver_with_files(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type,G_old_file_name, G_sys_file_name);
+			iterative_solver_file_handler(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type,G_old_file_name, G_sys_file_name);
 			
 			calculation_memory = get_mem_usage()-pre_solver_memory-baseline;
 			
