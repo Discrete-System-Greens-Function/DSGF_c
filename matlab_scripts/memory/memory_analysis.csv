@@ -807,3 +807,7 @@ desktop
 16,I,Serial,17452,3744,0,21204,1 s
 16,H,Serial,17452,3604,0,21068,85 s
 16,D,Serial,17452,7296,0,24752,0 s
+16,D,Serial,17456,7272,0,24732,1 s
+16,D,Serial,17452,7268,0,24724, 100 frequencies, 0 s
+16,D,Serial,17456,7296,0,24760, 100 frequencies, 0 s
+16,D,Serial,17452,1300,4812,23596, 1 frequency, 1 s

@@ -981,8 +981,14 @@ int main()
 		char dirPathMemory_FileName[260];
 		sprintf(dirPathMemory_FileName, "matlab_scripts/memory/memory_analysis.csv"); // path where the file is stored
 		memory = fopen(dirPathMemory_FileName, "a"); //append
-		if  (multithread == 'Y') {fprintf(memory,"%d,%c,Parallel,%ld,%ld,%ld,%ld,%ld s\n",tot_sub_vol,solution,baseline, pre_solver_memory, calculation_memory, total_memory,simulation_time-simulation_start); }
-		else if (multithread == 'N'){ fprintf(memory,"%d,%c,Serial,%ld,%ld,%ld,%ld,%ld s\n",tot_sub_vol,solution,baseline, pre_solver_memory, calculation_memory, total_memory,simulation_time-simulation_start);}
+		if  (multithread == 'Y') {
+			if (single_spectrum_analysis == 'Y'){ fprintf(memory,"%d,%c,Parallel,%ld,%ld,%ld,%ld, 1 frequency, %ld s\n",tot_sub_vol,solution,baseline, pre_solver_memory, calculation_memory, total_memory, simulation_time-simulation_start); }
+			else {fprintf(memory,"%d,%c,Parallel,%ld,%ld,%ld,%ld, %d frequencies, %ld s\n",tot_sub_vol,solution,baseline, pre_solver_memory, calculation_memory, total_memory, const_N_omega, simulation_time-simulation_start); }	
+		}
+		else if (multithread == 'N'){ 
+			if (single_spectrum_analysis == 'Y'){fprintf(memory,"%d,%c,Serial,%ld,%ld,%ld,%ld, 1 frequency, %ld s\n",tot_sub_vol,solution,baseline, pre_solver_memory, calculation_memory, total_memory, simulation_time-simulation_start);}
+			else {fprintf(memory,"%d,%c,Serial,%ld,%ld,%ld,%ld, %d frequencies, %ld s\n",tot_sub_vol,solution,baseline, pre_solver_memory, calculation_memory, total_memory, const_N_omega, simulation_time-simulation_start);}
+		}
 		fclose(memory);
 	}
 	 
