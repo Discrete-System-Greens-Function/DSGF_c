@@ -43,7 +43,7 @@ void read_bin(int tot_sub_vol, double complex G_array[][3*tot_sub_vol], char* fi
 
 void read_csv(int tot_sub_vol, double complex G_array[][3*tot_sub_vol], char* file_name);
 
-
+void read_populator_bin(int tot_sub_vol, double complex G_array[3*tot_sub_vol*3*tot_sub_vol], char* file_name);
 
 
 

@@ -1,7 +1,7 @@
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // User inputs definitions in DSGF framework
 // Developed by RETL Lab, Department of Mechanical Engineering, The University of Utah, USA.
-// LAST UPDATE: JUNE 1, 2022  
+// LAST UPDATE: OCTOBER 4, 2023  
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 #ifndef __user_inputs_h //https://stackoverflow.com/questions/28361391/calling-define-from-another-file
@@ -49,6 +49,7 @@ double Tcalc_vector[N_Tcalc]; // Multiple temperatures at which conductance is c
 // %%%%%%%%%%%%%%%%%%% Solution %%%%%%%%%%%%%%%%%%%%%
 
 char solution; // Solution method: D for "direct" or I for "iterative"
+//char solution[]; // Solution method: D for "direct" or I for "iterative"
 
 char single_analysis ='y'; // Initial input for spectrum range analysis, used to compute memory_usage.
 char single_spectrum_analysis; // Analysis of one or a range of frequencies

@@ -324,5 +324,20 @@ void read_csv(int tot_sub_vol, double complex G_array[][3*tot_sub_vol], char* fi
 	fclose(G_file); // Close the file
 }
 
+void read_populator_bin(int tot_sub_vol, double complex G_array[3*tot_sub_vol*3*tot_sub_vol], char* file_name)
+{
+		FILE* G_file = fopen(file_name, "rb"); //
+		// Determine the size of the binary file
+    	fseek(G_file, 0, SEEK_END);
+    	long fileSize = ftell(G_file);
+    	rewind(G_file);
+		
+    	// Calculate the number of complex numbers in the file
+    	size_t numComplexNumbers = fileSize / sizeof(double complex); //3*tot_sub_vol*3*tot_sub_vol;//
 
+		// Read the entire array from the file
+		fread(G_array, sizeof(double complex), numComplexNumbers, G_file);
+
+		fclose(G_file); // Close the file
+}
 
