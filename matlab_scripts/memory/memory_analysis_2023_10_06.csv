@@ -1,0 +1,23 @@
+tot_sub_vol,solution,multi_thread,baseline,pre_solver, calculation_memory,total_memory,frequencies,time
+2,H,Serial,21888,1604,2412,25904, 1 frequency, 0 s
+16,H,Serial,21836,1664,2324,25824, 1 frequency, 0 s
+64,H,Serial,21836,2648,2352,28516, 1 frequency, 7 s
+272,H,Serial,21880,20668,0,42548, 1 frequency, 643 s
+272,D,Serial,21744,20836,73312,115892, 1 frequency, 0 s
+2,D,Serial,21836,1600,4772,28208, 1 frequency, 0 s
+16,D,Serial,21884,1668,6148,29700, 1 frequency, 0 s
+64,D,Serial,21744,2472,15296,39512, 1 frequency, 0 s
+272,D,Serial,21864,20736,74220,116820, 1 frequency, 0 s
+272,E,Serial,21872,20732,73436,116040, 1 frequency, 1 s
+2,E,Serial,21884,1604,4776,28264, 1 frequency, 0 s
+16,E,Serial,21792,1948,6324,30064, 1 frequency, 1 s
+64,E,Serial,21792,2444,15112,39348, 1 frequency, 0 s
+272,E,Serial,21860,20736,74520,117116, 1 frequency, 1 s
+560,E,Serial,21776,84412,233636,339824, 1 frequency, 1 s
+1104,E,Serial,21864,324744,650324,996932, 1 frequency, 2 s
+1824,E,Serial,21840,884784,1595816,2502440, 1 frequency, 9 s
+2944,E,Serial,21884,2303480,4042236,6367600, 1 frequency, 33 s
+14416,E,Serial,21820,55204084,92844072,148069976, 1 frequency, 3433 s
+6224,E,Serial,21864,10291108,17472756,27785728, 1 frequency, 290 s
+8448,E,Serial,21856,18958864,32030856,51011576, 1 frequency, 710 s
+11232,E,Serial,21804,33512152,56445912,89979868, 1 frequency, 1651 s
