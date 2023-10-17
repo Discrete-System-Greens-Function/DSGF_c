@@ -275,7 +275,7 @@ void iterative_solver(int tot_sub_vol, double complex epsilon, double complex ep
 	double complex (*G_sys_old)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys_old));
 	//double complex (*G_old)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_old)); 
 	if (G_sys_old == NULL){
-			printf("Failure with memory in iterative solver.");
+			printf("Failure with memory=%ld in iterative solver.",get_mem_usage());
 			exit(1);
 	} 
 	get_G_old_struct_matrix_memory(tot_sub_vol, G_sys_old, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type);

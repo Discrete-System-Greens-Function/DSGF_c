@@ -101,30 +101,30 @@ int main()
 	
 	double(*omega) = malloc(sizeof *omega * const_N_omega); // radial frequency [rad/s]
 	if (omega == NULL){
-			printf("Failure with memory before spectral analysis when frequencies are defined. ");
+			printf("Failure with memory=%ld before spectral analysis when frequencies are defined. ",get_mem_usage());
 			return 1;
 	}
 	
 	double delta_V_1, delta_V_2;
 	double(*delta_V_vector) = malloc(sizeof *delta_V_vector * tot_sub_vol); // Vector of all subvolume size. Combines delta_V_1 and delta_V_2 in the same array
 	if (delta_V_vector == NULL){
-			printf("Failure with memory before spectral analysis when the size of subvolumes are defined. ");
+			printf("Failure with memory=%ld before spectral analysis when the size of subvolumes are defined. ",get_mem_usage());
 			return 1;
 	}
 
 	double(*R)[3] = calloc(tot_sub_vol, sizeof(*R)); // center of subvolumes for thermal objects: info imported from a .txt file
 	if (R == NULL){
-			printf("Failure with memory before spectral analysis when the positions of subvolumes are defined. ");
+			printf("Failure with memory=%ld before spectral analysis when the positions of subvolumes are defined. ",get_mem_usage());
 			return 1;
 	}	
 	double(*modulo_r_i_j)[tot_sub_vol] = malloc(sizeof *modulo_r_i_j * tot_sub_vol);
 	if (modulo_r_i_j == NULL){
-			printf("Failure with memory before spectral analysis when the distances between subvolumes are defined. ");
+			printf("Failure with memory=%ld before spectral analysis when the distances between subvolumes are defined. ",get_mem_usage());
 			return 1;
 	}
 	double complex(*r_i_j_outer_r_i_j)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*r_i_j_outer_r_i_j));
 	if (r_i_j_outer_r_i_j == NULL){
-			printf("Failure with memory before spectral analysis when the distances between subvolumes are defined. ");
+			printf("Failure with memory=%ld before spectral analysis when the distances between subvolumes are defined. ",get_mem_usage());
 			return 1;
 	} 
 	
@@ -338,7 +338,7 @@ int main()
 		//double complex alpha_0[tot_sub_vol];
 		double complex (*alpha_0) = malloc(sizeof *alpha_0 * tot_sub_vol); 
 		if (alpha_0 == NULL){
-			printf("Failure with memory when alpha_0 is defined. ");
+			printf("Failure with memory=%ld when alpha_0 is defined. ", get_mem_usage());
 			exit(1);
 		}
 		for (int i_alpha = 0; i_alpha < tot_sub_vol; i_alpha++)
@@ -381,21 +381,21 @@ int main()
 
 			double complex (*G_0)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_0));
 			if (G_0 == NULL){
-				printf("Failure with memory (G_0). Use iterative solver");
+				printf("Failure with memory=%ld (G_0). Use iterative solver", get_mem_usage());
 				exit(1);
 			} 
 			get_G0_matrix_memory_2D(tot_sub_vol, G_0, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type);
 
 			double complex (*A)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*A));
 			if (A == NULL){
-				printf("Failure with memory (A). Use iterative solver");
+				printf("Failure with memory=%ld (A). Use iterative solver", get_mem_usage());
 				exit(1);
 			}
 			get_A_matrix_2D(tot_sub_vol, G_0, A, k_0, alpha_0);
 			
 			double complex (*A_direct) = calloc(3*3*tot_sub_vol*tot_sub_vol, sizeof(*A_direct));
 			if (A_direct == NULL){
-				printf("Failure with memory (A_direct). Use iterative solver");
+				printf("Failure with memory=%ld (A_direct). Use iterative solver",get_mem_usage());
 				exit(1);
 			}
 			A_direct_populator_2D(tot_sub_vol, A, A_direct); //A_direct_populator(tot_sub_vol, A, A_direct);
@@ -403,7 +403,7 @@ int main()
 			
 			double complex (*b_direct) = calloc(3*3*tot_sub_vol*tot_sub_vol, sizeof(*b_direct));
 			if (b_direct == NULL){
-				printf("Failure with memory (b_direct). Use iterative solver");
+				printf("Failure with memory=%ld (b_direct). Use iterative solver",get_mem_usage());
 				exit(1);
 			}
 			b_direct_populator_2D(tot_sub_vol, G_0, b_direct); //b_direct_populator(tot_sub_vol, G_0, b_direct);
@@ -416,7 +416,7 @@ int main()
 
 			double complex (*G_sys)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys));
 			if (G_sys == NULL){
-			printf("Failure with memory (G_sys). Use iterative solver");
+			printf("Failure with memory=%ld (G_sys). Use iterative solver",get_mem_usage());
 			exit(1);
 			} 
 			populate_G_sys(tot_sub_vol, b_direct, G_sys);
@@ -506,7 +506,7 @@ int main()
 			
 			double complex (*G_0)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_0));//double complex (*G_0)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_0)); 	
 			if (G_0 == NULL){
-				printf("Failure with memory (G_0). Use iterative solver");
+				printf("Failure with memory=%ld (G_0). Use iterative solver",get_mem_usage());
 				exit(1);
 			} 
 			//get_G0_matrix_memory(tot_sub_vol, G_0, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type);
@@ -515,14 +515,14 @@ int main()
 						
 			double complex (*prod)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*prod));
 			if (prod == NULL){
-				printf("Failure with memory when generating A. Use iterative solver");
+				printf("Failure with memory=%ld when generating A. Use iterative solver",get_mem_usage());
 				exit(1);
 			}
 			get_alpha_prod_for_A_2D(tot_sub_vol, G_0, k_0, alpha_0, prod);
 
 			double complex (*A)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*A)); //double complex (*A)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*A));
 			if (A == NULL){
-				printf("Failure with memory (A). Use iterative solver");
+				printf("Failure with memory=%ld (A). Use iterative solver",get_mem_usage());
 				exit(1);
 			}
 			//get_A_matrix(tot_sub_vol, G_0, A, k_0, alpha_0); // function applicable for uniform and non-uniform discretization
@@ -549,7 +549,7 @@ int main()
 
 			double complex (*A_direct) = calloc(3*3*tot_sub_vol*tot_sub_vol, sizeof(*A_direct));
 			if (A_direct == NULL){
-				printf("Failure with memory (A_direct). Use iterative solver");
+				printf("Failure with memory=%ld (A_direct). Use iterative solver",get_mem_usage());
 				exit(1);
 			}
 			//A_direct_populator(tot_sub_vol, A, A_direct);
@@ -558,7 +558,7 @@ int main()
 			
 			double complex (*b_direct) = calloc(3*3*tot_sub_vol*tot_sub_vol, sizeof(*b_direct));
 			if (b_direct == NULL){
-				printf("Failure with memory (b_direct). Use iterative solver");
+				printf("Failure with memory=%ld (b_direct). Use iterative solver",get_mem_usage());
 				exit(1);
 			}
 			//b_direct_populator(tot_sub_vol, G_0, b_direct);
@@ -572,7 +572,7 @@ int main()
 
 			double complex (*G_sys)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys));
 			if (G_sys == NULL){
-			printf("Failure with memory (G_sys). Use iterative solver");
+			printf("Failure with memory=%ld (G_sys). Use iterative solver",get_mem_usage());
 			exit(1);
 			} 
 			populate_G_sys(tot_sub_vol, b_direct, G_sys);
@@ -661,6 +661,10 @@ int main()
 		{
 			//full matrix solution
 			double complex (*G_sys)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys));
+			if (G_sys == NULL){
+			printf("Failure with memory=%ld (G_sys). Use iterative solver",get_mem_usage());
+			exit(1);
+			} 
 			iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type);						    	
 			/*
 			//triangular matrix solution
@@ -1111,7 +1115,7 @@ int main()
 			
 			double(*G_12_omega_SGF)[N_Tcalc] = calloc(const_N_omega, sizeof(*G_12_omega_SGF)); // spectral conductance
 			if (G_12_omega_SGF == NULL){
-				printf("Failure with memory before spectral analysis when conductance defined. ");
+				printf("Failure with memory=%ld before spectral analysis when conductance defined. ",get_mem_usage());
 				return 1;
 			}
 			FILE *spectral_conductance; // append
