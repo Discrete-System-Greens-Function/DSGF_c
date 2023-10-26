@@ -1,5 +1,6 @@
 #include "computational/solvers/direct_solver.h"
-#include <lapacke.h>
+#include <lapacke.h> // for desktop
+// #include <mkl_lapacke.h> // for CHPC
 #include "computational/GreensFunction.h"
 #include "functions_DSGF.h" // Definitions of functions used in DSGF
 
@@ -67,7 +68,7 @@ void b_direct_populator(int tot_sub_vol,  double complex G_0[tot_sub_vol][tot_su
 
 void A_direct_populator_2D(int tot_sub_vol, double complex A[3*tot_sub_vol][3*tot_sub_vol], double complex A_direct[3*3*tot_sub_vol*tot_sub_vol]){
 
-	int ipack=0; 
+	//int ipack=0; 
 	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 	{
 		for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
@@ -78,8 +79,9 @@ void A_direct_populator_2D(int tot_sub_vol, double complex A[3*tot_sub_vol][3*to
 				for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
 				{
 					int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
-					A_direct[ipack] = A[ig_0_2d][jg_0_2d];
-					ipack++;
+					int index = j_subG_0+jg_0*3+i_subG_0*3*tot_sub_vol+ig_0*3*tot_sub_vol*3;
+					A_direct[index] = A[ig_0_2d][jg_0_2d];
+					//ipack++;
 				}    
 			}
 		}        
@@ -90,7 +92,7 @@ void A_direct_populator_2D(int tot_sub_vol, double complex A[3*tot_sub_vol][3*to
 
 void b_direct_populator_2D(int tot_sub_vol,  double complex G_0[3*tot_sub_vol][3*tot_sub_vol], double complex b_direct[3*3*tot_sub_vol*tot_sub_vol]){
 
-	int ipack=0; 
+	//int ipack=0; 
 	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 	{
 		for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
@@ -101,19 +103,22 @@ void b_direct_populator_2D(int tot_sub_vol,  double complex G_0[3*tot_sub_vol][3
 				for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
 				{
 					int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
-					b_direct[ipack]= G_0[ig_0_2d][jg_0_2d];
-					ipack++;
+					int index = j_subG_0+jg_0*3+i_subG_0*3*tot_sub_vol+ig_0*3*tot_sub_vol*3;
+					//printf("%d - ",index);
+					b_direct[index]= G_0[ig_0_2d][jg_0_2d];
+					//b_direct[ipack]= G_0[ig_0_2d][jg_0_2d];
+					//ipack++;
 				}    
 			}
 		}        
 	}   
-
+	//printf("\n");
 }
 
 
 void populate_G_sys(int tot_sub_vol, double complex b_direct[3*3*tot_sub_vol*tot_sub_vol], double complex G_sys[3*tot_sub_vol][3*tot_sub_vol]){
 
-	int gpack=0;
+	//int gpack=0;
 	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 	{
 		for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
@@ -124,8 +129,9 @@ void populate_G_sys(int tot_sub_vol, double complex b_direct[3*3*tot_sub_vol*tot
 				for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
 				{
 					int jg_0_2d = (3*jg_0 + j_subG_0);
-					G_sys[ig_0_2d][jg_0_2d] = b_direct[gpack];
-					gpack++;
+					int index = j_subG_0+jg_0*3+i_subG_0*3*tot_sub_vol+ig_0*3*tot_sub_vol*3;
+					G_sys[ig_0_2d][jg_0_2d] = b_direct[index];
+					//gpack++;
 				}    
 			}
 		}        

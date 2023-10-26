@@ -44,7 +44,8 @@
 #include "computational/ThermalPower.h"
 
 // LAPACKE libraries: https://www.netlib.org/lapack/lapacke.html ; https://extras.csc.fi/math/nag/mark21/pdf/F08/f08anf.pdf
-#include <lapacke.h>
+#include <lapacke.h> // library for desktop
+// #include <mkl_lapacke.h> // library for chpc
 #include "lapack_header.h" //header with Lapack definitions
 
 // #################################################################
@@ -359,7 +360,6 @@ int main()
 
     	pre_solver_memory = get_mem_usage()-baseline;
 		
-		//if (strcmp(solution, "DC") == 0)	
 		if(solution =='D') // Solves the linear system AG=G^0, where G^0 and A are 3N X 3N matrices. 
 		{	
 			/*
@@ -409,8 +409,10 @@ int main()
 			b_direct_populator_2D(tot_sub_vol, G_0, b_direct); //b_direct_populator(tot_sub_vol, G_0, b_direct);
 			free(G_0);
 
+			printf("Entering LAPACK\n");
 			direct_solver_memory(tot_sub_vol, A_direct, b_direct); // we noticed an memory improved from the old function
-			
+			printf("Leaving LAPACK\n");
+
 			calculation_memory = get_mem_usage()-pre_solver_memory-baseline;
 			free(A_direct);
 
@@ -500,163 +502,6 @@ int main()
 			free(G_sys);
 		} // end if (solution =='D')
 	 
-	 	//if (strcmp(solution, "DH") == 0)
-		if(solution =='E') // direct inversion file handling Solves the linear system AG=G^0, where G^0 and A are 3N X 3N matrices. 
-		{	
-			
-			double complex (*G_0)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_0));//double complex (*G_0)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_0)); 	
-			if (G_0 == NULL){
-				printf("Failure with memory=%ld (G_0). Use iterative solver",get_mem_usage());
-				exit(1);
-			} 
-			//get_G0_matrix_memory(tot_sub_vol, G_0, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type);
-			//get_G_old_struct_matrix_memory_file(tot_sub_vol, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type, G_0_file_name);
-			get_G0_matrix_memory_2D(tot_sub_vol, G_0, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type);
-						
-			double complex (*prod)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*prod));
-			if (prod == NULL){
-				printf("Failure with memory=%ld when generating A. Use iterative solver",get_mem_usage());
-				exit(1);
-			}
-			get_alpha_prod_for_A_2D(tot_sub_vol, G_0, k_0, alpha_0, prod);
-
-			double complex (*A)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*A)); //double complex (*A)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*A));
-			if (A == NULL){
-				printf("Failure with memory=%ld (A). Use iterative solver",get_mem_usage());
-				exit(1);
-			}
-			//get_A_matrix(tot_sub_vol, G_0, A, k_0, alpha_0); // function applicable for uniform and non-uniform discretization
-			//get_A_matrix_2D(tot_sub_vol, G_0, A, k_0, alpha_0);
-			fill_A_matrix_2D(tot_sub_vol, A, prod);
-			free(prod);
-
-			//Files reading/writing solution
-			char G_0_file_name[260];
-			char A_file_name[260];
-			if (multithread =='Y'){
-				sprintf(G_0_file_name,"%s/G_0_%d.bin",results_folder,i_omega); 
-				sprintf(A_file_name,"%s/A_%d.bin",results_folder,i_omega); 
-			}
-			else{
-				sprintf(G_0_file_name,"%s/G_0.bin",results_folder); 
-				sprintf(A_file_name,"%s/A.bin",results_folder); 
-			}
-			
-			write_bin(tot_sub_vol, G_0, G_0_file_name);
-			free(G_0);
-			write_bin(tot_sub_vol, A, A_file_name);
-			free(A);
-
-			double complex (*A_direct) = calloc(3*3*tot_sub_vol*tot_sub_vol, sizeof(*A_direct));
-			if (A_direct == NULL){
-				printf("Failure with memory=%ld (A_direct). Use iterative solver",get_mem_usage());
-				exit(1);
-			}
-			//A_direct_populator(tot_sub_vol, A, A_direct);
-			read_populator_bin(tot_sub_vol, A_direct, A_file_name);
-			
-			
-			double complex (*b_direct) = calloc(3*3*tot_sub_vol*tot_sub_vol, sizeof(*b_direct));
-			if (b_direct == NULL){
-				printf("Failure with memory=%ld (b_direct). Use iterative solver",get_mem_usage());
-				exit(1);
-			}
-			//b_direct_populator(tot_sub_vol, G_0, b_direct);
-			read_populator_bin(tot_sub_vol, b_direct, G_0_file_name);
-			
-
-			direct_solver_memory(tot_sub_vol, A_direct, b_direct); // we noticed an memory improved from the old function
-			
-			calculation_memory = get_mem_usage()-pre_solver_memory-baseline;
-			free(A_direct);
-
-			double complex (*G_sys)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys));
-			if (G_sys == NULL){
-			printf("Failure with memory=%ld (G_sys). Use iterative solver",get_mem_usage());
-			exit(1);
-			} 
-			populate_G_sys(tot_sub_vol, b_direct, G_sys);
-			free(b_direct);
-						
-			//direct_solver(tot_sub_vol, A_direct, b_direct, G_sys);  
-			//direct_solver(tot_sub_vol, A, G_0, G_sys);
-			//direct_solver(tot_sub_vol, G_sys, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type, alpha_0); // we noticed an memory improved from the old function
-			//spectral_post_processing(tot_sub_vol, i_omega, const_N_omega, k_0, h_bar, k_b, epsilon, omega_value, T_vector, delta_V_vector, const_N_subvolumes_per_object, pi, G_sys, &sum_trans_coeff, Q_subvol);
-
-			for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
-			{
-				Q_omega_subvol = 0;
-				for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //tot_sub_vol
-				{
-					G_element = 0;
-					for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
-					{
-						int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
-						for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
-						{
-							int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
-							// Extract one Green's function component: G_sys[ig_0][jg_0][i_subG_0]
-							double complex transpose_G_sys = G_sys[ig_0_2d][jg_0_2d];
-							double complex G_sys_cross = conj(transpose_G_sys);
-							G_element+=G_sys[ig_0_2d][jg_0_2d]*G_sys_cross; 
-						}    
-					}
-					// Transmissivity coefficient matrix tau(omega) for comparison with Czapla Mathematica output [dimensionless]
-					trans_coeff = 4.*pow(k_0,4)*delta_V_vector[ig_0]*delta_V_vector[jg_0]*cimag(epsilon)*cimag(epsilon)*G_element; 
-				
-					//Trans_bulk: Transmission coefficient between two bulk objects
-					// This function calculates the transmission coefficient between bulk objects given the transmission coefficient between every pair of dipoles for a given frequency.
-					if(ig_0 < const_N_subvolumes_per_object && jg_0 >= const_N_subvolumes_per_object)// bulk 1 -> 2
-					{
-						sum_trans_coeff += trans_coeff;
-					} 
-					// Thermal power dissipated calculation, based on the matlab code (Using Tervo's Eq. 26)
-					if (ig_0 != jg_0) 
-					{
-						//inner_sum = (theta_function(omega_value, T_vector[jg_0], h_bar, k_b) - theta_function(omega_value, T_vector[ig_0], h_bar, k_b)) * trans_coeff;
-						double T_i,T_j;
-						if (ig_0<const_N_subvolumes_per_object){ T_i=T1;}
-						else{ T_i=T2;}
-						if (jg_0<const_N_subvolumes_per_object){ T_j=T1;}
-						else{ T_j=T2;}
-						inner_sum = (theta_function(omega_value, T_j, h_bar, k_b) - theta_function(omega_value, T_i, h_bar, k_b)) * trans_coeff;
-					}
-					else {inner_sum = 0; }
-					Q_omega_subvol += (1 / (2 * pi)) * inner_sum; // calculates the thermal power dissipated per subvolume
-				}
-				if ( save_power_dissipated_spectral_subvolumes == 'Y' ||
- 		 		save_power_dissipated_total_subvolumes == 'Y' ||
- 				save_power_dissipated_spectral_bulk == 'Y' ||
- 		 		save_power_dissipated_total_bulk == 'Y' ||
- 		 		save_power_density_total_subvolumes == 'Y' )
-				{
-					FILE *power_dissipated_spectral; // append
-					char dirPathPower_dissipated_spectral_subvolumes_FileName[260];
-					sprintf(dirPathPower_dissipated_spectral_subvolumes_FileName, "%s/Q_omega_subvol.csv", results_folder); // path where the file is stored
-					if (ig_0 == 0 && i_omega ==0){ power_dissipated_spectral = fopen(dirPathPower_dissipated_spectral_subvolumes_FileName, "w");} // write
-					else if (ig_0 == 0 && i_omega!=0)
-					{
-						power_dissipated_spectral = fopen(dirPathPower_dissipated_spectral_subvolumes_FileName, "a"); // append
-						fprintf(power_dissipated_spectral, "\n");
-					}
-					else { power_dissipated_spectral = fopen(dirPathPower_dissipated_spectral_subvolumes_FileName, "a"); }// append
-					fprintf(power_dissipated_spectral, "%e,", Q_omega_subvol);					
-					fclose(power_dissipated_spectral);
-				
-				}
-				/*
-				if ( save_power_dissipated_spectral_subvolumes == 'Y' ||
- 		 		save_power_dissipated_total_subvolumes == 'Y' ||
- 				save_power_dissipated_spectral_bulk == 'Y' ||
- 		 		save_power_dissipated_total_bulk == 'Y' ||
- 		 		save_power_density_total_subvolumes == 'Y' )
-				{ Q_subvol[ig_0][i_omega] = Q_omega_subvol; }
-				*/
-			}	
-			free(G_sys);
-		} // end if (solution == 'E') direct file handler
-
-		//if (strcmp(solution, "IC") == 0)
 		if(solution =='I') // iterative solver classic
 		{
 			//full matrix solution
@@ -674,12 +519,7 @@ int main()
 			*/
 
 			calculation_memory = get_mem_usage()-pre_solver_memory-baseline;
-			
-			/*
-			double complex (*G_sys)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys));	
-			read_bin(tot_sub_vol, G_sys, G_sys_file_name);
-			*/
-						
+									
 			//spectral_post_processing(tot_sub_vol, i_omega, const_N_omega, k_0, h_bar, k_b, epsilon, omega_value, T_vector, delta_V_vector, const_N_subvolumes_per_object, pi, G_sys, &sum_trans_coeff, Q_subvol);
 			for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 			{
@@ -775,8 +615,6 @@ int main()
 			free(G_sys);
 		}	//end if (solution =='I')
 
-	
-		//if (strcmp(solution, "IH") == 0)
 		if(solution =='H') // iterative with file handler
 		{ 		
 			//Files reading/writing solution

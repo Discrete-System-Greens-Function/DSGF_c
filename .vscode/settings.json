@@ -23,7 +23,8 @@
         "utility": "c",
         "string": "c",
         "string_view": "c",
-        "shared.h": "c"
+        "shared.h": "c",
+        "chrono": "c"
     },
     "C_Cpp.errorSquiggles": "enabled"
 }
