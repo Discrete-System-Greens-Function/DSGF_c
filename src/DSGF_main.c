@@ -283,9 +283,7 @@ int main()
 	
 	if(solution =='D'){printf("spectrum range calculation using direct inversion: \n");}
 	if(solution =='I'){printf("spectrum range calculation using iterative solver: \n");}
-	if(solution =='H'){printf("spectrum range calculation using iterative solver with file handling: \n");}
-	if(solution =='E'){printf("spectrum range calculation using direct inversion with file handling: \n");}
-	
+	if(solution =='H'){printf("spectrum range calculation using iterative solver with file handling: \n");}	
 	/*
 	if (strcmp(solution, "DC") == 0){printf("spectrum range calculation using direct inversion: \n");}		
 	else if (strcmp(solution, "IC") == 0){printf("spectrum range calculation using iterative solver: \n");}
@@ -357,28 +355,9 @@ int main()
 		double complex G_element;
 		double Q_omega_subvol;
 		double sum_trans_coeff = 0; // Transmissivity to calculate spectral conductance and spectral power in subvolumes
-
-    	pre_solver_memory = get_mem_usage()-baseline;
 		
 		if(solution =='D') // Solves the linear system AG=G^0, where G^0 and A are 3N X 3N matrices. 
 		{	
-			/*
-			double complex (*G_0)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*G_0)); 	
-			if (G_0 == NULL){
-				printf("Failure with memory (G_0). Use iterative solver");
-				exit(1);
-			} 
-			//get_G0_matrix(tot_sub_vol, G_0, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type);
-			get_G0_matrix_memory(tot_sub_vol, G_0, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type);
-			
-			double complex (*A)[tot_sub_vol][3][3] = calloc(tot_sub_vol, sizeof(*A));
-			if (A == NULL){
-				printf("Failure with memory (A). Use iterative solver");
-				exit(1);
-			}
-			get_A_matrix(tot_sub_vol, G_0, A, k_0, alpha_0); // function applicable for uniform and non-uniform discretization
-			*/
-
 			double complex (*G_0)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_0));
 			if (G_0 == NULL){
 				printf("Failure with memory=%ld (G_0). Use iterative solver", get_mem_usage());
@@ -409,11 +388,10 @@ int main()
 			b_direct_populator_2D(tot_sub_vol, G_0, b_direct); //b_direct_populator(tot_sub_vol, G_0, b_direct);
 			free(G_0);
 
-			printf("Entering LAPACK\n");
+			//printf("Entering LAPACK\n");
 			direct_solver_memory(tot_sub_vol, A_direct, b_direct); // we noticed an memory improved from the old function
-			printf("Leaving LAPACK\n");
+			//printf("Leaving LAPACK\n");
 
-			calculation_memory = get_mem_usage()-pre_solver_memory-baseline;
 			free(A_direct);
 
 			double complex (*G_sys)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys));
@@ -447,7 +425,7 @@ int main()
 							G_element+=G_sys[ig_0_2d][jg_0_2d]*G_sys_cross; 
 						}    
 					}
-					// Transmissivity coefficient matrix tau(omega) for comparison with Czapla Mathematica output [dimensionless]
+					// Transmission coefficient matrix tau(omega) for comparison with Czapla Mathematica output [dimensionless]
 					trans_coeff = 4.*pow(k_0,4)*delta_V_vector[ig_0]*delta_V_vector[jg_0]*cimag(epsilon)*cimag(epsilon)*G_element; 
 				
 					//Trans_bulk: Transmission coefficient between two bulk objects
@@ -490,14 +468,6 @@ int main()
 					fclose(power_dissipated_spectral);
 				
 				}
-				/*
-				if ( save_power_dissipated_spectral_subvolumes == 'Y' ||
- 		 		save_power_dissipated_total_subvolumes == 'Y' ||
- 				save_power_dissipated_spectral_bulk == 'Y' ||
- 		 		save_power_dissipated_total_bulk == 'Y' ||
- 		 		save_power_density_total_subvolumes == 'Y' )
-				{ Q_subvol[ig_0][i_omega] = Q_omega_subvol; }
-				*/
 			}	
 			free(G_sys);
 		} // end if (solution =='D')
@@ -517,8 +487,6 @@ int main()
 			double complex* G_sys_TriangularMatrix = (double complex*)malloc(size * sizeof(double complex)); // Allocate memory for the 1D array
 			//iterative_solver_memory(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, size, G_sys_TriangularMatrix,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type);
 			*/
-
-			calculation_memory = get_mem_usage()-pre_solver_memory-baseline;
 									
 			//spectral_post_processing(tot_sub_vol, i_omega, const_N_omega, k_0, h_bar, k_b, epsilon, omega_value, T_vector, delta_V_vector, const_N_subvolumes_per_object, pi, G_sys, &sum_trans_coeff, Q_subvol);
 			for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
@@ -593,23 +561,7 @@ int main()
 					fclose(power_dissipated_spectral);
 				
 				}
-				/*
-				if ( save_power_dissipated_spectral_subvolumes == 'Y' ||
- 		 		save_power_dissipated_total_subvolumes == 'Y' ||
- 				save_power_dissipated_spectral_bulk == 'Y' ||
- 		 		save_power_dissipated_total_bulk == 'Y' ||
- 		 		save_power_density_total_subvolumes == 'Y' )
-				{
-					Q_subvol[ig_0][i_omega] = Q_omega_subvol;
-					
-					//if (ig_0 < const_N_subvolumes_per_object)
-					//{
-					//	Q_subvol[ig_0][i_omega] = Q_omega_subvol;
-					//	Q_subvol[tot_sub_vol-ig_0-1][i_omega] = -Q_omega_subvol;
-					//}
-					
-				}
-				*/
+				
 			} // end ig_0
 			//free(G_sys_TriangularMatrix);
 			free(G_sys);
@@ -634,7 +586,7 @@ int main()
 			//iterative_solver_store(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type,G_sys_file_name);
 			iterative_solver_file_handler(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type,G_old_file_name, G_sys_file_name);
 			
-			calculation_memory = get_mem_usage()-pre_solver_memory-baseline;
+			//calculation_memory = get_mem_usage()-pre_solver_memory-baseline;
 			
 			/*
 			double complex (*G_sys)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys));	
@@ -1010,12 +962,12 @@ int main()
 		sprintf(dirPathMemory_FileName, "matlab_scripts/memory/memory_analysis.csv"); // path where the file is stored
 		memory = fopen(dirPathMemory_FileName, "a"); //append
 		if  (multithread == 'Y') {
-			if (single_spectrum_analysis == 'Y'){ fprintf(memory,"%d,%c,Parallel,%ld,%ld,%ld,%ld, 1 frequency, %ld s\n",tot_sub_vol,solution,baseline, pre_solver_memory, calculation_memory, total_memory, simulation_time-simulation_start); }
-			else {fprintf(memory,"%d,%c,Parallel,%ld,%ld,%ld,%ld, %d frequencies, %ld s\n",tot_sub_vol,solution,baseline, pre_solver_memory, calculation_memory, total_memory, const_N_omega, simulation_time-simulation_start); }	
+			if (single_spectrum_analysis == 'Y'){ fprintf(memory,"%d,%c,Parallel,%ld,%ld, 1 frequency, %ld s\n",tot_sub_vol,solution,baseline, total_memory, simulation_time-simulation_start); }
+			else {fprintf(memory,"%d,%c,Parallel,%ld,%ld, %d frequencies, %ld s\n",tot_sub_vol,solution,baseline, total_memory, const_N_omega, simulation_time-simulation_start); }	
 		}
 		else if (multithread == 'N'){ 
-			if (single_spectrum_analysis == 'Y'){fprintf(memory,"%d,%c,Serial,%ld,%ld,%ld,%ld, 1 frequency, %ld s\n",tot_sub_vol,solution,baseline, pre_solver_memory, calculation_memory, total_memory, simulation_time-simulation_start);}
-			else {fprintf(memory,"%d,%c,Serial,%ld,%ld,%ld,%ld, %d frequencies, %ld s\n",tot_sub_vol,solution,baseline, pre_solver_memory, calculation_memory, total_memory, const_N_omega, simulation_time-simulation_start);}
+			if (single_spectrum_analysis == 'Y'){fprintf(memory,"%d,%c,Serial,%ld,%ld, 1 frequency, %ld s\n",tot_sub_vol,solution,baseline, total_memory, simulation_time-simulation_start);}
+			else {fprintf(memory,"%d,%c,Serial,%ld,%ld, %d frequencies, %ld s\n",tot_sub_vol,solution,baseline, total_memory, const_N_omega, simulation_time-simulation_start);}
 		}
 		fclose(memory);
 	}

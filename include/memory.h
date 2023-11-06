@@ -3,10 +3,10 @@
 
 
 long baseline;
-long pre_solver_memory;
-long calculation_memory;
+// long pre_solver_memory;
+// long calculation_memory;
 long total_memory;
-long memoryMaxMatrix; 
-long memoryInversion; 
+// long memoryMaxMatrix; 
+// long memoryInversion; 
 
 #endif // __memory_h
