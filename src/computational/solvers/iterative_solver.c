@@ -65,11 +65,11 @@ void G_sys_new_populator(int tot_sub_vol, int mm, int jg_0, double complex G_sys
 
 void remaining_pertubations(int tot_sub_vol, int mm, double complex G_sys_old[3*tot_sub_vol][3*tot_sub_vol], double complex G_sys_new[3*tot_sub_vol][3*tot_sub_vol], double complex A_2d[3][3]){
 
-	double complex A_iterative[3*3];
-	double complex b_iterative[3*3];
 	// #pragma omp parallel for // PARALELLIZE HERE
 	for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) // Only loop through remaining perturbations
 	{
+		double complex A_iterative[3*3];
+		double complex b_iterative[3*3];
 		A_b_iterative_populator(tot_sub_vol, A_iterative, b_iterative, A_2d, G_sys_old, mm, jg_0);
 		//A_b_iterative_populator(tot_sub_vol, A_iterative, b_iterative, A_2d, size, upperTriangularMatrix, mm, jg_0);
 		int info = LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',3,3,3,A_iterative,3,b_iterative,3);

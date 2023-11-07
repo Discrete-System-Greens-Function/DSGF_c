@@ -53,7 +53,7 @@ void setup_G_0_matrices(int tot_sub_vol, double modulo_r_i_j[tot_sub_vol][tot_su
 		exit(1);
 	}
 	
-
+	// #pragma omp parallel for
 	for (int i_i = 0; i_i < tot_sub_vol; i_i++)
 	{ 
 		for (int i_j = 0; i_j < tot_sub_vol; i_j++)
@@ -62,15 +62,23 @@ void setup_G_0_matrices(int tot_sub_vol, double modulo_r_i_j[tot_sub_vol][tot_su
 			{  
 				//double unit_r_ij = r[i_i][i_j][i_alpha]/modulo_r_i_j[i_i][i_j];
 				unit_r_ij[i_i][i_j][i_alpha] = r[i_i][i_j][i_alpha]/modulo_r_i_j[i_i][i_j]; // ˆr -- unit distance 
-				double transpose = r[i_i][i_j][i_alpha]/modulo_r_i_j[i_i][i_j]; // https://www.programiz.com/c-programming/examples/matrix-transpose        
-				unit_conj_r_ij[i_i][i_j][i_alpha] = conj(transpose);// r^+ Conjugate transpose unit distance 
+				//double transpose = r[i_i][i_j][i_alpha]/modulo_r_i_j[i_i][i_j]; // https://www.programiz.com/c-programming/examples/matrix-transpose        
+				//unit_conj_r_ij[i_i][i_j][i_alpha] = conj(transpose);// r^+ Conjugate transpose unit distance 
 				//double complex unit_conj_r_ij = conj(transpose); 
+				unit_conj_r_ij[i_i][i_j][i_alpha] = conj(r[i_i][i_j][i_alpha]/modulo_r_i_j[i_i][i_j]);// r^+ Conjugate transpose unit distance 
 			}
+			for (int i_alpha = 0; i_alpha < 3; i_alpha++)
+			{
+				for (int j_alpha = 0; j_alpha < 3; j_alpha++)
+				{ 
+					r_i_j_outer_r_i_j[i_i][i_j][i_alpha][j_alpha] = unit_r_ij[i_i][i_j][i_alpha]*unit_conj_r_ij[i_i][i_j][j_alpha];
+				}
+			}	
 		}
 	}
 	free(r);
 
-
+	/*
 	// #pragma omp parallel for collapse(2)	// PARALLELIZE HERE
 	for (int i_i = 0; i_i < tot_sub_vol; i_i++)
 	{ 
@@ -85,6 +93,8 @@ void setup_G_0_matrices(int tot_sub_vol, double modulo_r_i_j[tot_sub_vol][tot_su
 			}    
 		}
 	}
+	*/
+
 	free(unit_r_ij);
 	free(unit_conj_r_ij);
 }
