@@ -5,7 +5,7 @@
 #include "computational/solvers/iterative_solver.h"
 #include "mkl.h"
 
-void setup_G_0_matrices(int tot_sub_vol, double modulo_r_i_j[tot_sub_vol][tot_sub_vol], double complex r_i_j_outer_r_i_j[tot_sub_vol][tot_sub_vol][3][3], double R[][3]){
+void setup_G_0_matrices(int tot_sub_vol, double modulo_r_i_j[tot_sub_vol][tot_sub_vol], double complex r_i_j_outer_r_i_j[tot_sub_vol][tot_sub_vol][3][3], double R[][3], char multithread){
 	
 	double (*r)[tot_sub_vol][3] = calloc(tot_sub_vol, sizeof(*r));
 	if (r == NULL){
@@ -53,14 +53,13 @@ void setup_G_0_matrices(int tot_sub_vol, double modulo_r_i_j[tot_sub_vol][tot_su
 		exit(1);
 	}
 	
-	// #pragma omp parallel for
+	#pragma omp parallel for if (multithread == 'Y')
 	for (int i_i = 0; i_i < tot_sub_vol; i_i++)
 	{ 
 		for (int i_j = 0; i_j < tot_sub_vol; i_j++)
 		{ 
 			for (int i_alpha = 0; i_alpha < 3; i_alpha++)
 			{  
-				//double unit_r_ij = r[i_i][i_j][i_alpha]/modulo_r_i_j[i_i][i_j];
 				unit_r_ij[i_i][i_j][i_alpha] = r[i_i][i_j][i_alpha]/modulo_r_i_j[i_i][i_j]; // ˆr -- unit distance 
 				//double transpose = r[i_i][i_j][i_alpha]/modulo_r_i_j[i_i][i_j]; // https://www.programiz.com/c-programming/examples/matrix-transpose        
 				//unit_conj_r_ij[i_i][i_j][i_alpha] = conj(transpose);// r^+ Conjugate transpose unit distance 
@@ -78,28 +77,11 @@ void setup_G_0_matrices(int tot_sub_vol, double modulo_r_i_j[tot_sub_vol][tot_su
 	}
 	free(r);
 
-	/*
-	// #pragma omp parallel for collapse(2)	// PARALLELIZE HERE
-	for (int i_i = 0; i_i < tot_sub_vol; i_i++)
-	{ 
-		for (int i_j = 0; i_j < tot_sub_vol; i_j++)
-		{ 
-			for (int i_alpha = 0; i_alpha < 3; i_alpha++)
-			{  
-				for (int j_alpha = 0; j_alpha < 3; j_alpha++)
-				{ 
-					r_i_j_outer_r_i_j[i_i][i_j][i_alpha][j_alpha] = unit_r_ij[i_i][i_j][i_alpha]*unit_conj_r_ij[i_i][i_j][j_alpha];
-				}
-			}    
-		}
-	}
-	*/
-
 	free(unit_r_ij);
 	free(unit_conj_r_ij);
 }
 
-void get_G_old_struct_matrix_memory(int tot_sub_vol, double complex G_old[3*tot_sub_vol][3*tot_sub_vol], double k_0, double pi, double epsilon_ref, double modulo_r_i_j[tot_sub_vol][tot_sub_vol], double complex r_i_j_outer_r_i_j[tot_sub_vol][tot_sub_vol][3][3], double delta_V_vector[tot_sub_vol],char wave_type){
+void get_G_old_struct_matrix_memory(int tot_sub_vol, double complex G_old[3*tot_sub_vol][3*tot_sub_vol], double k_0, double pi, double epsilon_ref, double modulo_r_i_j[tot_sub_vol][tot_sub_vol], double complex r_i_j_outer_r_i_j[tot_sub_vol][tot_sub_vol][3][3], double delta_V_vector[tot_sub_vol],char multithread){
 
 	// ################### MATRICES STRUCTURE LOOPS ###########################
 	// 3N X 3N Matrices structure loops for G^0 and A:
@@ -108,7 +90,7 @@ void get_G_old_struct_matrix_memory(int tot_sub_vol, double complex G_old[3*tot_
 	//double a_j, part1ii;
 	// double complex part2ii, part2iiexp,part3ii;
 	double eyeG_0[3][3] = {{1,0,0}, {0,1,0}, {0,0,1}};
-	// #pragma omp parallel for collapse(2)	// PARALLELIZE HERE
+	#pragma omp parallel for if (multithread == 'Y')	// PARALLELIZE HERE
 	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 	{
 		for (int jg_0 = ig_0; jg_0 < tot_sub_vol; jg_0++)//
@@ -156,7 +138,7 @@ void get_G_old_struct_matrix_memory(int tot_sub_vol, double complex G_old[3*tot_
 
 }
 
-void get_G_old_struct_matrix_memory_file(int tot_sub_vol, double k_0, double pi, double epsilon_ref, double modulo_r_i_j[tot_sub_vol][tot_sub_vol], double complex r_i_j_outer_r_i_j[tot_sub_vol][tot_sub_vol][3][3], double delta_V_vector[tot_sub_vol],char wave_type, char* G_old_file_name){
+void get_G_old_struct_matrix_memory_file(int tot_sub_vol, double k_0, double pi, double epsilon_ref, double modulo_r_i_j[tot_sub_vol][tot_sub_vol], double complex r_i_j_outer_r_i_j[tot_sub_vol][tot_sub_vol][3][3], double delta_V_vector[tot_sub_vol],char multithread, char* G_old_file_name){
 
 	// ################### MATRICES STRUCTURE LOOPS ###########################
 	// 3N X 3N Matrices structure loops for G^0 and A:
@@ -171,7 +153,7 @@ void get_G_old_struct_matrix_memory_file(int tot_sub_vol, double k_0, double pi,
     	perror("Error opening binary file");
     	exit(1); // Exit with an error code
 	}
-	// #pragma omp parallel for collapse(2)	// PARALLELIZE HERE
+	#pragma omp parallel for if (multithread == 'Y')	// PARALLELIZE HERE
 	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 	{
 		for (int jg_0 = ig_0; jg_0 < tot_sub_vol; jg_0++)//
@@ -246,7 +228,7 @@ void get_G_old_struct_matrix_memory_file(int tot_sub_vol, double k_0, double pi,
 
 }
 
-void get_G0_matrix_memory_2D(int tot_sub_vol, double complex G_0[3*tot_sub_vol][3*tot_sub_vol], double k_0, double pi, double epsilon_ref, double modulo_r_i_j[tot_sub_vol][tot_sub_vol], double complex r_i_j_outer_r_i_j[tot_sub_vol][tot_sub_vol][3][3], double delta_V_vector[tot_sub_vol],char wave_type){
+void get_G0_matrix_memory_2D(int tot_sub_vol, double complex G_0[3*tot_sub_vol][3*tot_sub_vol], double k_0, double pi, double epsilon_ref, double modulo_r_i_j[tot_sub_vol][tot_sub_vol], double complex r_i_j_outer_r_i_j[tot_sub_vol][tot_sub_vol][3][3], double delta_V_vector[tot_sub_vol],char multithread){
 
 	// ################### MATRICES STRUCTURE LOOPS ###########################
 	// 3N X 3N Matrices structure loops for G^0 and A:
@@ -255,7 +237,7 @@ void get_G0_matrix_memory_2D(int tot_sub_vol, double complex G_0[3*tot_sub_vol][
 	//double a_j, part1ii;
 	//double complex part2ii, part2iiexp,part3ii;
 	double eyeG_0[3][3] = {{1,0,0}, {0,1,0}, {0,0,1}};
-	// #pragma omp parallel for collapse(3)	// PARALLELIZE HERE
+	#pragma omp parallel for if (multithread == 'Y')	// PARALLELIZE HERE
 	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 	//for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++)//
 	//for (int jg_0 = 0; jg_0 < tot_sub_vol-1; jg_0++) //tot_sub_vol
@@ -304,14 +286,14 @@ void get_G0_matrix_memory_2D(int tot_sub_vol, double complex G_0[3*tot_sub_vol][
 
 }
 
-void get_A_matrix_2D(int tot_sub_vol, double complex G_0[3*tot_sub_vol][3*tot_sub_vol], double complex A[3*tot_sub_vol][3*tot_sub_vol], double k_0, double complex alpha_0[tot_sub_vol]){ //,char wave_type
+void get_A_matrix_2D(int tot_sub_vol, double complex G_0[3*tot_sub_vol][3*tot_sub_vol], double complex A[3*tot_sub_vol][3*tot_sub_vol], double k_0, double complex alpha_0[tot_sub_vol], char multithread){ 
 	
 	double complex (*alpha_0_matrix)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*alpha_0_matrix));
 	if (alpha_0_matrix == NULL){
 		printf("Failure with memory when generating A. Use iterative solver");
 		exit(1);
 	} 
-	// #pragma omp parallel for collapse(2)	// PARALLELIZE HERE
+	#pragma omp parallel for if (multithread == 'Y')	// PARALLELIZE HERE
 	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++)//
 	{
 		for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++)//
@@ -357,7 +339,7 @@ void get_A_matrix_2D(int tot_sub_vol, double complex G_0[3*tot_sub_vol][3*tot_su
 	
 	free(alpha_0_matrix);
 
-	// #pragma omp parallel for collapse(2)	// PARALLELIZE HERE
+	#pragma omp parallel for if (multithread == 'Y')	// PARALLELIZE HERE
 	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++)//
 	{
 		for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++)//

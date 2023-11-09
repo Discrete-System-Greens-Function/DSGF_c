@@ -180,7 +180,7 @@ int main()
 	} // end if save_power_dissipated
 
 	//  Fill terms for G^0:		
-	setup_G_0_matrices(tot_sub_vol, modulo_r_i_j, r_i_j_outer_r_i_j, R);
+	setup_G_0_matrices(tot_sub_vol, modulo_r_i_j, r_i_j_outer_r_i_j, R, multithread);
 	free(R);
 	
 	
@@ -297,7 +297,7 @@ int main()
 	if (single_spectrum_analysis == 'N')
 		omega_range = const_N_omega;
 
-	#pragma omp parallel for if (multithread == 'Y')
+	// #pragma omp parallel for if (multithread == 'Y')
 
 	for (int i_omega = 0; i_omega < omega_range; i_omega++) // Frequency loop
 	{
@@ -363,14 +363,14 @@ int main()
 				printf("Failure with memory=%ld (G_0). Use iterative solver", get_mem_usage());
 				exit(1);
 			} 
-			get_G0_matrix_memory_2D(tot_sub_vol, G_0, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type);
+			get_G0_matrix_memory_2D(tot_sub_vol, G_0, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, multithread);
 
 			double complex (*A)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*A));
 			if (A == NULL){
 				printf("Failure with memory=%ld (A). Use iterative solver", get_mem_usage());
 				exit(1);
 			}
-			get_A_matrix_2D(tot_sub_vol, G_0, A, k_0, alpha_0);
+			get_A_matrix_2D(tot_sub_vol, G_0, A, k_0, alpha_0, multithread);
 			
 			double complex (*A_direct) = calloc(3*3*tot_sub_vol*tot_sub_vol, sizeof(*A_direct));
 			if (A_direct == NULL){
@@ -480,7 +480,7 @@ int main()
 			printf("Failure with memory=%ld (G_sys). Use iterative solver",get_mem_usage());
 			exit(1);
 			} 
-			iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type);						    	
+			iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,multithread);						    	
 			/*
 			//triangular matrix solution
 			int size = 9*tot_sub_vol*(tot_sub_vol+1)/2; // Calculate the size of the 1D array to store the upper triangular matrix, via chatgpt
@@ -584,7 +584,7 @@ int main()
 			}
 
 			//iterative_solver_store(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type,G_sys_file_name);
-			iterative_solver_file_handler(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type,G_old_file_name, G_sys_file_name);
+			iterative_solver_file_handler(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,multithread,G_old_file_name, G_sys_file_name);
 			
 			//calculation_memory = get_mem_usage()-pre_solver_memory-baseline;
 			

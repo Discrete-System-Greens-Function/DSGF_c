@@ -63,9 +63,9 @@ void G_sys_new_populator(int tot_sub_vol, int mm, int jg_0, double complex G_sys
 	}
 }
 
-void remaining_pertubations(int tot_sub_vol, int mm, double complex G_sys_old[3*tot_sub_vol][3*tot_sub_vol], double complex G_sys_new[3*tot_sub_vol][3*tot_sub_vol], double complex A_2d[3][3]){
+void remaining_pertubations(int tot_sub_vol, int mm, double complex G_sys_old[3*tot_sub_vol][3*tot_sub_vol], double complex G_sys_new[3*tot_sub_vol][3*tot_sub_vol], double complex A_2d[3][3], char multithread){
 
-	// #pragma omp parallel for // PARALELLIZE HERE
+	#pragma omp parallel for if (multithread == 'Y')// PARALELLIZE HERE
 	for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) // Only loop through remaining perturbations
 	{
 		double complex A_iterative[3*3];
@@ -78,9 +78,9 @@ void remaining_pertubations(int tot_sub_vol, int mm, double complex G_sys_old[3*
 	
 }
 
-void offdiagonal_solver(int tot_sub_vol, int mm, double k, double complex alpha_0[], double complex G_sys_old[3*tot_sub_vol][3*tot_sub_vol], double complex G_sys_new[3*tot_sub_vol][3*tot_sub_vol]){
+void offdiagonal_solver(int tot_sub_vol, int mm, double k, double complex alpha_0[], double complex G_sys_old[3*tot_sub_vol][3*tot_sub_vol], double complex G_sys_new[3*tot_sub_vol][3*tot_sub_vol], char multithread){
 			
-	// #pragma omp parallel for collapse(3)	// PARALLELIZE HERE	
+	#pragma omp parallel for if (multithread == 'Y')	// PARALLELIZE HERE	
 	// Next, solve all systems of equations for ii not equal to mm		
 	//for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //complete system
 	for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //upper triangular matrix
@@ -118,7 +118,7 @@ void offdiagonal_solver(int tot_sub_vol, int mm, double k, double complex alpha_
 
 }
 
-void core_solver(int tot_sub_vol, double complex epsilon, double complex epsilon_ref, double k, double delta_V_vector[], double complex alpha_0[],double complex G_sys_new[3*tot_sub_vol][3*tot_sub_vol], double complex G_sys_old[3*tot_sub_vol][3*tot_sub_vol]){
+void core_solver(int tot_sub_vol, double complex epsilon, double complex epsilon_ref, double k, double delta_V_vector[], double complex alpha_0[],double complex G_sys_new[3*tot_sub_vol][3*tot_sub_vol], double complex G_sys_old[3*tot_sub_vol][3*tot_sub_vol], char multithread){
 
 	double complex A_2d[3][3];
 	for (int mm = 0; mm < tot_sub_vol; mm++) //tot_sub_vol
@@ -126,28 +126,28 @@ void core_solver(int tot_sub_vol, double complex epsilon, double complex epsilon
 		printf("%d - ",mm+1);
 		double complex epsilon_s = (epsilon - epsilon_ref); // Scattering dielectric function
 		A2d_solver(epsilon_s, mm, tot_sub_vol, delta_V_vector[mm], G_sys_old, A_2d, k);	
-		remaining_pertubations(tot_sub_vol, mm, G_sys_old, G_sys_new, A_2d);
-		offdiagonal_solver(tot_sub_vol, mm, k, alpha_0, G_sys_old, G_sys_new);
+		remaining_pertubations(tot_sub_vol, mm, G_sys_old, G_sys_new, A_2d, multithread);
+		offdiagonal_solver(tot_sub_vol, mm, k, alpha_0, G_sys_old, G_sys_new, multithread);
 		memcpy(G_sys_old,G_sys_new,3*tot_sub_vol*3*tot_sub_vol*sizeof(double complex)); // Update G_old = G_new for next iteration.
 	}//end mm loop 
 }
 
-void iterative_solver(int tot_sub_vol, double complex epsilon, double complex epsilon_ref, double k, double delta_V_vector[], double complex alpha_0[], double complex G_sys[3*tot_sub_vol][3*tot_sub_vol],double k_0, double pi,double modulo_r_i_j[tot_sub_vol][tot_sub_vol], double complex r_i_j_outer_r_i_j[tot_sub_vol][tot_sub_vol][3][3],char wave_type){
+void iterative_solver(int tot_sub_vol, double complex epsilon, double complex epsilon_ref, double k, double delta_V_vector[], double complex alpha_0[], double complex G_sys[3*tot_sub_vol][3*tot_sub_vol],double k_0, double pi,double modulo_r_i_j[tot_sub_vol][tot_sub_vol], double complex r_i_j_outer_r_i_j[tot_sub_vol][tot_sub_vol][3][3],char multithread){
 
 	double complex (*G_sys_old)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys_old));
 	if (G_sys_old == NULL){
 			printf("Failure with memory=%ld in iterative solver.",get_mem_usage());
 			exit(1);
 	} 
-	get_G_old_struct_matrix_memory(tot_sub_vol, G_sys_old, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type);
-	core_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys, G_sys_old);
+	get_G_old_struct_matrix_memory(tot_sub_vol, G_sys_old, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, multithread);
+	core_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys, G_sys_old, multithread);
 	free(G_sys_old);
 
 }
 
-void iterative_solver_file_handler(int tot_sub_vol, double complex epsilon, double complex epsilon_ref, double k, double delta_V_vector[], double complex alpha_0[],double k_0, double pi,double modulo_r_i_j[tot_sub_vol][tot_sub_vol], double complex r_i_j_outer_r_i_j[tot_sub_vol][tot_sub_vol][3][3],char wave_type, char* G_old_file_name, char* G_sys_file_name){
+void iterative_solver_file_handler(int tot_sub_vol, double complex epsilon, double complex epsilon_ref, double k, double delta_V_vector[], double complex alpha_0[],double k_0, double pi,double modulo_r_i_j[tot_sub_vol][tot_sub_vol], double complex r_i_j_outer_r_i_j[tot_sub_vol][tot_sub_vol][3][3],char multithread, char* G_old_file_name, char* G_sys_file_name){
 
-	get_G_old_struct_matrix_memory_file(tot_sub_vol, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type,G_old_file_name);
+	get_G_old_struct_matrix_memory_file(tot_sub_vol, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, multithread,G_old_file_name);
 	double complex A_2d[3][3];
 	for (int mm = 0; mm < tot_sub_vol; mm++) //tot_sub_vol
 	{
@@ -195,7 +195,7 @@ void iterative_solver_file_handler(int tot_sub_vol, double complex epsilon, doub
     		perror("Error opening binary file");
     		exit(1); // Exit with an error code
 		}
-		// #pragma omp parallel for // PARALELLIZE HERE
+		// #pragma omp parallel for if (multithread == 'Y')// PARALELLIZE HERE
 		for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) // Only loop through remaining perturbations
 		{
 			//int ipack=0;
@@ -259,7 +259,7 @@ void iterative_solver_file_handler(int tot_sub_vol, double complex epsilon, doub
 		double complex G_new_ij_value, G_old_ij_value;
 		double complex G_old_im_value,G_new_mj_value;
 		
-		// #pragma omp parallel for collapse(3) // PARALELLIZE HERE
+		// #pragma omp parallel for if (multithread == 'Y') // PARALELLIZE HERE
 		for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //upper triangular matrix
 		{
 			for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
