@@ -1,924 +1,159 @@
 tot_sub_vol,solution,baseline, calculation_memory, total_memory,time_spent
 desktop
-272,D,17448,134780,152228,12 s
-272,I,17452,45988,63440,98 s
-16,I,17452,3740,21200,0 s
-16,D,17452,7312,24768,0 s
-16,D,17452,7316,24772,1 s
-16,D,17452,7340,24800,0 s
-16,D,17452,7352,24812,0 s
-16,D,17452,7340,24800,0 s modification with power dissipated
-272,D,17448,134552,152000,14 s modification with power dissipated
-272,I,17452,45776,63228,95 s modification with power dissipated
-272,I,17452,45772,63224,90 s modification with power dissipated
-272,I,17452,45784,63236,101 s
-272,D,17448,134560,152008,13 s
-272,I,17452,45780,63232,91 s
-272,I,17452,45780,63232,93 s
-272,I,17452,45780,63232,92 s
-272,D,17452,134564,152016,13 s
-272,D,17452,134560,152012,12 s
-272,D,17452,134560,152012,12 s
-272,I,17452,45776,63228,92 s
-272,I,17452,557464,574920,96 s not free triangular matrix
-272,I,17452,45780,63232,90 s free triangular matrix
-16,I,17448,3740,21200,0 s
-16,I,17452,3744,21208,0 s
-16,D,17448,7312,24764,0 s combine calculation and post-processing in direct
-16,D,17452,7348,24804,0 s combine calculation and post-processing in direct with all outputs
-16,I,17448,3764,21220,0 s combine calculation and post-processing in iterative with all outputs
-272,D,17452,134592,152044,12 s combine calculation and post-processing in direct
-272,I,17444,45784,63228,93 s
-16,I,17452,3752,21212,0 s mod. for-loop j spectral post-processing line 407
-272,I,17452,45788,63240,100 s mod. for-loop j spectral post-processing line 407
-272,I,17452,45784,63236,96 s mod. for-loop j spectral post-processing line 407
-16,I,17452,3752,21212,0 s
-16,I,17452,3768,21228,0 s
-16,I,17452,3768,21228,1 s
-16,I,17452,3768,21228,0 s
-16,I,17448,3768,21224,0 s
-16,I,17452,3768,21228,1 s
-16,I,17448,3768,21224,0 s
-16,I,17452,3768,21228,0 s if save line 452: Q_subvol[tot_sub_vol-ig_0-1][i_omega] = -Q_omega_subvol;
-272,I,17452,46004,63456,104 s all outputs. if save line 452: Q_subvol[tot_sub_vol-ig_0-1][i_omega] = -Q_omega_subvol;
-272,I,17448,46004,63452,107 s all outputs. if save line 452: Q_subvol[tot_sub_vol-ig_0-1][i_omega] = -Q_omega_subvol;
-272,I,17448,45788,63236,95 s
-272,I,17452,45788,63240,91 s
-2,I,17452,3632,21092,0 s
-2,I,17452,3492,20952,0 s
-2,I,17452,3488,20948,0 s
-2,I,17452,3492,20952,0 s
-2,I,Serial,17448,3492,20948,0 s
-2,I,Parallel,17452,4520,21976,1 s
-2,I,Serial,17452,3488,20948,0 s
-2,I,Serial,17452,3488,20948,0 s
-2,I,Serial,17452,3492,20952,0 s
-2,I,Serial,17448,3492,20948,0 s
-2,I,Serial,17448,3492,20948,1 s
-2,I,Serial,17452,3492,20952,0 s
-2,D,Serial,17452,3700,21160,1 s
-2,I,Serial,17448,3492,20948,0 s
-2,I,Serial,17448,3492,20948,0 s
-2,I,Serial,17448,3492,20948,0 s
-2,I,Serial,17452,3492,20952,0 s
-2,I,Serial,17452,3632,21092,0 s
-2,I,Serial,17452,3492,20952,0 s
-16,D,Serial,17452,-17452,24776,0 s
-16,D,Serial,17448,0,24776,1 s
-16,D,Serial,17452,0,24780,0 s
-16,D,Serial,17452,24800,24804,0 s
-16,D,Serial,17452,7308,24764,0 s
-16,D,Serial,17448,7320,24772,0 s
-16,D,Serial,17452,7308,24764,0 s
-16,D,Serial,17452,7320,24776,1 s
-16,D,Serial,17448,7352,24804,0 s
-16,D,Serial,17452,7316,24772,0 s
-16,D,Serial,17444,7360,24808,0 s
-16,D,Serial,17452,7352,24808,0 s
-2,I,Serial,17452,0,20952,0 s
-2,I,Serial,17452,0,20952,0 s
-2,I,Serial,17452,0,20952,0 s
-2,I,Serial,17452,0,20952,0 s
-2,I,Serial,17452,0,20952,0 s
-2,I,Serial,17448,0,20948,0 s
-2,I,Serial,17452,0,20948,0 s
-2,I,Serial,17452,0,20952,0 s
-2,I,Serial,17452,0,20948,0 s
-2,I,Serial,17452,0,20948,0 s
-2,I,Serial,17452,0,20952,0 s
-2,I,Serial,17452,0,20952,0 s
-2,I,Serial,17448,0,20948,0 s
-2,I,Serial,17448,0,20948,0 s
-2,I,Serial,17448,0,20948,0 s
-2,I,Serial,17448,0,20948,0 s
-2,I,Serial,17452,0,20952,0 s
-2,I,Serial,17448,0,20948,0 s
-2,I,Serial,17452,0,20948,0 s
-2,I,Serial,17452,0,20948,0 s
-2,I,Serial,17452,0,20952,0 s
-2,I,Serial,17452,0,20952,0 s
-2,I,Serial,17452,0,20908,0 s
-2,I,Serial,17452,0,20908,0 s
-2,I,Serial,17448,0,20904,0 s
-2,I,Serial,17452,0,20908,0 s
-2,I,Serial,17452,0,20908,0 s
-2,I,Serial,17452,0,20904,0 s
-2,I,Serial,17452,0,20908,0 s
-2,I,Serial,17452,0,20912,0 s
-2,I,Serial,17452,0,20912,0 s
-2,I,Serial,17448,0,20952,0 s
-2,I,Serial,17448,0,20952,0 s
-2,I,Serial,17452,0,20912,0 s
-2,I,Serial,17452,0,20912,0 s
-2,I,Serial,17448,0,20908,0 s
-2,I,Serial,17448,0,20908,0 s
-2,I,Serial,17452,0,20912,0 s
-2,I,Serial,17448,0,20908,0 s
-2,I,Serial,17448,0,20908,0 s
-2,I,Serial,17452,0,20908,0 s
-2,I,Serial,17452,0,20904,0 s
-2,I,Serial,17452,0,20908,1 s
-2,I,Serial,17452,0,20904,0 s
-2,I,Serial,17448,0,20904,0 s
-2,I,Serial,17448,0,20904,0 s
-2,I,Serial,17448,0,20904,0 s
-2,I,Serial,17452,0,20908,0 s
-2,I,Serial,17452,0,20952,1 s
-2,I,Serial,17452,0,20908,0 s
-2,I,Serial,17452,0,20908,0 s
-2,I,Serial,17452,0,21048,0 s
-2,I,Serial,17452,0,21044,0 s
-2,I,Serial,17452,0,20912,0 s
-2,I,Serial,17452,0,20908,1 s
-2,I,Serial,17452,0,20908,0 s
-2,I,Serial,17452,0,20904,0 s
-2,I,Serial,17452,0,20908,1 s
-2,I,Serial,17448,0,20904,0 s
-2,I,Serial,17452,0,20948,1 s
-2,I,Serial,17448,0,21092,1 s
-2,I,Serial,17452,0,21096,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17452,0,21048,0 s
-2,I,Serial,17448,0,21048,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17448,0,21048,1 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17448,0,21048,0 s
-2,I,Serial,17448,0,21048,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17448,0,21048,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17452,0,21096,1 s
-2,I,Serial,17448,0,21048,0 s
-2,I,Serial,17448,0,21048,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17452,0,21048,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17448,0,21048,0 s
-2,I,Serial,17448,0,21048,0 s
-2,I,Serial,17448,0,21048,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17448,0,21048,1 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17448,0,21048,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17452,0,21048,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17448,0,21048,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17452,0,21044,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17452,0,21052,1 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17448,0,21048,0 s
-2,I,Serial,17448,0,21048,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17448,0,21048,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17448,0,21048,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17452,0,21048,0 s
-2,I,Serial,17452,0,21052,1 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17452,0,21048,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17452,0,21048,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17444,0,21044,0 s
-2,I,Serial,17452,0,21048,0 s
-2,I,Serial,17448,0,21048,1 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17448,0,21048,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17452,0,21096,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17452,0,21096,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17448,0,21048,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17448,0,21048,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17452,0,21052,1 s
-2,I,Serial,17452,0,21048,0 s
-2,I,Serial,17448,0,21048,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17452,0,21044,0 s
-2,I,Serial,17448,0,21048,0 s
-2,I,Serial,17448,0,21048,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17452,0,21048,0 s
-2,I,Serial,17452,0,21052,1 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17448,0,20908,0 s
-2,I,Serial,17448,0,21048,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17448,0,21048,0 s
-2,I,Serial,17448,0,21032,0 s
-2,I,Serial,17452,0,21036,0 s
-16,I,Serial,17452,0,21216,0 s
-16,I,Serial,17448,0,21176,0 s
-16,I,Serial,17452,0,21172,0 s
-2,I,Serial,17452,0,21032,0 s
-2,I,Serial,17452,0,21032,0 s
-2,I,Serial,17452,0,21032,0 s
-2,I,Serial,17452,0,21032,0 s
-2,I,Serial,17452,0,21036,0 s
-2,I,Serial,17452,0,21036,0 s
-2,I,Serial,17452,0,21040,0 s
-2,I,Serial,17452,0,21032,0 s
-2,I,Serial,17448,0,21028,0 s
-2,I,Serial,17452,0,21036,0 s
-2,I,Serial,17452,0,21036,0 s
-2,I,Serial,17452,0,21032,0 s
-2,I,Serial,17448,0,21032,0 s
-16,I,Serial,17452,0,21208,5 s
-16,I,Serial,17452,0,21212,5 s
-16,I,Serial,17452,0,21212,4 s
-16,I,Serial,17452,0,21212,5 s
-16,I,Serial,17448,0,21208,5 s
-16,I,Serial,17448,0,21184,5 s
-16,I,Serial,17452,0,21188,5 s
-16,I,Serial,17452,0,21188,6 s
-16,I,Serial,17452,0,21188,5 s
-16,I,Serial,17452,0,21188,5 s
-16,I,Serial,17452,0,21188,5 s
-16,I,Serial,17448,0,21184,12 s
-16,I,Serial,17452,0,21188,13 s
-16,I,Serial,17452,0,21188,12 s
-16,I,Serial,17452,0,21196,15 s
-16,I,Serial,17452,0,21188,45 s
-16,I,Serial,17452,0,21184,46 s
-16,I,Serial,17452,0,21196,15 s
-16,I,Serial,17452,0,21200,15 s
-16,I,Serial,17452,0,21196,15 s
-16,I,Serial,17452,0,21196,15 s
-16,I,Serial,17452,0,21196,15 s
-16,I,Serial,17448,0,21188,14 s
-16,I,Serial,17452,0,21156,15 s
-16,I,Serial,17452,0,21152,14 s
-16,I,Serial,17452,0,21156,15 s
-16,I,Serial,17452,0,21156,15 s
-16,I,Serial,17452,0,21156,14 s
-16,I,Serial,17452,0,21156,14 s
-16,I,Serial,17456,0,21068,15 s
-2,I,Serial,17452,0,18868,0 s
-2,I,Serial,17456,0,18872,0 s
-2,I,Serial,17456,0,18868,0 s
-2,I,Serial,17456,0,18872,0 s
-2,I,Serial,17452,0,18868,1 s
-2,I,Serial,17456,0,18868,0 s
-2,I,Serial,17456,0,18872,0 s
-2,I,Serial,17456,0,20852,0 s
-2,I,Serial,17456,0,20852,0 s
-2,I,Serial,17452,0,20916,1 s
-2,I,Serial,17456,0,20920,0 s
-2,I,Serial,17452,0,20916,0 s
-2,I,Serial,17456,0,20920,0 s
-2,I,Serial,17456,0,20920,0 s
-2,I,Serial,17456,0,20920,0 s
-2,I,Serial,17456,0,20920,0 s
-2,I,Serial,17456,0,21056,0 s
-2,I,Serial,17456,0,20920,0 s
-2,I,Serial,17456,0,20920,0 s
-2,I,Serial,17456,0,20920,0 s
-2,I,Serial,17456,0,20852,0 s
-2,I,Serial,17456,0,20920,0 s
-2,I,Serial,17456,0,20920,0 s
-2,I,Serial,17456,0,21080,0 s
-2,I,Serial,17456,0,21076,0 s
-2,I,Serial,17456,0,21076,0 s
-2,I,Serial,17456,0,20920,1 s
-2,I,Serial,17452,0,20916,0 s
-2,I,Serial,17456,0,20920,0 s
-2,I,Serial,17452,0,20904,0 s
-2,I,Serial,17456,0,20920,0 s
-2,I,Serial,17452,0,20916,0 s
-2,I,Serial,17452,0,20916,0 s
-2,I,Serial,17456,0,20920,0 s
-2,I,Serial,17456,0,20912,0 s
-2,I,Serial,17452,0,20916,0 s
-2,I,Serial,17456,0,20920,0 s
-2,I,Serial,17456,0,20916,0 s
-2,I,Serial,17456,0,20920,0 s
-2,I,Serial,17456,0,20852,0 s
-2,I,Serial,17456,0,20920,0 s
-2,I,Serial,17452,0,20916,0 s
-2,I,Serial,17456,0,20936,0 s
-2,I,Serial,17456,0,20920,0 s
-2,I,Serial,17452,0,20916,0 s
-2,I,Serial,17456,0,20840,0 s
-2,I,Serial,17456,0,20920,1 s
-2,I,Serial,17456,0,20852,0 s
-2,I,Serial,17456,0,18868,0 s
-2,I,Serial,17452,0,21060,0 s
-2,I,Serial,17456,0,21064,0 s
-2,I,Serial,17456,0,21064,0 s
-2,I,Serial,17456,0,21056,0 s
-2,I,Serial,17456,0,21056,1 s
-2,I,Serial,17456,0,18868,0 s
-2,I,Serial,17456,0,21060,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17452,0,21060,0 s
-2,I,Serial,17456,0,21056,0 s
-2,I,Serial,17456,0,21056,1 s
-2,I,Serial,17456,0,21064,0 s
-2,I,Serial,17456,0,18876,0 s
-2,I,Serial,17456,0,18872,1 s
-2,I,Serial,17456,0,18872,1 s
-2,I,Serial,17456,0,18872,0 s
-2,I,Serial,17452,0,20920,0 s
-2,I,Serial,17456,0,20920,0 s
-2,I,Serial,17456,0,20916,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17452,0,21072,0 s
-2,I,Serial,17456,0,21056,0 s
-2,I,Serial,17456,0,21056,0 s
-2,I,Serial,17456,0,20920,0 s
-2,I,Serial,17456,0,21060,0 s
-2,I,Serial,17456,0,21060,1 s
-2,I,Serial,17456,0,21060,0 s
-2,I,Serial,17456,0,21060,0 s
-2,I,Serial,17456,0,21060,0 s
-2,I,Serial,17456,0,21056,0 s
-2,I,Serial,17456,0,21060,0 s
-2,I,Serial,17456,0,21060,0 s
-2,I,Serial,17456,0,21060,0 s
-2,I,Serial,17456,0,21060,0 s
-2,I,Serial,17456,0,21060,0 s
-2,I,Serial,17456,0,21060,0 s
-2,I,Serial,17456,0,21060,1 s
-2,I,Serial,17456,0,21060,0 s
-2,I,Serial,17456,0,21060,1 s
-2,I,Serial,17456,0,21060,0 s
-2,I,Serial,17452,0,21056,0 s
-2,I,Serial,17456,0,21060,0 s
-2,I,Serial,17456,0,20924,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17456,0,21064,0 s
-2,I,Serial,17456,0,20924,0 s
-2,I,Serial,17456,0,21060,0 s
-2,I,Serial,17456,0,21060,3 s
-2,I,Serial,17456,0,21060,0 s
-2,I,Serial,17456,0,21060,0 s
-2,I,Serial,17452,0,21060,0 s
-2,I,Serial,17452,0,21048,1 s
-2,I,Serial,17452,0,20920,0 s
-2,I,Serial,17456,0,20924,0 s
-2,I,Serial,17452,0,21060,0 s
-2,I,Serial,17456,0,21060,0 s
-2,I,Serial,17456,0,20920,0 s
-2,I,Serial,17456,0,21056,0 s
-2,I,Serial,17456,0,20852,0 s
-2,I,Serial,17456,0,20852,0 s
-2,I,Serial,17452,0,20844,0 s
-2,I,Serial,17452,0,20848,0 s
-2,I,Serial,17456,0,21060,1 s
-2,I,Serial,17456,0,21060,2 s
-16,I,Serial,17456,0,21212,59 s
-16,I,Serial,17456,0,21212,17 s
-16,I,Serial,17456,0,21212,17 s
-2,I,Serial,17452,0,21052,2 s
-16,I,Serial,17456,0,21208,14 s
-2,I,Serial,17456,0,21060,2 s
-16,I,Serial,17456,0,21176,0 s
-16,I,Serial,17456,0,21196,0 s
-16,I,Serial,17456,0,21196,0 s
-16,I,Serial,17452,0,21192,0 s
-16,I,Serial,17456,0,21192,1 s
-16,I,Serial,17456,0,21196,0 s
-16,I,Serial,17456,0,21180,0 s
-16,I,Serial,17452,0,21188,0 s
-16,I,Serial,17456,0,21176,0 s
-16,I,Serial,17456,0,21176,0 s
-16,I,Serial,17456,0,21180,0 s
-16,I,Serial,17456,0,21180,0 s
-2,I,Serial,17456,0,21060,0 s
-2,I,Serial,17456,0,21060,1 s
-16,I,Serial,17456,0,21180,1 s
-16,I,Serial,17456,0,21196,0 s
-16,I,Serial,17456,0,21180,1 s
-16,I,Serial,17448,0,21172,0 s
-16,I,Serial,17452,0,21176,0 s
-16,I,Serial,17456,0,21180,0 s
-16,I,Serial,17456,0,21180,0 s
-16,I,Serial,17452,0,21208,16 s
-16,I,Serial,17456,0,21180,0 s
-2,I,Serial,17456,0,21060,0 s
-16,I,Serial,17452,0,21176,1 s
-16,I,Serial,17456,0,21196,1 s
-16,I,Serial,17456,0,21180,0 s
-16,I,Serial,17456,0,21180,1 s
-16,I,Serial,17456,0,21180,0 s
-16,I,Serial,17456,0,21180,0 s
-16,I,Serial,17456,0,21180,0 s
-16,I,Serial,17456,0,21176,0 s
-16,I,Serial,17456,0,21180,0 s
-16,I,Serial,17456,0,21176,0 s
-16,I,Serial,17452,0,21176,0 s
-16,I,Serial,17456,0,21180,0 s
-2,I,Serial,17456,0,21060,1 s
-2,I,Serial,17452,0,21056,0 s
-2,I,Serial,17456,0,21056,0 s
-2,I,Serial,17456,0,21060,0 s
-2,I,Serial,17456,0,21060,2 s
-16,I,Serial,17456,0,21180,0 s
-16,I,Serial,17456,0,21180,0 s
-2,I,Serial,17456,0,21060,0 s
-2,I,Serial,17456,0,21060,2 s
-16,I,Serial,17456,0,21176,0 s
-16,I,Serial,17456,0,21040,0 s
-2,I,Serial,17456,0,21060,0 s
-2,I,Serial,17452,0,21060,0 s
-2,I,Serial,17456,0,21060,0 s
-2,I,Serial,17456,0,21060,0 s
-2,I,Serial,17456,0,21060,0 s
-16,I,Serial,17456,0,21180,0 s
-16,I,Serial,17456,0,21180,1 s
-16,I,Serial,17456,0,21180,1 s
-16,I,Serial,17452,0,21176,1 s
-16,I,Serial,17456,0,21180,0 s
-16,I,Serial,17456,0,21180,1 s
-16,I,Serial,17456,0,21180,0 s
-16,I,Serial,17456,0,21180,0 s
-16,I,Serial,17456,0,21172,0 s
-2,I,Serial,17456,0,21060,0 s
-2,I,Serial,17456,0,21060,2 s
-16,I,Serial,17456,0,21176,0 s
-16,I,Serial,17456,0,21180,1 s
-16,I,Serial,17452,0,21172,0 s
-16,I,Serial,17456,0,21180,0 s
-16,I,Serial,17452,0,21176,0 s
-16,I,Serial,17456,0,21196,0 s
-16,I,Serial,17456,0,21196,0 s
-16,I,Serial,17456,0,21196,0 s
-16,I,Serial,17452,0,21208,0 s
-2,I,Serial,17456,0,21060,0 s
-16,I,Serial,17456,0,21180,0 s
-16,I,Serial,17456,0,21180,0 s
-16,I,Serial,17456,0,21180,0 s
-16,I,Serial,17452,0,21100,0 s
-16,I,Serial,17448,0,21096,1 s
-16,I,Serial,17452,0,21156,0 s
-16,I,Serial,17452,0,21156,16 s
-16,I,Serial,17452,0,21156,1 s
-16,I,Serial,17452,0,21156,0 s
-16,I,Serial,17452,0,21156,0 s
-16,I,Serial,17452,0,21156,0 s
-16,I,Serial,17456,0,21176,0 s
-16,I,Serial,17456,0,21176,0 s
-16,I,Serial,17456,0,21176,1 s
-16,I,Serial,17456,0,21180,0 s
-16,I,Serial,17456,0,21176,0 s
-16,I,Serial,17456,0,21180,0 s
-16,I,Serial,17456,0,21176,1 s
-2,I,Serial,17456,0,21060,0 s
-2,I,Serial,17456,0,21064,0 s
-2,I,Serial,17456,0,21060,0 s
-2,I,Serial,17456,0,21064,0 s
-2,I,Serial,17456,0,21060,1 s
-2,I,Serial,17456,0,21056,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21056,0 s
-2,I,Serial,17456,0,21060,1 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17456,0,21052,1 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17452,0,21052,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21056,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21056,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17452,0,21048,1 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17452,0,21048,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17452,0,21048,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21052,1 s
-2,I,Serial,17456,0,21048,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21048,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21048,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,21052,0 s
-2,I,Serial,17456,0,20988,0 s
-2,I,Serial,17456,0,20988,0 s
-2,I,Serial,17456,0,21060,0 s
-2,I,Serial,17452,0,21056,0 s
-2,I,Serial,17456,0,21056,0 s
-2,I,Serial,17456,0,21056,0 s
-16,I,Serial,17456,0,21172,20 s
-16,I,Serial,17452,0,21168,19 s
-16,I,Serial,17456,0,21172,39 s
-16,I,Serial,17456,0,21168,47 s
-16,I,Serial,17456,0,21172,48 s
-16,I,Serial,17456,0,21172,20 s
-2,I,Serial,17456,0,21052,0 s
-16,I,Serial,17456,0,21164,12 s
-16,I,Serial,17456,0,21168,12 s
-16,I,Serial,17456,0,21172,11 s
-2,I,Serial,17456,0,21056,2 s
-2,I,Serial,17456,0,21052,2 s
-16,I,Serial,17456,0,21168,12 s
-16,I,Serial,17456,0,21172,12 s
-16,I,Serial,17456,0,21172,12 s
-16,I,Serial,17456,0,21172,11 s
-16,I,Serial,17456,0,21172,11 s
-2,I,Serial,17456,0,21048,3 s
-2,I,Serial,17452,0,21932,2 s
-2,I,Serial,17448,0,21036,0 s
-2,I,Serial,17452,0,21040,0 s
-2,I,Serial,17452,0,21040,0 s
-2,I,Serial,17452,0,21044,0 s
-2,I,Serial,17452,0,21044,0 s
-2,I,Serial,17452,0,21036,1 s
-2,I,Serial,17452,0,21036,0 s
-2,I,Serial,17452,0,21036,0 s
-2,I,Serial,17452,0,21036,0 s
-2,I,Serial,17452,0,21036,0 s
-2,I,Serial,17448,0,21032,0 s
-2,I,Serial,17452,0,21036,0 s
-2,I,Serial,17452,0,21036,1 s
-2,I,Serial,17452,0,21036,0 s
-2,I,Serial,17452,0,21032,0 s
-2,I,Serial,17452,0,21036,0 s
-2,I,Serial,17452,0,21036,0 s
-2,I,Serial,17452,0,21028,0 s
-16,I,Serial,17452,0,21136,8 s
-2,I,Serial,17452,0,21036,0 s
-2,I,Serial,17452,0,21036,0 s
-2,I,Serial,17452,0,21036,0 s
-2,I,Serial,17452,0,21036,0 s
-2,I,Serial,17452,0,21036,0 s
-2,I,Serial,17452,0,21040,0 s
-2,I,Serial,17452,0,21036,0 s
-2,I,Serial,17452,0,21040,0 s
-2,I,Serial,17452,0,21036,0 s
-2,I,Serial,17452,0,21036,0 s
-2,I,Serial,17452,0,21036,0 s
-2,I,Serial,17452,0,21040,0 s
-2,I,Serial,17452,0,21040,0 s
-2,I,Serial,17452,0,21196,0 s
-2,I,Serial,17452,0,21192,1 s
-2,I,Serial,17448,0,21188,0 s
-2,I,Serial,17452,0,21188,0 s
-2,I,Serial,17452,0,21192,0 s
-2,I,Serial,17452,0,21188,0 s
-2,I,Serial,17452,0,21188,0 s
-2,I,Serial,17452,0,21188,0 s
-2,I,Serial,17452,0,21188,0 s
-2,I,Serial,17452,0,21188,0 s
-2,I,Serial,17452,0,21188,0 s
-2,I,Serial,17452,0,21112,0 s
-2,I,Serial,17452,0,21112,0 s
-2,I,Serial,17448,0,21104,0 s
-2,I,Serial,17452,0,21112,1 s
-2,I,Serial,17452,0,21108,0 s
-2,I,Serial,17452,0,21112,0 s
-2,I,Serial,17452,0,21104,0 s
-2,I,Serial,17448,0,21104,0 s
-2,I,Serial,17452,0,21108,0 s
-2,I,Serial,17452,0,21108,0 s
-2,I,Serial,17452,0,21108,0 s
-2,I,Serial,17452,0,21108,0 s
-2,I,Serial,17452,0,21108,0 s
-2,I,Serial,17452,0,21108,0 s
-2,I,Serial,17448,0,21108,0 s
-2,I,Serial,17448,0,21112,1 s
-2,I,Serial,17452,0,21112,0 s
-2,I,Serial,17452,0,21112,0 s
-2,I,Serial,17452,0,21112,0 s
-2,I,Serial,17452,0,21112,0 s
-2,I,Serial,17452,0,21112,0 s
-2,I,Serial,17452,0,21112,0 s
-2,I,Serial,17452,0,21112,0 s
-2,I,Serial,17452,0,21112,0 s
-2,I,Serial,17452,0,21112,0 s
-2,I,Serial,17452,0,21112,0 s
-2,I,Serial,17452,0,21108,0 s
-2,I,Serial,17452,0,21112,0 s
-2,I,Serial,17452,0,21112,0 s
-2,I,Serial,17448,0,21108,0 s
-2,I,Serial,17452,0,21116,1 s
-2,I,Serial,17448,0,21028,0 s
-16,I,Serial,17448,0,21208,0 s
-16,I,Serial,17452,0,21212,0 s
-2,I,Serial,17452,0,21108,0 s
-2,I,Serial,17452,0,21120,0 s
-2,D,Serial,17452,3716,21172,0 s
-16,D,Serial,17452,7356,24812,0 s
-16,I,Serial,17452,0,21216,0 s
-16,D,Serial,17452,7316,24772,0 s
-16,D,Serial,17452,7332,24788,0 s
-16,D,Serial,17452,7348,24804,0 s
-16,D,Serial,17452,6168,23648,0 s
-16,I,Serial,17448,0,21176,0 s
-2,I,Serial,17452,0,21036,0 s
-16,D,Serial,17448,6168,23644,0 s
-16,D,Serial,17452,6172,23652,0 s
-16,D,Serial,17452,7324,24780,0 s
-16,D,Serial,17452,7348,24804,1 s
-16,I,Serial,17452,0,21216,1 s
-16,I,Serial,17452,0,21216,0 s
-16,D,Serial,17452,7356,24812,1 s
-16,I,Serial,17452,0,21216,1 s
-16,I,Serial,17452,0,21200,0 s
-16,I,Serial,17452,0,21204,0 s
-16,I,Serial,17452,0,21232,1 s
-16,I,Serial,17452,0,21228,0 s
-16,I,Serial,17452,0,21232,0 s
-16,I,Serial,17448,0,21192,0 s
-16,I,Serial,17452,0,21168,0 s
-16,I,Serial,17452,0,21204,0 s
-16,I,Serial,17452,0,21232,1 s
-16,I,Serial,17452,0,21232,0 s
-16,I,Serial,17452,0,21228,0 s
-16,I,Serial,17452,0,21204,1 s
-16,I,Serial,17452,0,21204,1 s
-16,I,Serial,17452,0,21200,0 s
-16,I,Serial,17452,0,21196,1 s
-2,I,Serial,17452,0,21044,0 s
-2,D,Serial,17452,3708,21172,1 s
-16,D,Serial,17452,7324,24780,0 s
-16,D,Serial,17452,7316,24772,0 s
-16,D,Serial,17452,7328,24784,0 s
-16,I,Serial,17452,0,21200,6 s
-16,I,Serial,17452,0,21204,0 s
-16,D,Serial,17452,7308,24764,0 s
-16,D,Serial,17448,7312,17448,24764,0 s
-16,D,Serial,17452,7296,0,24752,0 s
-16,D,Serial,17452,7316,0,24772,0 s
-16,D,Serial,17452,7308,0,24764,1 s
-16,D,Serial,17452,7264,0,24720,0 s
-16,D,Serial,17452,7296,0,24752,0 s
-16,D,Serial,17452,7272,0,24728,0 s
-16,D,Serial,17452,7276,0,24732,0 s
-2,D,Serial,17452,3712,0,21172,0 s
-2,D,Serial,17452,3704,0,21168,0 s
-16,D,Serial,17452,7268,0,24724,1 s
-16,D,Serial,17448,7308,0,24760,1 s
-272,D,Serial,17452,124156,0,141608,14 s
-2,I,Serial,17452,1268,0,21116,0 s
-2,I,Serial,17452,1268,0,21112,0 s
-2,I,Serial,17452,1268,0,21112,0 s
-2,I,Serial,17452,1272,0,21116,0 s
-2,I,Serial,17452,1268,0,21116,0 s
-2,I,Serial,17452,1268,0,21124,0 s
-2,I,Serial,17452,1268,0,21120,0 s
-2,I,Serial,17452,1268,0,21040,0 s
-2,I,Serial,17452,1268,0,21040,0 s
-2,I,Serial,17452,1264,0,21040,0 s
-2,I,Serial,17452,1268,0,21040,0 s
-2,I,Serial,17456,1264,0,21044,0 s
-2,I,Serial,17452,1268,0,21040,0 s
-2,I,Serial,17452,1272,0,21044,1 s
-2,I,Serial,17452,1272,0,21044,0 s
-2,I,Serial,17452,1272,0,21044,0 s
-2,I,Serial,17452,1268,0,21040,1 s
-2,I,Serial,17452,1272,0,21044,0 s
-2,I,Serial,17452,1268,0,21040,0 s
-2,I,Serial,17448,1268,0,21036,0 s
-2,I,Serial,17452,1268,0,21044,0 s
-2,I,Serial,17452,1272,0,21048,0 s
-2,I,Serial,17452,1268,0,21040,1 s
-2,I,Serial,17452,1268,0,21044,0 s
-2,I,Serial,17452,1268,0,21044,0 s
-2,I,Serial,17452,1268,0,21044,1 s
-2,I,Serial,17452,1268,0,21044,0 s
-2,I,Serial,17448,1268,0,21040,0 s
-2,I,Serial,17452,1264,0,21040,0 s
-2,I,Serial,17452,1268,0,21040,0 s
-2,I,Serial,17452,1268,0,21040,0 s
-2,I,Serial,17456,1268,0,21048,0 s
-2,I,Serial,17452,1268,0,21044,0 s
-2,I,Serial,17452,3592,0,21052,10 s
-2,I,Serial,17452,3580,0,21040,7 s
-2,I,Serial,17452,3580,0,21040,8 s
-2,I,Serial,17452,3572,0,21032,9 s
-16,I,Serial,17452,3632,0,21084,21203 s
-2,I,Serial,17452,3572,0,21032,9 s
-16,I,Serial,17452,3740,0,21200,0 s
-2,I,Serial,17452,3580,0,21044,0 s
-2,I,Serial,17452,3572,0,21032,10 s
-2,I,Serial,17448,3572,0,21028,9 s
-2,I,Serial,17452,1272,0,21044,0 s
-2,I,Serial,17452,1268,0,21040,1 s
-2,I,Serial,17452,1268,0,21032,0 s
-2,I,Serial,17452,3584,0,21044,17 s
-16,I,Serial,17452,1296,0,21096,208 s
-2,I,Serial,17452,1272,0,21032,0 s
-2,I,Serial,17452,1272,0,21032,0 s
-2,I,Serial,17452,1272,0,21032,0 s
-2,I,Serial,17452,1272,0,21032,0 s
-16,I,Serial,17456,1300,0,21100,202 s
-2,I,Serial,17452,1272,0,21032,0 s
-16,I,Serial,17452,1304,0,21096,204 s
-2,I,Serial,17452,1272,0,21032,1 s
-2,I,Serial,17452,3572,0,21032,10 s
-2,I,Serial,17452,5356,0,22828,9 s
-2,I,Serial,17452,1272,0,21052,1 s
-2,I,Serial,17456,1268,0,21052,0 s
-16,I,Serial,17448,1304,0,22240,194 s
-2,I,Serial,17452,1272,0,21060,0 s
-2,I,Serial,17452,1272,0,21060,0 s
-2,I,Serial,17452,1272,0,21060,0 s
-2,I,Serial,17452,6240,0,23724,2 s
-16,I,Serial,17456,1300,0,22320,2 s
-16,I,Serial,17452,1304,0,22316,2 s
-16,I,Serial,17456,1300,0,22320,0 s
-16,I,Serial,17452,1304,0,21092,1 s
-2,I,Serial,17452,1272,0,21032,0 s
-2,I,Serial,17452,1268,0,21032,0 s
-2,I,Serial,17452,1272,0,21032,0 s
-16,I,Serial,17452,1304,0,21096,1 s
-16,I,Serial,17452,1304,0,21096,1 s
-16,I,Serial,17452,1304,0,21096,1 s
-2,I,Serial,17456,1268,0,21036,0 s
-2,I,Serial,17452,3576,0,21036,2 s
-2,I,Serial,17452,1272,0,21032,1 s
-16,I,Serial,17452,1300,0,21096,1 s
-16,I,Serial,17452,3636,0,21096,90 s
-2,I,Serial,17452,3576,0,21036,2 s
-16,I,Serial,17452,3636,0,21096,81 s
-2,I,Serial,17452,1268,2280,21028,0 s
-2,I,Serial,17452,3572,0,21032,2 s
-16,I,Serial,17448,3632,0,21088,84 s
-2,I,Serial,17452,3568,0,21028,2 s
-2,I,Serial,17452,3568,0,21028,2 s
-16,I,Serial,17452,3600,0,21060,83 s
-16,I,Serial,17452,3600,0,21060,83 s
-16,D,Serial,17452,7276,0,24732,0 s
-16,D,Serial,17452,7292,0,24748,1 s
-16,I,Serial,17452,3740,0,21200,1 s
-16,D,Serial,17452,7288,0,24744,1 s
-16,I,Serial,17452,3740,0,21200,0 s
-16,I,Serial,17452,3600,0,21060,87 s
-16,I,Serial,17452,3744,0,21204,1 s
-16,H,Serial,17452,3604,0,21068,85 s
-16,D,Serial,17452,7296,0,24752,0 s
-16,D,Serial,17456,7272,0,24732,1 s
-16,D,Serial,17452,7268,0,24724, 100 frequencies, 0 s
-16,D,Serial,17456,7296,0,24760, 100 frequencies, 0 s
-16,D,Serial,17452,1300,4812,23596, 1 frequency, 1 s
-16,H,Serial,17452,1300,2280,21064, 1 frequency, 1 s
-16,I,Serial,17452,1300,2376,21164, 1 frequency, 0 s
-16,I,Serial,17452,3736,0,21200, 100 frequencies, 0 s
-16,H,Serial,17452,3600,0,21064, 100 frequencies, 85 s
-16,H,Serial,17456,1296,2284,21068, 1 frequency, 1 s
-16,H,Serial,17456,1300,2284,21072, 1 frequency, 1 s
-2,E,Serial,17456,1268,2408,21172, 1 frequency, 0 s
-16,E,Serial,17452,1300,4788,23572, 1 frequency, 0 s
-2,E,Serial,17456,1272,2400,21168, 1 frequency, 0 s
-2,E,Serial,17456,1268,2404,21172, 1 frequency, 0 s
-2,E,Serial,17452,1268,2408,21172, 1 frequency, 1 s
-2,E,Serial,17452,1268,2408,21172, 1 frequency, 0 s
-2,E,Serial,17452,1272,2408,21172, 1 frequency, 0 s
-2,E,Serial,17452,1272,2408,21172, 1 frequency, 0 s
-2,E,Serial,17452,1272,2408,21172, 1 frequency, 0 s
-2,E,Serial,17452,1272,2412,21180, 1 frequency, 0 s
-2,E,Serial,17456,1268,2412,21180, 1 frequency, 1 s
-16,E,Serial,17452,1304,4776,23564, 1 frequency, 0 s
-16,E,Serial,17456,7260,0,24720, 100 frequencies, 4 s
-16,D,Serial,17452,1300,4776,23560, 1 frequency, 0 s
-16,D,Serial,17452,7236,0,24692, 100 frequencies, 0 s
-2,D,Serial,17456,3700,0,21168, 100 frequencies, 0 s
-16,D,Serial,17456,1296,4776,23560, 1 frequency, 0 s
-16,D,Serial,17452,1300,4776,23560, 1 frequency, 0 s
-16,D,Serial,17452,1300,4776,23560, 1 frequency, 0 s
-272,D,Serial,17456,20084,87064,124632, 1 frequency, 1 s
-272,E,Serial,17452,20088,87084,124656, 1 frequency, 1 s
-272,I,Serial,17456,20088,15264,52808, 1 frequency, 1 s
-2,D,Serial,17452,1268,2408,21172, 1 frequency, 0 s
-2,E,Serial,17452,1268,2404,21172, 1 frequency, 0 s
-2,E,Serial,17452,1268,2404,21172, 1 frequency, 0 s
-16,E,Serial,17452,1300,4748,23536, 1 frequency, 0 s
-16,D,Serial,17452,1296,4776,23556, 1 frequency, 0 s
-16,D,Serial,17452,7228,0,24684, 100 frequencies, 1 s
-16,D,Serial,17452,7236,0,24692, 100 frequencies, 0 s
-16,E,Serial,17452,7252,0,24708, 100 frequencies, 1 s
-16,E,Serial,17456,7232,0,24692, 100 frequencies, 1 s
-16,H,Serial,17452,3608,0,21068, 100 frequencies, 84 s
-16,I,Serial,17452,3740,0,21200, 100 frequencies, 0 s
-16,I,Serial,17452,3680,0,21140, 100 frequencies, 1 s
-16,I,Serial,17452,3680,0,21140, 100 frequencies, 1 s
-16,I,Serial,17456,3676,0,21140, 100 frequencies, 0 s
-16,I,Serial,17452,3680,0,21140, 100 frequencies, 0 s
-16,I,Serial,17456,3680,0,21144, 100 frequencies, 1 s
-16,E,Serial,17456,7224,0,24684, 100 frequencies, 1 s
-16,E,Serial,17456,1300,4772,23556, 1 frequency, 0 s
-16,E,Serial,17452,1300,4780,23560, 1 frequency, 0 s
-2,D,Serial,17456,1268,2400,21168, 1 frequency, 0 s
-2,E,Serial,17456,1264,2408,21168, 1 frequency, 0 s
-2,I,Serial,17456,1264,2288,21044, 1 frequency, 0 s
-2,H,Serial,17452,1268,2292,21040, 1 frequency, 0 s
-16,D,Serial,17456,1300,4776,23564, 1 frequency, 0 s
-16,E,Serial,17452,1300,4792,23572, 1 frequency, 0 s
-16,I,Serial,17456,1296,2356,21140, 1 frequency, 0 s
-16,H,Serial,17452,1300,2288,21068, 1 frequency, 0 s
-16,H,Serial,17448,3612,0,21068, 100 frequencies, 84 s
-16,I,Serial,17452,3684,0,21144, 100 frequencies, 0 s
-16,D,Serial,17452,7228,0,24684, 100 frequencies, 1 s
-16,E,Serial,17456,7244,0,24704, 100 frequencies, 1 s
-16,E,Serial,17456,7256,0,24716, 100 frequencies, 2 s
-16,E,Serial,17456,1296,4780,23560, 1 frequency, 0 s
-16,E,Serial,17456,1296,4792,23572, 1 frequency, 0 s
-16,E,Serial,17452,7264,0,24720, 100 frequencies, 3 s
-16,D,Serial,17452,7264,0,24720, 100 frequencies, 1 s
-16,D,Serial,17452,7228,0,24684, 100 frequencies, 1 s
-16,D,Serial,17452,7264,0,24720, 100 frequencies, 0 s
-16,D,Serial,17452,7244,0,24700, 100 frequencies, 0 s
-16,D,Serial,17452,7232,0,24688, 100 frequencies, 0 s
-16,H,Serial,17456,3608,0,21072, 100 frequencies, 87 s
-16,D,Serial,17456,7232,0,24692, 100 frequencies, 1 s
-2,D,Serial,17452,3712,0,21176, 100 frequencies, 0 s
-2,D,Serial,17452,3712,0,21176, 100 frequencies, 0 s
-2,D,Serial,17456,3704,0,21172, 100 frequencies, 0 s
-16,D,Serial,17452,7260,0,24716, 100 frequencies, 0 s
-16,D,Serial,17452,7272,0,24728, 100 frequencies, 0 s
-16,D,Serial,17456,7228,0,24688, 100 frequencies, 0 s
-16,D,Serial,17452,7236,0,24692, 100 frequencies, 0 s
-16,I,Serial,17452,3684,0,21144, 100 frequencies, 0 s
-16,I,Serial,17452,3684,0,21144, 100 frequencies, 0 s
-16,I,Serial,17448,3684,0,21140, 100 frequencies, 0 s
-16,I,Serial,17456,3684,0,21148, 100 frequencies, 0 s
-16,H,Serial,17456,3608,0,21072, 100 frequencies, 86 s
-16,I,Serial,17456,3676,0,21140, 100 frequencies, 1 s
-16,I,Serial,17452,21140, 1 frequency, 0 s
-2000,D,Serial,17456,3077112, 100 frequencies, 3230 s
-16,D,Serial,17452,24692, 100 frequencies, 0 s
-16,D,Serial,17452,24684, 100 frequencies, 0 s
-272,D,Serial,17452,135696, 100 frequencies, 11 s
-16,I,Serial,17452,21140, 100 frequencies, 0 s
-16,I,Serial,17456,21140, 100 frequencies, 0 s
-16,I,Serial,17456,21140, 100 frequencies, 0 s
-16,I,Serial,17452,21140, 100 frequencies, 0 s
-16,I,Serial,17456,21140, 100 frequencies, 0 s
-16,I,Serial,17456,21140, 100 frequencies, 1 s
-16,D,Serial,17452,24708, 100 frequencies, 1 s
-16,I,Serial,17452,21136, 100 frequencies, 0 s
-16,H,Serial,17452,21060, 100 frequencies, 84 s
-16,I,Serial,17448,21136, 100 frequencies, 0 s
-16,I,Serial,17452,21132, 100 frequencies, 0 s
-16,D,Serial,17452,24712, 100 frequencies, 0 s
-16,I,Serial,17452,21136, 100 frequencies, 0 s
-16,H,Serial,17452,21060, 100 frequencies, 84 s
-16,D,Serial,17452,24720, 100 frequencies, 0 s
-16,D,Serial,17452,24728, 100 frequencies, 0 s
-16,D,Serial,17452,24704, 100 frequencies, 0 s
-16,D,Serial,17452,23564, 1 frequency, 1 s
-16,D,Serial,17452,23536, 1 frequency, 1 s
-16,I,Serial,17452,21140, 1 frequency, 0 s
+
+16,D,Parallel,17452,23852, 1 frequency, 0 s
+16,D,Parallel,17452,25008, 100 frequencies, 1 s
+16,D,Parallel,17452,25032, 100 frequencies, 0 s
+16,H,Parallel,17452,21652, 1 frequency, 1 s
+16,I,Parallel,17452,22340, 1 frequency, 0 s
+16,H,Parallel,17452,21660, 1 frequency, 1 s
+2,H,Parallel,17452,21584, 1 frequency, 0 s
+16,H,Parallel,17452,21664, 1 frequency, 1 s
+16,H,Serial,17456,21064, 1 frequency, 1 s
+16,H,Serial,17452,21064, 1 frequency, 1 s
+16,H,Parallel,17456,21676, 1 frequency, 1 s
 16,H,Serial,17452,21060, 1 frequency, 1 s
-16,D,Parallel,17452,23872, 1 frequency, 0 s
-16,I,Parallel,17452,22336, 1 frequency, 0 s
+9,D,Serial,17452,21736, 1 frequency, 0 s
+9,D,Serial,17452,21732, 100 frequencies, 0 s
+9,D,Serial,17452,21732, 100 frequencies, 0 s
+9,I,Serial,17452,21064, 100 frequencies, 0 s
+9,D,Serial,17452,21744, 1 frequency, 0 s
+16,D,Serial,17452,23568, 1 frequency, 0 s
+16,D,Serial,17452,23556, 1 frequency, 0 s
+16,D,Serial,17452,23568, 1 frequency, 0 s
+9,D,Serial,17448,21728, 1 frequency, 0 s
+9,D,Serial,17452,20752, 1 frequency, 0 s
+9,D,Serial,17452,20752, 100 frequencies, 1 s
+9,D,Serial,17452,20748, 100 frequencies, 0 s
+9,D,Serial,17452,21752, 100 frequencies, 1 s
+9,D,Serial,17452,21732, 100 frequencies, 0 s
+9,D,Serial,17452,21728, 100 frequencies, 0 s
+9,D,Serial,17452,21732, 100 frequencies, 0 s
+9,D,Serial,17452,21740, 100 frequencies, 0 s
+9,D,Serial,17452,21748, 1 frequency, 0 s
+9,D,Serial,17452,21744, 1 frequency, 0 s
+9,D,Serial,17452,21740, 1 frequency, 0 s
+9,D,Serial,17452,21732, 1 frequency, 1 s
+9,D,Serial,17452,21724, 100 frequencies, 1 s
+16,D,Serial,17452,24716, 100 frequencies, 1 s
+16,D,Serial,17452,24724, 100 frequencies, 1 s
+9,D,Serial,17452,21736, 100 frequencies, 0 s
+9,D,Serial,17448,21740, 100 frequencies, 0 s
+9,D,Serial,17452,21728, 1 frequency, 0 s
+16,D,Serial,17452,23560, 1 frequency, 0 s
+9,D,Serial,17452,21736, 100 frequencies, 0 s
+9,D,Serial,17448,21724, 1 frequency, 0 s
+16,D,Serial,17452,24720, 100 frequencies, 1 s
+16,D,Serial,17456,24688, 100 frequencies, 1 s
+9,D,Serial,17456,21744, 100 frequencies, 0 s
+9,D,Serial,17452,21740, 100 frequencies, 0 s
+16,D,Serial,17452,24684, 100 frequencies, 0 s
+16,D,Serial,17456,24708, 100 frequencies, 1 s
+9,D,Serial,17460,21752, 100 frequencies, 0 s
+9,D,Serial,17456,21736, 100 frequencies, 1 s
+16,D,Serial,17456,24704, 100 frequencies, 0 s
+9,D,Serial,17456,21748, 100 frequencies, 0 s
+9,D,Serial,17456,21736, 100 frequencies, 0 s
+9,D,Serial,17456,21748, 100 frequencies, 0 s
+9,D,Serial,17452,21740, 100 frequencies, 1 s
+16,D,Serial,17456,24724, 100 frequencies, 0 s
+16,D,Serial,17452,24712, 100 frequencies, 0 s
+16,D,Parallel,17452,25012, 100 frequencies, 1 s
+9,I,Parallel,17452,21964, 100 frequencies, 0 s
+9,D,Parallel,17456,22032, 1 frequency, 1 s
+9,D,Parallel,17456,22032, 1 frequency, 0 s
+9,D,Parallel,17452,22028, 1 frequency, 0 s
+9,D,Parallel,17456,22032, 1 frequency, 0 s
+9,D,Serial,17448,21728, 1 frequency, 0 s
+9,D,Serial,17456,21732, 1 frequency, 0 s
+16,D,Serial,17452,21404, 1 frequency, 0 s
+16,D,Serial,17452,21396, 1 frequency, 0 s
+16,D,Serial,17452,21396, 1 frequency, 0 s
+16,D,Serial,17452,21392, 1 frequency, 0 s
+16,D,Serial,17452,21408, 1 frequency, 0 s
+16,D,Serial,17452,23588, 1 frequency, 0 s
+16,D,Serial,17456,23552, 1 frequency, 0 s
+16,D,Serial,17452,23568, 1 frequency, 0 s
+16,D,Serial,17452,23568, 1 frequency, 0 s
+16,D,Serial,17456,23576, 1 frequency, 0 s
+16,D,Serial,17452,23560, 1 frequency, 0 s
+16,D,Serial,17452,23588, 1 frequency, 0 s
+16,D,Serial,17452,23576, 1 frequency, 0 s
+16,D,Serial,17452,23576, 1 frequency, 1 s
+16,D,Serial,17452,23572, 1 frequency, 0 s
+16,D,Serial,17456,23576, 1 frequency, 0 s
+16,D,Serial,17452,23564, 1 frequency, 0 s
+16,D,Serial,17456,23564, 1 frequency, 0 s
+16,D,Serial,17456,23572, 1 frequency, 0 s
+16,D,Serial,17452,23572, 1 frequency, 0 s
+16,D,Serial,17452,23548, 1 frequency, 0 s
+16,D,Serial,17452,23572, 1 frequency, 1 s
+16,D,Serial,17452,23572, 1 frequency, 0 s
+16,D,Serial,17452,23572, 1 frequency, 1 s
+16,D,Serial,17456,24736, 100 frequencies, 1 s
+9,D,Serial,17452,21760, 100 frequencies, 0 s
+16,D,Serial,17452,24724, 100 frequencies, 0 s
+16,D,Serial,17448,24700, 100 frequencies, 1 s
+16,I,Serial,17456,21160, 100 frequencies, 0 s
+16,I,Serial,17452,21144, 100 frequencies, 0 s
+16,D,Serial,17452,24696, 100 frequencies, 0 s
+16,D,Serial,17452,23572, 1 frequency, 0 s
+16,D,Serial,17452,23572, 1 frequency, 0 s
+16,D,Serial,17456,23572, 1 frequency, 0 s
+16,D,Serial,17452,23548, 1 frequency, 0 s
+16,D,Serial,17452,23564, 1 frequency, 0 s
+16,D,Serial,17452,23572, 1 frequency, 0 s
+9,D,Serial,17452,21760, 100 frequencies, 0 s
+16,D,Serial,17452,24704, 100 frequencies, 1 s
+16,D,Serial,17452,24704, 100 frequencies, 1 s
+16,D,Serial,17452,24708, 100 frequencies, 1 s
+16,D,Serial,17452,23548, 1 frequency, 0 s
+9,D,Serial,17456,21752, 1 frequency, 0 s
+9,D,Serial,17452,21744, 1 frequency, 0 s
+9,D,Serial,17456,21744, 1 frequency, 0 s
+9,D,Serial,17452,21748, 1 frequency, 0 s
+9,D,Serial,17448,21744, 1 frequency, 0 s
+9,D,Serial,17452,21744, 1 frequency, 0 s
+9,D,Serial,17452,21772, 100 frequencies, 0 s
+9,D,Serial,17452,21760, 1 frequency, 0 s
+9,D,Serial,17452,21760, 1 frequency, 1 s
+9,D,Serial,17452,21760, 1 frequency, 0 s
+9,D,Serial,17452,21744, 1 frequency, 1 s
+16,D,Serial,17452,23576, 1 frequency, 0 s
+16,D,Serial,17452,23572, 1 frequency, 1 s
+16,D,Serial,17456,23576, 1 frequency, 0 s
+16,D,Serial,17452,23580, 1 frequency, 0 s
+16,D,Serial,17456,23580, 1 frequency, 0 s
+16,D,Serial,17452,23576, 1 frequency, 0 s
+16,D,Serial,17452,23580, 1 frequency, 0 s
+16,D,Serial,17452,23580, 1 frequency, 1 s
+16,D,Serial,17452,23580, 1 frequency, 0 s
+16,D,Serial,17448,23576, 1 frequency, 0 s
+16,D,Serial,17452,23588, 1 frequency, 0 s
+16,D,Serial,17452,23568, 1 frequency, 0 s
+16,D,Serial,17452,23580, 1 frequency, 1 s
+9,D,Serial,17452,21748, 1 frequency, 0 s
+9,D,Serial,17452,21764, 1 frequency, 0 s
+9,D,Serial,17456,21752, 1 frequency, 0 s
+9,D,Serial,17448,21752, 1 frequency, 0 s
+9,D,Serial,17448,21748, 1 frequency, 0 s
+2,D,Serial,17452,21148, 1 frequency, 0 s
+2,D,Serial,17456,21148, 100 frequencies, 0 s
+16,D,Serial,17452,23576, 1 frequency, 0 s
+16,D,Serial,17456,23568, 1 frequency, 0 s
+16,D,Serial,17452,23576, 1 frequency, 1 s
+2,D,Serial,17456,21148, 1 frequency, 0 s
+2,D,Serial,17452,21148, 100 frequencies, 0 s
+9,D,Serial,17452,21748, 1 frequency, 0 s
+9,D,Serial,17452,21756, 100 frequencies, 0 s
+9,D,Serial,17448,21752, 1 frequency, 0 s
+16,I,Serial,17448,21152, 1 frequency, 0 s
+16,I,Serial,17456,21744, 100 frequencies, 0 s
+16,I,Serial,17452,21744, 100 frequencies, 1 s
+16,D,Serial,17452,24692, 100 frequencies, 1 s
+16,D,Serial,17452,24732, 100 frequencies, 1 s
+16,D,Serial,17456,24668, 100 frequencies, 0 s
+16,H,Serial,17456,21636, 100 frequencies, 86 s
+16,D,Serial,17460,24680, 100 frequencies, 0 s
+16,I,Serial,17456,21700, 100 frequencies, 1 s
+16,H,Serial,17460,21640, 100 frequencies, 87 s

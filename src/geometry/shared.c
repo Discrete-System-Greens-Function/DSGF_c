@@ -33,6 +33,7 @@ void set_delta_V_vector(double delta_V_1, double delta_V_2, int tot_sub_vol, int
 		{
 			delta_V_vector[i_vec] = delta_V_2;
 		}
+		//printf("%e\n",delta_V_vector[i_vec]);
 	}  
 }
 

@@ -31,6 +31,8 @@ void write_to_csv_double_array(char file_name[], int length, double array[]);
 
 void populate_subvol_struct(char file_name[], int array_length, subvol shape[array_length]);
 
+void populate_subvol_struct_object_2(char file_name[], int array_length, subvol shape[array_length], int subvol_per_object);
+
 void populate_subvol_delta_v(char file_name[], int array_length, double delta_V_vector[array_length]);
 
 void create_pos_processing(char file_name[], char material[], double initial, double end, double time_spent, double T_calc_vector[], double Total_conductance[], int N_Tcalc);

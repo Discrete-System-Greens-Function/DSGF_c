@@ -132,22 +132,27 @@ void core_solver(int tot_sub_vol, double complex epsilon, double complex epsilon
 	}//end mm loop 
 }
 
-void iterative_solver(int tot_sub_vol, double complex epsilon, double complex epsilon_ref, double k, double delta_V_vector[], double complex alpha_0[], double complex G_sys[3*tot_sub_vol][3*tot_sub_vol],double k_0, double pi,double modulo_r_i_j[tot_sub_vol][tot_sub_vol], double complex r_i_j_outer_r_i_j[tot_sub_vol][tot_sub_vol][3][3],char multithread){
+//void iterative_solver(int tot_sub_vol, double complex epsilon, double complex epsilon_ref, double k, double delta_V_vector[], double complex alpha_0[], double complex G_sys[3*tot_sub_vol][3*tot_sub_vol],double k_0, double pi,double modulo_r_i_j[tot_sub_vol][tot_sub_vol], double complex r_i_j_outer_r_i_j[tot_sub_vol][tot_sub_vol][3][3],char multithread){
+void iterative_solver(int tot_sub_vol, double complex epsilon, double complex epsilon_ref, double k, double delta_V_vector[], double complex alpha_0[], double complex G_sys[3*tot_sub_vol][3*tot_sub_vol],double k_0, double pi,char multithread, double R[][3]){
 
 	double complex (*G_sys_old)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_sys_old));
 	if (G_sys_old == NULL){
 			printf("Failure with memory=%ld in iterative solver.",get_mem_usage());
 			exit(1);
 	} 
-	get_G_old_struct_matrix_memory(tot_sub_vol, G_sys_old, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, multithread);
+	//get_G_old_struct_matrix_memory(tot_sub_vol, G_sys_old, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, multithread);
+	set_up_get_G_old(tot_sub_vol, G_sys_old, k_0, pi, epsilon_ref, delta_V_vector, multithread, R);
 	core_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys, G_sys_old, multithread);
 	free(G_sys_old);
 
 }
 
-void iterative_solver_file_handler(int tot_sub_vol, double complex epsilon, double complex epsilon_ref, double k, double delta_V_vector[], double complex alpha_0[],double k_0, double pi,double modulo_r_i_j[tot_sub_vol][tot_sub_vol], double complex r_i_j_outer_r_i_j[tot_sub_vol][tot_sub_vol][3][3],char multithread, char* G_old_file_name, char* G_sys_file_name){
+void iterative_solver_file_handler(int tot_sub_vol, double complex epsilon, double complex epsilon_ref, double k, double delta_V_vector[], double complex alpha_0[],double k_0, double pi,char multithread, char* G_old_file_name, char* G_sys_file_name, double R[][3]){
+//void iterative_solver_file_handler(int tot_sub_vol, double complex epsilon, double complex epsilon_ref, double k, double delta_V_vector[], double complex alpha_0[],double k_0, double pi,double modulo_r_i_j[tot_sub_vol][tot_sub_vol], double complex r_i_j_outer_r_i_j[tot_sub_vol][tot_sub_vol][3][3],char multithread, char* G_old_file_name, char* G_sys_file_name){
 
-	get_G_old_struct_matrix_memory_file(tot_sub_vol, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, multithread,G_old_file_name);
+	//get_G_old_struct_matrix_memory_file(tot_sub_vol, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, multithread,G_old_file_name);
+	set_up_get_G_old_file(tot_sub_vol, k_0, pi, epsilon_ref, delta_V_vector, multithread, G_old_file_name, R);
+
 	double complex A_2d[3][3];
 	for (int mm = 0; mm < tot_sub_vol; mm++) //tot_sub_vol
 	{

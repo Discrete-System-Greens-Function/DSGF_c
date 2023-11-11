@@ -4,9 +4,9 @@
 #include "computational/GreensFunction.h"
 #include "functions_DSGF.h" // Definitions of functions used in DSGF
 
-void A_direct_populator_2D(int tot_sub_vol, double complex A[3*tot_sub_vol][3*tot_sub_vol], double complex A_direct[3*3*tot_sub_vol*tot_sub_vol]){
+void A_direct_populator_2D(int tot_sub_vol, double complex A[3*tot_sub_vol][3*tot_sub_vol], double complex A_direct[3*3*tot_sub_vol*tot_sub_vol],char multithread){
 
-	//int ipack=0; 
+	#pragma omp parallel for if (multithread == 'Y')
 	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 	{
 		for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
@@ -19,7 +19,6 @@ void A_direct_populator_2D(int tot_sub_vol, double complex A[3*tot_sub_vol][3*to
 					int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
 					int index = j_subG_0+jg_0*3+i_subG_0*3*tot_sub_vol+ig_0*3*tot_sub_vol*3;
 					A_direct[index] = A[ig_0_2d][jg_0_2d];
-					//ipack++;
 				}    
 			}
 		}        
@@ -28,9 +27,9 @@ void A_direct_populator_2D(int tot_sub_vol, double complex A[3*tot_sub_vol][3*to
 }
 
 
-void b_direct_populator_2D(int tot_sub_vol,  double complex G_0[3*tot_sub_vol][3*tot_sub_vol], double complex b_direct[3*3*tot_sub_vol*tot_sub_vol]){
+void b_direct_populator_2D(int tot_sub_vol,  double complex G_0[3*tot_sub_vol][3*tot_sub_vol], double complex b_direct[3*3*tot_sub_vol*tot_sub_vol], char multithread){
 
-	//int ipack=0; 
+	#pragma omp parallel for if (multithread == 'Y')
 	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 	{
 		for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
@@ -54,9 +53,9 @@ void b_direct_populator_2D(int tot_sub_vol,  double complex G_0[3*tot_sub_vol][3
 }
 
 
-void populate_G_sys(int tot_sub_vol, double complex b_direct[3*3*tot_sub_vol*tot_sub_vol], double complex G_sys[3*tot_sub_vol][3*tot_sub_vol]){
+void populate_G_sys(int tot_sub_vol, double complex b_direct[3*3*tot_sub_vol*tot_sub_vol], double complex G_sys[3*tot_sub_vol][3*tot_sub_vol], char multithread){
 
-	//int gpack=0;
+	#pragma omp parallel for if (multithread == 'Y')
 	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 	{
 		for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
@@ -69,7 +68,6 @@ void populate_G_sys(int tot_sub_vol, double complex b_direct[3*3*tot_sub_vol*tot
 					int jg_0_2d = (3*jg_0 + j_subG_0);
 					int index = j_subG_0+jg_0*3+i_subG_0*3*tot_sub_vol+ig_0*3*tot_sub_vol*3;
 					G_sys[ig_0_2d][jg_0_2d] = b_direct[index];
-					//gpack++;
 				}    
 			}
 		}        

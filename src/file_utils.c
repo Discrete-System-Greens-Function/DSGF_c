@@ -222,6 +222,17 @@ void populate_subvol_struct(char file_name[], int array_length, subvol shape[arr
 	fclose(import_discretization);
 }
 
+void populate_subvol_struct_object_2(char file_name[], int array_length, subvol shape[array_length], int subvol_per_object){
+	
+	int i_import = subvol_per_object;
+	FILE *import_discretization = fopen(file_name, "r");
+	while (3 == fscanf(import_discretization, "%e %e %e", &shape[i_import].x, &shape[i_import].y, &shape[i_import].z))
+	{   
+		i_import++;
+	}
+	fclose(import_discretization);
+}
+
 void populate_subvol_delta_v(char file_name[], int array_length, double delta_V_vector[array_length]){
 	FILE *import_delta_v = fopen(file_name, "r");
 	for (int i = 0; i < array_length; i++) {
