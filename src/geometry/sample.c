@@ -28,7 +28,7 @@ void populate_R_sample(int tot_sub_vol, int subvol_per_object, double origin1[],
 
 }
 
-void populate_R_sample_new(int tot_sub_vol, int subvol_per_object, double origin1[], double origin2[], double delta_V_1, double delta_V_2, subvol shape_file1[], subvol shape_file2[], double R[][3],double const_N_subvolumes_per_object_2){
+void populate_R_sample_center_of_mass(int tot_sub_vol, int subvol_per_object, double origin1[], double origin2[], double delta_V_1, double delta_V_2, subvol shape_file1[], subvol shape_file2[], double R[][3],double const_N_subvolumes_per_object_2){
 	
 	double center_of_mass_1[3]={0.,0.,0.};
 	double center_of_mass_2[3]={0.,0.,0.};
@@ -41,9 +41,9 @@ void populate_R_sample_new(int tot_sub_vol, int subvol_per_object, double origin
 			R[i][0] = shape_file1[i].x *pow(delta_V_1,1./3);
 			R[i][1] = shape_file1[i].y *pow(delta_V_1,1./3);
 			R[i][2] = shape_file1[i].z *pow(delta_V_1,1./3);
-			center_of_mass_1[0]=+ R[i][0];
-			center_of_mass_1[1]=+ R[i][1];
-			center_of_mass_1[2]=+ R[i][2];
+			center_of_mass_1[0]+= R[i][0];
+			center_of_mass_1[1]+= R[i][1];
+			center_of_mass_1[2]+= R[i][2];
 			
 			//printf("%d: %e ; %e ; %e ; \n",i, center_of_mass_1[0],center_of_mass_1[1],center_of_mass_1[2]);
 		}
@@ -55,20 +55,27 @@ void populate_R_sample_new(int tot_sub_vol, int subvol_per_object, double origin
 			//R[i][0] = shape_file2[i].x* pow(delta_V_2,1./3) + origin2[0]; 
 			//R[i][1] = shape_file2[i].y*pow(delta_V_2,1./3) + origin2[1]; 
 			//R[i][2] = shape_file2[i].z*pow(delta_V_2,1./3) + origin2[2]; 
-			center_of_mass_2[0]=+ R[i][0];
-			center_of_mass_2[1]=+ R[i][1];
-			center_of_mass_2[2]=+ R[i][2];
+			center_of_mass_2[0]+= R[i][0];
+			center_of_mass_2[1]+= R[i][1];
+			center_of_mass_2[2]+= R[i][2];
 		}
-		//printf("%e, %e, %e \n",R[i][0],R[i][1],R[i][2]);
+		//printf("R[%d]: %e, %e, %e \n",i, R[i][0],R[i][1],R[i][2]);
 	}   
 	// center of mass: Move the center-of-mass of each object to the origin [0,0,0]
-	/*
-	center_of_mass_1[1]=center_of_mass_1[1]/subvol_per_object;
-	center_of_mass_1[2]=center_of_mass_1[2]/subvol_per_object;
-	center_of_mass_2[1]=center_of_mass_2[1]/const_N_subvolumes_per_object_2;
-	center_of_mass_2[2]=center_of_mass_2[2]/const_N_subvolumes_per_object_2;
-	*/
 	// Move each discretization to its user-specified origin
+	//printf("Center of mass 1(total): %e, %e %e\n", center_of_mass_1[0], center_of_mass_1[1], center_of_mass_1[2]);
+	//printf("Center of mass 2(total): %e, %e %e\n", center_of_mass_2[0], center_of_mass_2[1], center_of_mass_2[2]);
+	/*
+	for (int cord=0; cord<3;cord++) //tot_sub_vol
+	{
+		center_of_mass_1[cord]= center_of_mass_1[cord]/subvol_per_object;
+		center_of_mass_2[cord]= center_of_mass_2[cord]/const_N_subvolumes_per_object_2;
+	} 
+	*/
+	//printf("Center of mass 1: %e, %e %e\n", center_of_mass_1[0], center_of_mass_1[1], center_of_mass_1[2]);
+	//printf("Center of mass 2: %e, %e %e\n", center_of_mass_2[0], center_of_mass_2[1], center_of_mass_2[2]);
+	double r_centered_1[3];
+	double r_centered_2[3];
 	for (int i=0; i<tot_sub_vol;i++) //tot_sub_vol
 	{
 		if(i<subvol_per_object)
@@ -76,23 +83,22 @@ void populate_R_sample_new(int tot_sub_vol, int subvol_per_object, double origin
 			for (int cord=0; cord<3;cord++) //tot_sub_vol
 			{
 				//printf("%e ; ",center_of_mass_1[cord]);
-				center_of_mass_1[cord]=R[i][cord] - (center_of_mass_1[cord]/subvol_per_object);
-				//printf("%e ; ",center_of_mass_1[cord]);
-				R[i][cord] = center_of_mass_1[cord]+origin1[cord];
-				printf("%e ; ",R[i][cord]);
+				r_centered_1[cord]=R[i][cord] - center_of_mass_1[cord]/subvol_per_object;
+				R[i][cord] = r_centered_1[cord]+origin1[cord];
+				//printf("%e ; ",R[i][cord]);
 			}
 		}
 		else
 		{
 			for (int cord=0; cord<3;cord++) //tot_sub_vol
 			{
-				center_of_mass_2[cord]=R[i][cord] - (center_of_mass_2[cord]/const_N_subvolumes_per_object_2);
 				//printf("%e ; ",center_of_mass_2[cord]);
-				R[i][cord] = center_of_mass_2[cord]+origin2[cord];
-				printf("%e ; ",R[i][cord]);
+				r_centered_2[cord]=R[i][cord] - center_of_mass_2[cord]/const_N_subvolumes_per_object_2;
+				R[i][cord] = r_centered_2[cord]+origin2[cord];
+				//printf("%e ; ",R[i][cord]);
 			}
 		}	
-		printf("\n");
+		//printf("\n");
 	}   
 
 }
@@ -144,8 +150,8 @@ void set_up_sample_geometry(double pi, int tot_sub_vol, int subvol_per_object, i
 	if (strcmp(geometry_2, "cube") == 0){ origin_x = radius1/2+*d+radius2/2; } // calculate the origin for cube
 	double origin2[3]= {origin_x,0,0};
 
-	populate_R_sample(tot_sub_vol, subvol_per_object, origin1, origin2, *delta_V_1, *delta_V_2, shape_file1, shape_file2 , R);
-	//populate_R_sample_new(tot_sub_vol, subvol_per_object, origin1, origin2, *delta_V_1, *delta_V_2, shape_file1, shape_file2 , R,N_subvolumes_per_object_2);
+	//populate_R_sample(tot_sub_vol, subvol_per_object, origin1, origin2, *delta_V_1, *delta_V_2, shape_file1, shape_file2 , R);
+	populate_R_sample_center_of_mass(tot_sub_vol, subvol_per_object, origin1, origin2, *delta_V_1, *delta_V_2, shape_file1, shape_file2 , R,N_subvolumes_per_object_2);
 	
 
 }

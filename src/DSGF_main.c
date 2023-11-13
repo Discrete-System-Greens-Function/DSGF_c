@@ -285,7 +285,7 @@ int main()
 	
 	if(solution =='D'){printf("spectrum range calculation using direct inversion: \n");}
 	if(solution =='I'){printf("spectrum range calculation using iterative solver: \n");}
-	if(solution =='H'){printf("spectrum range calculation using iterative solver with file handling: \n");}	
+	if(solution =='H'){printf("spectrum range calculation using iterative solver file handler: \n");}	
 	/*
 	if (strcmp(solution, "DC") == 0){printf("spectrum range calculation using direct inversion: \n");}		
 	else if (strcmp(solution, "IC") == 0){printf("spectrum range calculation using iterative solver: \n");}

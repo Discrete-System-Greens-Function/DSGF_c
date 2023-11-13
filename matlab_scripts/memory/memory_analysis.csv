@@ -1,3 +1,26 @@
 tot_sub_vol,solution,baseline, calculation_memory, total_memory,time_spent
 desktop
 
+9,D,Serial,17456,21732, 1 frequency, 0 s
+9,D,Serial,17456,21736, 1 frequency, 0 s
+9,D,Serial,17456,21736, 1 frequency, 0 s
+9,D,Serial,17456,21748, 1 frequency, 0 s
+16,D,Serial,17452,23524, 1 frequency, 1 s
+9,D,Serial,17456,21732, 1 frequency, 0 s
+9,D,Serial,17452,21732, 1 frequency, 0 s
+9,D,Serial,17456,21744, 100 frequencies, 0 s
+16,D,Serial,17456,24696, 100 frequencies, 0 s
+16,D,Serial,17456,24656, 100 frequencies, 0 s
+16,D,Serial,17452,24680, 100 frequencies, 0 s
+9,D,Serial,17460,21752, 100 frequencies, 0 s
+9,D,Serial,17456,21744, 1 frequency, 0 s
+9,D,Serial,17456,21752, 1 frequency, 0 s
+9,D,Serial,17456,21748, 1 frequency, 0 s
+9,D,Serial,17456,21740, 1 frequency, 0 s
+9,D,Serial,17456,21724, 1 frequency, 0 s
+9,D,Serial,17456,21736, 1 frequency, 0 s
+9,D,Serial,17456,21740, 100 frequencies, 0 s
+9,D,Serial,17460,21740, 100 frequencies, 0 s
+9,D,Serial,17456,21748, 100 frequencies, 1 s
+9,D,Serial,17460,21744, 100 frequencies, 0 s
+9,D,Serial,17456,21732, 100 frequencies, 0 s
