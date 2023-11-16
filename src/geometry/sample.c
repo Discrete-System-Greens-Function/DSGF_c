@@ -5,6 +5,7 @@
 
 void populate_R_sample(int tot_sub_vol, int subvol_per_object, double origin1[], double origin2[], double delta_V_1, double delta_V_2, subvol shape_file1[], subvol shape_file2[], double R[][3]){
 
+	// applicable for two objects with the same number of subvolumes 
 	for (int i=0; i<tot_sub_vol;i++) //tot_sub_vol
 	{
 		if(i<subvol_per_object)
@@ -44,7 +45,6 @@ void populate_R_sample_center_of_mass(int tot_sub_vol, int subvol_per_object, do
 			center_of_mass_1[0]+= R[i][0];
 			center_of_mass_1[1]+= R[i][1];
 			center_of_mass_1[2]+= R[i][2];
-			
 			//printf("%d: %e ; %e ; %e ; \n",i, center_of_mass_1[0],center_of_mass_1[1],center_of_mass_1[2]);
 		}
 		else
@@ -63,8 +63,6 @@ void populate_R_sample_center_of_mass(int tot_sub_vol, int subvol_per_object, do
 	}   
 	// center of mass: Move the center-of-mass of each object to the origin [0,0,0]
 	// Move each discretization to its user-specified origin
-	//printf("Center of mass 1(total): %e, %e %e\n", center_of_mass_1[0], center_of_mass_1[1], center_of_mass_1[2]);
-	//printf("Center of mass 2(total): %e, %e %e\n", center_of_mass_2[0], center_of_mass_2[1], center_of_mass_2[2]);
 	/*
 	for (int cord=0; cord<3;cord++) //tot_sub_vol
 	{
@@ -119,8 +117,20 @@ void set_up_sample_geometry(double pi, int tot_sub_vol, int subvol_per_object, i
 	*delta_V_1 = vol1/subvol_per_object; // defines the subvolumes' volume for sphere 1
 	*delta_V_2 = vol2/N_subvolumes_per_object_2; // defines the subvolumes' volume for sphere 2
 
-	subvol shape_file1[subvol_per_object];
-	subvol shape_file2[N_subvolumes_per_object_2];
+	//subvol shape_file1[subvol_per_object];
+	//subvol shape_file2[N_subvolumes_per_object_2];
+	subvol (*shape_file1) = malloc(sizeof *shape_file1 * subvol_per_object); // radial frequency [rad/s]
+	if (shape_file1 == NULL){
+			printf("Failure with memory=%ld before spectral analysis when positions of subvolumes are defined. ",get_mem_usage());
+			//return 1;
+			exit(1);
+	}
+	subvol (*shape_file2) = malloc(sizeof *shape_file2 * N_subvolumes_per_object_2); // radial frequency [rad/s]
+	if (shape_file2 == NULL){
+			printf("Failure with memory=%ld before spectral analysis when positions of subvolumes are defined. ",get_mem_usage());
+			//return 1;
+			exit(1);
+	}
 	
 	char file_name1[256];
 	sprintf(file_name1, "library/discretizations/%s/%s_%d.txt",geometry_1,geometry_1,subvol_per_object); // path where the file is stored
@@ -152,6 +162,7 @@ void set_up_sample_geometry(double pi, int tot_sub_vol, int subvol_per_object, i
 
 	//populate_R_sample(tot_sub_vol, subvol_per_object, origin1, origin2, *delta_V_1, *delta_V_2, shape_file1, shape_file2 , R);
 	populate_R_sample_center_of_mass(tot_sub_vol, subvol_per_object, origin1, origin2, *delta_V_1, *delta_V_2, shape_file1, shape_file2 , R,N_subvolumes_per_object_2);
-	
 
+	free(shape_file1);
+	free(shape_file2);
 }

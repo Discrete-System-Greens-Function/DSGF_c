@@ -1,12 +1,12 @@
 discretization_type = sample
-number_subvolumes_per_object_1 = 1
-number_subvolumes_per_object_2 = 8
+number_subvolumes_per_object_1 = 1000
+number_subvolumes_per_object_2 = 1000
 material = SiO2
 epsilon_ref = 1
 number_omega = 100
 uniform_spectra = Y
 solution = D
-multithread = N
+multithread = Y
 single_spectrum_analysis = N
 save_spectral_conductance = Y
 save_total_conductance = Y

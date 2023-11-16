@@ -192,8 +192,8 @@ int main()
 		if (uniform_spectra == 'Y')
 		{
 			double initial,final;
-			initial = 5.e-6;
-			final = 25.e-6;
+			initial = 25.e-6; // 5.e-6;
+			final = 5.e-6; //25.e-6;
 			double lambda[const_N_omega];
 			double_linspace(initial, final, const_N_omega, lambda);
 			for (int i_lambda = 0; i_lambda < const_N_omega; i_lambda++)
@@ -351,7 +351,7 @@ int main()
 		}
 				
 		// ######### Calculation of SGF and post-processing ###########
-
+		// these variables may move for parallelization
 		double complex trans_coeff;
 		double inner_sum;
 		double complex G_element;
@@ -404,12 +404,7 @@ int main()
 			} 
 			populate_G_sys(tot_sub_vol, b_direct, G_sys, multithread);
 			free(b_direct);
-			
-			//direct_solver(tot_sub_vol, A_direct, b_direct, G_sys);  
-			//direct_solver(tot_sub_vol, A, G_0, G_sys);
-			//direct_solver(tot_sub_vol, G_sys, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, wave_type, alpha_0); // we noticed an memory improved from the old function
-			//spectral_post_processing(tot_sub_vol, i_omega, const_N_omega, k_0, h_bar, k_b, epsilon, omega_value, T_vector, delta_V_vector, const_N_subvolumes_per_object, pi, G_sys, &sum_trans_coeff, Q_subvol);
-
+			// #pragma omp parallel for if (multithread == 'Y')// PARALELLIZE HERE
 			for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 			{
 				Q_omega_subvol = 0;
@@ -492,7 +487,7 @@ int main()
 			//iterative_solver_memory(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, size, G_sys_TriangularMatrix,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type);
 			*/
 									
-			//spectral_post_processing(tot_sub_vol, i_omega, const_N_omega, k_0, h_bar, k_b, epsilon, omega_value, T_vector, delta_V_vector, const_N_subvolumes_per_object, pi, G_sys, &sum_trans_coeff, Q_subvol);
+			// #pragma omp parallel for if (multithread == 'Y')// PARALELLIZE HERE
 			for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 			{
 				Q_omega_subvol = 0;
@@ -588,7 +583,7 @@ int main()
 			}
 
 			//iterative_solver_store(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type,G_sys_file_name);
-			iterative_solver_file_handler(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0,k_0, pi,multithread,G_old_file_name, G_sys_file_name, R);
+			iterative_solver_file_handler_multiple(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0,k_0, pi,multithread,G_old_file_name, G_sys_file_name, R);
 			
 			//calculation_memory = get_mem_usage()-pre_solver_memory-baseline;
 			
@@ -624,7 +619,7 @@ int main()
     			exit(1); // Exit with an error code
 			}
 			
-			//spectral_post_processing(tot_sub_vol, i_omega, const_N_omega, k_0, h_bar, k_b, epsilon, omega_value, T_vector, delta_V_vector, const_N_subvolumes_per_object, pi, G_sys, &sum_trans_coeff, Q_subvol);
+			// #pragma omp parallel for if (multithread == 'Y')// PARALELLIZE HERE
 			for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 			{
 				Q_omega_subvol = 0;

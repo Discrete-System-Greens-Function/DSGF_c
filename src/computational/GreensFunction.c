@@ -305,7 +305,7 @@ void set_up_get_G_old_file(int tot_sub_vol, double k_0, double pi, double epsilo
     	perror("Error opening binary file");
     	exit(1); // Exit with an error code
 	}
-	#pragma omp parallel for if (multithread == 'Y')	// PARALLELIZE HERE
+	// #pragma omp parallel for if (multithread == 'Y')	// PARALLELIZE HERE
 	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 	{
 		for (int jg_0 = ig_0; jg_0 < tot_sub_vol; jg_0++)//
