@@ -352,10 +352,10 @@ int main()
 				
 		// ######### Calculation of SGF and post-processing ###########
 		// these variables may move for parallelization
-		double complex trans_coeff;
-		double inner_sum;
-		double complex G_element;
-		double Q_omega_subvol;
+		//double complex trans_coeff;
+		//double inner_sum;
+		// double complex G_element;
+		//double Q_omega_subvol;
 		double sum_trans_coeff = 0; // Transmissivity to calculate spectral conductance and spectral power in subvolumes
 		
 		if(solution =='D') // Solves the linear system AG=G^0, where G^0 and A are 3N X 3N matrices. 
@@ -404,13 +404,13 @@ int main()
 			} 
 			populate_G_sys(tot_sub_vol, b_direct, G_sys, multithread);
 			free(b_direct);
-			// #pragma omp parallel for if (multithread == 'Y')// PARALELLIZE HERE
+			//#pragma omp parallel for if (multithread == 'Y')// PARALELLIZE HERE
 			for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 			{
-				Q_omega_subvol = 0;
+				double Q_omega_subvol = 0;
 				for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //tot_sub_vol
 				{
-					G_element = 0;
+					double complex G_element = 0;
 					for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
 					{
 						int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
@@ -424,7 +424,7 @@ int main()
 						}    
 					}
 					// Transmission coefficient matrix tau(omega) for comparison with Czapla Mathematica output [dimensionless]
-					trans_coeff = 4.*pow(k_0,4)*delta_V_vector[ig_0]*delta_V_vector[jg_0]*cimag(epsilon)*cimag(epsilon)*G_element; 
+					double complex trans_coeff = 4.*pow(k_0,4)*delta_V_vector[ig_0]*delta_V_vector[jg_0]*cimag(epsilon)*cimag(epsilon)*G_element; 
 				
 					//Trans_bulk: Transmission coefficient between two bulk objects
 					// This function calculates the transmission coefficient between bulk objects given the transmission coefficient between every pair of dipoles for a given frequency.
@@ -433,6 +433,7 @@ int main()
 						sum_trans_coeff += trans_coeff;
 					} 
 					// Thermal power dissipated calculation, based on the matlab code (Using Tervo's Eq. 26)
+					double inner_sum;
 					if (ig_0 != jg_0) 
 					{
 						//inner_sum = (theta_function(omega_value, T_vector[jg_0], h_bar, k_b) - theta_function(omega_value, T_vector[ig_0], h_bar, k_b)) * trans_coeff;
@@ -490,11 +491,11 @@ int main()
 			// #pragma omp parallel for if (multithread == 'Y')// PARALELLIZE HERE
 			for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 			{
-				Q_omega_subvol = 0;
+				double Q_omega_subvol = 0;
 				for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) // original
 				//for (int jg_0 = ig_0; jg_0 < tot_sub_vol; jg_0++) // mod: Sept.6,2023
 				{
-					G_element = 0;
+					double complex G_element = 0;
 					for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
 					{
 						int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
@@ -517,7 +518,7 @@ int main()
 						}    
 					}
 					// Transmissivity coefficient matrix tau(omega) for comparison with Czapla Mathematica output [dimensionless]
-					trans_coeff = 4.*pow(k_0,4)*delta_V_vector[ig_0]*delta_V_vector[jg_0]*cimag(epsilon)*cimag(epsilon)*G_element; 
+					double complex trans_coeff = 4.*pow(k_0,4)*delta_V_vector[ig_0]*delta_V_vector[jg_0]*cimag(epsilon)*cimag(epsilon)*G_element; 
 			
 					//Trans_bulk: Transmission coefficient between two bulk objects
 					// This function calculates the transmission coefficient between bulk objects given the transmission coefficient between every pair of dipoles for a given frequency.
@@ -526,6 +527,7 @@ int main()
 						sum_trans_coeff += trans_coeff;
 					} 
 					// Thermal power dissipated calculation, based on the matlab code (Using Tervo's Eq. 26)
+					double inner_sum;
 					if (ig_0 != jg_0){ 
 						//inner_sum = (theta_function(omega_value, T_vector[jg_0], h_bar, k_b) - theta_function(omega_value, T_vector[ig_0], h_bar, k_b)) * trans_coeff; 
 						double T_i,T_j;
@@ -583,7 +585,7 @@ int main()
 			}
 
 			//iterative_solver_store(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,wave_type,G_sys_file_name);
-			iterative_solver_file_handler_multiple(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0,k_0, pi,multithread,G_old_file_name, G_sys_file_name, R);
+			iterative_solver_file_handler(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0,k_0, pi,multithread,G_old_file_name, G_sys_file_name, R);
 			
 			//calculation_memory = get_mem_usage()-pre_solver_memory-baseline;
 			
@@ -622,11 +624,11 @@ int main()
 			// #pragma omp parallel for if (multithread == 'Y')// PARALELLIZE HERE
 			for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 			{
-				Q_omega_subvol = 0;
+				double Q_omega_subvol = 0;
 				for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) // original
 				//for (int jg_0 = ig_0; jg_0 < tot_sub_vol; jg_0++) // mod: Sept.6,2023
 				{
-					G_element = 0;
+					double complex G_element = 0;
 					for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
 					{
 						int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
@@ -645,7 +647,7 @@ int main()
 						}    
 					}
 					// Transmissivity coefficient matrix tau(omega) for comparison with Czapla Mathematica output [dimensionless]
-					trans_coeff = 4.*pow(k_0,4)*delta_V_vector[ig_0]*delta_V_vector[jg_0]*cimag(epsilon)*cimag(epsilon)*G_element; 
+					double complex trans_coeff = 4.*pow(k_0,4)*delta_V_vector[ig_0]*delta_V_vector[jg_0]*cimag(epsilon)*cimag(epsilon)*G_element; 
 			
 					//Trans_bulk: Transmission coefficient between two bulk objects
 					// This function calculates the transmission coefficient between bulk objects given the transmission coefficient between every pair of dipoles for a given frequency.
@@ -654,6 +656,7 @@ int main()
 						sum_trans_coeff += trans_coeff;
 					} 
 					// Thermal power dissipated calculation, based on the matlab code (Using Tervo's Eq. 26)
+					double inner_sum;
 					if (ig_0 != jg_0){ 
 						//inner_sum = (theta_function(omega_value, T_vector[jg_0], h_bar, k_b) - theta_function(omega_value, T_vector[ig_0], h_bar, k_b)) * trans_coeff; 
 						double T_i,T_j;
