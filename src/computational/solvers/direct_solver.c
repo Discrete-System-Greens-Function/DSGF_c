@@ -4,9 +4,10 @@
 #include "computational/GreensFunction.h"
 #include "functions_DSGF.h" // Definitions of functions used in DSGF
 
-void A_direct_populator_2D(int tot_sub_vol, double complex A[3*tot_sub_vol][3*tot_sub_vol], double complex A_direct[3*3*tot_sub_vol*tot_sub_vol],char multithread){
+void A_direct_populator_2D(int tot_sub_vol, double complex A[3*tot_sub_vol][3*tot_sub_vol], double complex A_direct[3*3*tot_sub_vol*tot_sub_vol]){
+//void A_direct_populator_2D(int tot_sub_vol, double complex A[3*tot_sub_vol][3*tot_sub_vol], double complex A_direct[3*3*tot_sub_vol*tot_sub_vol],char multithread){
 
-	#pragma omp parallel for if (multithread == 'Y')
+	#pragma omp parallel for // if (multithread == 'Y')
 	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 	{
 		for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
@@ -27,9 +28,10 @@ void A_direct_populator_2D(int tot_sub_vol, double complex A[3*tot_sub_vol][3*to
 }
 
 
-void b_direct_populator_2D(int tot_sub_vol,  double complex G_0[3*tot_sub_vol][3*tot_sub_vol], double complex b_direct[3*3*tot_sub_vol*tot_sub_vol], char multithread){
+void b_direct_populator_2D(int tot_sub_vol,  double complex G_0[3*tot_sub_vol][3*tot_sub_vol], double complex b_direct[3*3*tot_sub_vol*tot_sub_vol]){
+//void b_direct_populator_2D(int tot_sub_vol,  double complex G_0[3*tot_sub_vol][3*tot_sub_vol], double complex b_direct[3*3*tot_sub_vol*tot_sub_vol], char multithread){
 
-	#pragma omp parallel for if (multithread == 'Y')
+	#pragma omp parallel for // if (multithread == 'Y')
 	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 	{
 		for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
@@ -53,9 +55,10 @@ void b_direct_populator_2D(int tot_sub_vol,  double complex G_0[3*tot_sub_vol][3
 }
 
 
-void populate_G_sys(int tot_sub_vol, double complex b_direct[3*3*tot_sub_vol*tot_sub_vol], double complex G_sys[3*tot_sub_vol][3*tot_sub_vol], char multithread){
+void populate_G_sys(int tot_sub_vol, double complex b_direct[3*3*tot_sub_vol*tot_sub_vol], double complex G_sys[3*tot_sub_vol][3*tot_sub_vol]){
+//void populate_G_sys(int tot_sub_vol, double complex b_direct[3*3*tot_sub_vol*tot_sub_vol], double complex G_sys[3*tot_sub_vol][3*tot_sub_vol], char multithread){
 
-	#pragma omp parallel for if (multithread == 'Y')
+	#pragma omp parallel for // if (multithread == 'Y')
 	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 	{
 		for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions

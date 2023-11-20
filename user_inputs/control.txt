@@ -1,11 +1,11 @@
-discretization_type = user_defined
-number_subvolumes_per_object_1 = 288
-number_subvolumes_per_object_2 = 288
-material = SiN
+discretization_type = sample
+number_subvolumes_per_object_1 = 8
+number_subvolumes_per_object_2 = 8
+material = SiO2
 epsilon_ref = 1
 number_omega = 100
 uniform_spectra = Y
-solution = D
+solution = I
 multithread = Y
 single_spectrum_analysis = N
 save_spectral_conductance = Y

@@ -119,13 +119,13 @@ void set_up_sample_geometry(double pi, int tot_sub_vol, int subvol_per_object, i
 
 	//subvol shape_file1[subvol_per_object];
 	//subvol shape_file2[N_subvolumes_per_object_2];
-	subvol (*shape_file1) = malloc(sizeof *shape_file1 * subvol_per_object); // radial frequency [rad/s]
+	subvol(*shape_file1) = malloc(sizeof *shape_file1 * subvol_per_object); // radial frequency [rad/s]
 	if (shape_file1 == NULL){
 			printf("Failure with memory=%ld before spectral analysis when positions of subvolumes are defined. ",get_mem_usage());
 			//return 1;
 			exit(1);
 	}
-	subvol (*shape_file2) = malloc(sizeof *shape_file2 * N_subvolumes_per_object_2); // radial frequency [rad/s]
+	subvol(*shape_file2) = malloc(sizeof *shape_file2 * N_subvolumes_per_object_2); // radial frequency [rad/s]
 	if (shape_file2 == NULL){
 			printf("Failure with memory=%ld before spectral analysis when positions of subvolumes are defined. ",get_mem_usage());
 			//return 1;

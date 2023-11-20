@@ -360,35 +360,43 @@ int main()
 		
 		if(solution =='D') // Solves the linear system AG=G^0, where G^0 and A are 3N X 3N matrices. 
 		{	
+			//double complex (*G_0) = calloc(3*3*tot_sub_vol*tot_sub_vol, sizeof(*G_0));
 			double complex (*G_0)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*G_0));
 			if (G_0 == NULL){
 				printf("Failure with memory=%ld (G_0). Use iterative solver", get_mem_usage());
 				exit(1);
 			} 
+			//set_up_get_G0_1D(tot_sub_vol, G_0, k_0, pi, epsilon_ref, delta_V_vector,R);
+			set_up_get_G0_2D(tot_sub_vol, G_0, k_0, pi, epsilon_ref, delta_V_vector,R);
+			//set_up_get_G0_2D(tot_sub_vol, G_0, k_0, pi, epsilon_ref, delta_V_vector, multithread,R);
 			//get_G0_matrix_memory_2D(tot_sub_vol, G_0, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, multithread);
-			set_up_get_G0_2D(tot_sub_vol, G_0, k_0, pi, epsilon_ref, delta_V_vector, multithread,R);
 
+			//double complex (*A) = calloc(3*3*tot_sub_vol*tot_sub_vol, sizeof(*A));
 			double complex (*A)[3*tot_sub_vol] = calloc(3*tot_sub_vol, sizeof(*A));
 			if (A == NULL){
 				printf("Failure with memory=%ld (A). Use iterative solver", get_mem_usage());
 				exit(1);
 			}
-			get_A_matrix_2D(tot_sub_vol, G_0, A, k_0, alpha_0, multithread);
+			//get_A_matrix_1D(tot_sub_vol, G_0, A, k_0, alpha_0);
+			get_A_matrix_2D(tot_sub_vol, G_0, A, k_0, alpha_0);
+			//get_A_matrix_2D(tot_sub_vol, G_0, A, k_0, alpha_0, multithread);
 			
-			double complex (*A_direct) = calloc(3*3*tot_sub_vol*tot_sub_vol, sizeof(*A_direct));
+			double complex (*A_direct) = malloc(sizeof *A_direct * 3*3*tot_sub_vol*tot_sub_vol);
+			//double complex (*A_direct) = calloc(3*3*tot_sub_vol*tot_sub_vol, sizeof(*A_direct));
 			if (A_direct == NULL){
 				printf("Failure with memory=%ld (A_direct). Use iterative solver",get_mem_usage());
 				exit(1);
 			}
-			A_direct_populator_2D(tot_sub_vol, A, A_direct, multithread); //A_direct_populator(tot_sub_vol, A, A_direct);
+			A_direct_populator_2D(tot_sub_vol, A, A_direct); //A_direct_populator(tot_sub_vol, A, A_direct);
 			free(A);
 			
-			double complex (*b_direct) = calloc(3*3*tot_sub_vol*tot_sub_vol, sizeof(*b_direct));
+			double complex (*b_direct) = malloc(sizeof *b_direct * 3*3*tot_sub_vol*tot_sub_vol);
+			//double complex (*b_direct) = calloc(3*3*tot_sub_vol*tot_sub_vol, sizeof(*b_direct));
 			if (b_direct == NULL){
 				printf("Failure with memory=%ld (b_direct). Use iterative solver",get_mem_usage());
 				exit(1);
 			}
-			b_direct_populator_2D(tot_sub_vol, G_0, b_direct, multithread); //b_direct_populator(tot_sub_vol, G_0, b_direct);
+			b_direct_populator_2D(tot_sub_vol, G_0, b_direct); //b_direct_populator(tot_sub_vol, G_0, b_direct);
 			free(G_0);
 
 			//printf("Entering LAPACK\n");
@@ -402,7 +410,7 @@ int main()
 			printf("Failure with memory=%ld (G_sys). Use iterative solver",get_mem_usage());
 			exit(1);
 			} 
-			populate_G_sys(tot_sub_vol, b_direct, G_sys, multithread);
+			populate_G_sys(tot_sub_vol, b_direct, G_sys);
 			free(b_direct);
 			//#pragma omp parallel for if (multithread == 'Y')// PARALELLIZE HERE
 			for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
@@ -479,8 +487,9 @@ int main()
 			printf("Failure with memory=%ld (G_sys). Use iterative solver",get_mem_usage());
 			exit(1);
 			} 
+			iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys,k_0, pi,R);						    	
+			//iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys,k_0, pi,multithread,R);						    	
 			//iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys,k_0, pi,modulo_r_i_j, r_i_j_outer_r_i_j,multithread);						    	
-			iterative_solver(tot_sub_vol, epsilon, epsilon_ref, k, delta_V_vector, alpha_0, G_sys,k_0, pi,multithread,R);						    	
 			/*
 			//triangular matrix solution
 			int size = 9*tot_sub_vol*(tot_sub_vol+1)/2; // Calculate the size of the 1D array to store the upper triangular matrix, via chatgpt
