@@ -110,7 +110,7 @@ void set_up_get_G0_2D(int tot_sub_vol, double complex G_0[3*tot_sub_vol][3*tot_s
 	free(r_ij);
 }
 
-/*
+
 void set_up_get_G0_1D(int tot_sub_vol, double complex G_0[3*tot_sub_vol*3*tot_sub_vol], double k_0, double pi, double epsilon_ref, double delta_V_vector[tot_sub_vol], double R[][3]){
 //void set_up_get_G0_2D(int tot_sub_vol, double complex G_0[3*tot_sub_vol][3*tot_sub_vol], double k_0, double pi, double epsilon_ref, double delta_V_vector[tot_sub_vol],char multithread, double R[][3]){
 
@@ -221,7 +221,7 @@ void set_up_get_G0_1D(int tot_sub_vol, double complex G_0[3*tot_sub_vol*3*tot_su
 	
 	free(r_ij);
 }
-*/
+
 
 void set_up_get_G_old(int tot_sub_vol, double complex G_old[3*tot_sub_vol][3*tot_sub_vol], double k_0, double pi, double epsilon_ref, double delta_V_vector[tot_sub_vol], double R[][3]){
 //void set_up_get_G_old(int tot_sub_vol, double complex G_old[3*tot_sub_vol][3*tot_sub_vol], double k_0, double pi, double epsilon_ref, double delta_V_vector[tot_sub_vol],char multithread, double R[][3]){
@@ -749,7 +749,7 @@ free(prod);
 
 }
 
-/*
+
 void get_A_matrix_1D(int tot_sub_vol, double complex G_0[3*tot_sub_vol*3*tot_sub_vol], double complex A[3*tot_sub_vol*3*tot_sub_vol], double k_0, double complex alpha_0[tot_sub_vol]){ 
 //void get_A_matrix_2D(int tot_sub_vol, double complex G_0[3*tot_sub_vol][3*tot_sub_vol], double complex A[3*tot_sub_vol][3*tot_sub_vol], double k_0, double complex alpha_0[tot_sub_vol], char multithread){ 
 	
@@ -822,14 +822,20 @@ void get_A_matrix_1D(int tot_sub_vol, double complex G_0[3*tot_sub_vol*3*tot_sub
 					int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
 					if (ig_0==jg_0 && i_subG_0==j_subG_0) // if i=j:
 					{
-						A[ig_0_2d][jg_0_2d] = 1. -  prod[ig_0_2d][jg_0_2d]; // eq. 26 from Lindsay's paper
+						int index_ij = j_subG_0+jg_0*3+i_subG_0*3*tot_sub_vol+ig_0*3*tot_sub_vol*3;
+						A[index_ij] = 1. -  prod[ig_0_2d][jg_0_2d]; // eq. 26 from Lindsay's paper
+						//A[ig_0_2d][jg_0_2d] = 1. -  prod[ig_0_2d][jg_0_2d]; // eq. 26 from Lindsay's paper
 						//printf(" %e+i%e , ",creal(A[ig_0_2d][jg_0_2d]), cimag(A[ig_0_2d][jg_0_2d]));
 					
 					}	
 					else
 					{
-						A[ig_0_2d][jg_0_2d] = 0. -  prod[ig_0_2d][jg_0_2d]; // eq. 26 from Lindsay's paper
-						A[jg_0_2d][ig_0_2d] = 0. -  prod[jg_0_2d][ig_0_2d]; // eq. 26 from Lindsay's paper
+						int index_ij = j_subG_0+jg_0*3+i_subG_0*3*tot_sub_vol+ig_0*3*tot_sub_vol*3;
+						int index_ji = i_subG_0+ig_0*3+j_subG_0*3*tot_sub_vol+jg_0*3*tot_sub_vol*3;
+						A[index_ij] = 0. -  prod[ig_0_2d][jg_0_2d]; // eq. 26 from Lindsay's paper
+						A[index_ji] = 0. -  prod[jg_0_2d][ig_0_2d]; // eq. 26 from Lindsay's paper
+						//A[ig_0_2d][jg_0_2d] = 0. -  prod[ig_0_2d][jg_0_2d]; // eq. 26 from Lindsay's paper
+						//A[jg_0_2d][ig_0_2d] = 0. -  prod[jg_0_2d][ig_0_2d]; // eq. 26 from Lindsay's paper
 						//printf(" %e+i%e , ",creal(A[ig_0_2d][jg_0_2d]), cimag(A[ig_0_2d][jg_0_2d]));
 					}
 				} //end j_subG_0 
@@ -840,4 +846,3 @@ void get_A_matrix_1D(int tot_sub_vol, double complex G_0[3*tot_sub_vol*3*tot_sub
 
 free(prod);
 }
-*/

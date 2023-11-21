@@ -3,6 +3,10 @@
 
 #include <complex.h>
 
+void set_up_get_G0_1D(int tot_sub_vol, double complex G_0[3*tot_sub_vol*3*tot_sub_vol], double k_0, double pi, double epsilon_ref, double delta_V_vector[tot_sub_vol], double R[][3]);
+void get_A_matrix_1D(int tot_sub_vol, double complex G_0[3*tot_sub_vol*3*tot_sub_vol], double complex A[3*tot_sub_vol*3*tot_sub_vol], double k_0, double complex alpha_0[tot_sub_vol]);
+
+
 void set_up_get_G0_2D(int tot_sub_vol, double complex G_0[3*tot_sub_vol][3*tot_sub_vol], double k_0, double pi, double epsilon_ref, double delta_V_vector[tot_sub_vol], double R[][3]);
 //void set_up_get_G0_2D(int tot_sub_vol, double complex G_0[3*tot_sub_vol][3*tot_sub_vol], double k_0, double pi, double epsilon_ref, double delta_V_vector[tot_sub_vol],char multithread, double R[][3]);
 

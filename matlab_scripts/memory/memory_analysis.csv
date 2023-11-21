@@ -56,3 +56,7 @@ desktop
 16,D,Parallel,17456,24960, 100 frequencies, 1 s
 16,D,Parallel,17452,24996, 100 frequencies, 1 s
 16,I,Parallel,17452,22944, 100 frequencies, 1 s
+16,I,Parallel,17456,22908, 100 frequencies, 0 s
+16,D,Parallel,17456,24936, 100 frequencies, 0 s
+16,D,Parallel,17456,24952, 100 frequencies, 0 s
+16,D,Parallel,17460,24936, 100 frequencies, 1 s
