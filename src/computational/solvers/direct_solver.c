@@ -69,7 +69,7 @@ void populate_G_sys(int tot_sub_vol, double complex b_direct[3*3*tot_sub_vol*tot
 				for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
 				{
 					int jg_0_2d = (3*jg_0 + j_subG_0);
-					int index = j_subG_0+jg_0*3+i_subG_0*3*tot_sub_vol+ig_0*3*tot_sub_vol*3;
+					long index = j_subG_0+jg_0*3+i_subG_0*3*tot_sub_vol+ig_0*3*tot_sub_vol*3;
 					G_sys[ig_0_2d][jg_0_2d] = b_direct[index];
 				}    
 			}

@@ -3,7 +3,7 @@
 #SBATCH -p notchpeak
 #SBATCH -N 1
 #SBATCH -n 64
-#SBATCH -t 24:00:00
+#SBATCH -t 72:00:00
 #SBATCH -C rom
 
 # declare STRING variable
@@ -45,5 +45,5 @@ echo "Compilation complete"
 # Intel advisor: https://www.intel.com/content/www/us/en/develop/documentation/get-started-with-advisor/top/prototype-threading-designs.html#prototype-threading-designs
 
 echo "Starting the run on node" `hostname`
-./DSGF
-
+# ./DSGF
+command time -v ./DSGF

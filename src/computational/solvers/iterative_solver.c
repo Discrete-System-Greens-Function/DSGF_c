@@ -120,6 +120,29 @@ void offdiagonal_solver(int tot_sub_vol, int mm, double k, double complex alpha_
 
 }
 
+void update_G_old(int tot_sub_vol, double complex G_sys_old[3*tot_sub_vol][3*tot_sub_vol], double complex G_sys_new[3*tot_sub_vol][3*tot_sub_vol]){
+			
+	#pragma omp parallel for // if (multithread == 'Y')	// PARALLELIZE HERE	
+	for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //upper triangular matrix
+	{
+		for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
+		{
+			int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
+			for (int ig_0 = jg_0; ig_0 < tot_sub_vol; ig_0++) //lower triangular
+			{ 
+				for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
+				{
+					int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
+						G_sys_old[ig_0_2d][jg_0_2d] = G_sys_new[ig_0_2d][jg_0_2d]; //alpha_0[mm]*[ig_0_2d][jg_0_2d]
+						G_sys_old[jg_0_2d][ig_0_2d] = G_sys_old[ig_0_2d][jg_0_2d]; // reciprocity
+					} // j_subG_0    
+			} // jg_0   	
+		}// i_subG_0   	                 	
+	} // ig_0    
+
+}
+
+
 void core_solver(int tot_sub_vol, double complex epsilon, double complex epsilon_ref, double k, double delta_V_vector[], double complex alpha_0[],double complex G_sys_new[3*tot_sub_vol][3*tot_sub_vol], double complex G_sys_old[3*tot_sub_vol][3*tot_sub_vol]){
 //void core_solver(int tot_sub_vol, double complex epsilon, double complex epsilon_ref, double k, double delta_V_vector[], double complex alpha_0[],double complex G_sys_new[3*tot_sub_vol][3*tot_sub_vol], double complex G_sys_old[3*tot_sub_vol][3*tot_sub_vol], char multithread){
 
@@ -130,12 +153,15 @@ void core_solver(int tot_sub_vol, double complex epsilon, double complex epsilon
 		double complex epsilon_s = (epsilon - epsilon_ref); // Scattering dielectric function
 		A2d_solver(epsilon_s, mm, tot_sub_vol, delta_V_vector[mm], G_sys_old, A_2d, k);	
 		remaining_pertubations(tot_sub_vol, mm, G_sys_old, G_sys_new, A_2d);
+		
 		offdiagonal_solver(tot_sub_vol, mm, k, alpha_0, G_sys_old, G_sys_new);
-
+		update_G_old(tot_sub_vol, G_sys_old, G_sys_new); //new function to update G_old = G_new
+	
 		//remaining_pertubations(tot_sub_vol, mm, G_sys_old, G_sys_new, A_2d, multithread);
 		//offdiagonal_solver(tot_sub_vol, mm, k, alpha_0, G_sys_old, G_sys_new, multithread);
-		memmove(G_sys_old,G_sys_new,3*tot_sub_vol*3*tot_sub_vol*sizeof(double complex));
+		//memmove(G_sys_old,G_sys_new,3*tot_sub_vol*3*tot_sub_vol*sizeof(double complex));
 		//memcpy(G_sys_old,G_sys_new,3*tot_sub_vol*3*tot_sub_vol*sizeof(double complex)); // Update G_old = G_new for next iteration.
+	
 	}//end mm loop 
 }
 

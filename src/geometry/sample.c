@@ -1,6 +1,7 @@
 #include "geometry/sample.h"
 #include "file_utils.h"
 #include <string.h> // library used to concatenate 2 strings https://stackoverflow.com/questions/46612504/creating-directories-and-files-using-a-loop-in-c
+#include <stdlib.h>	 // export/import data
 
 
 void populate_R_sample(int tot_sub_vol, int subvol_per_object, double origin1[], double origin2[], double delta_V_1, double delta_V_2, subvol shape_file1[], subvol shape_file2[], double R[][3]){

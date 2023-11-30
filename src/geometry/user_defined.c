@@ -1,5 +1,6 @@
 #include "geometry/user_defined.h"
 #include "file_utils.h"
+#include <stdlib.h>	 // export/import data
 
 void populate_R_user_defined(int tot_sub_vol, subvol shape_file[], double R[][3]){
 
