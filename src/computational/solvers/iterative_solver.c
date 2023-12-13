@@ -82,7 +82,42 @@ void remaining_pertubations(int tot_sub_vol, int mm, double complex G_sys_old[3*
 void offdiagonal_solver(int tot_sub_vol, int mm, double k, double complex alpha_0[], double complex G_sys_old[3*tot_sub_vol][3*tot_sub_vol], double complex G_sys_new[3*tot_sub_vol][3*tot_sub_vol]){
 //void offdiagonal_solver(int tot_sub_vol, int mm, double k, double complex alpha_0[], double complex G_sys_old[3*tot_sub_vol][3*tot_sub_vol], double complex G_sys_new[3*tot_sub_vol][3*tot_sub_vol], char multithread){
 			
-	#pragma omp parallel for // if (multithread == 'Y')	// PARALLELIZE HERE	
+	//modifications from Martin Cuma		
+	#pragma omp parallel for collapse(2) // if (multithread == 'Y')	// PARALLELIZE HERE	
+	// Next, solve all systems of equations for ii not equal to mm	
+	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //lower triangular
+	{ 
+		for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
+		{
+			int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
+		for (int jg_0 = ig_0; jg_0 < tot_sub_vol; jg_0++) //upper triangular matrix
+		{
+		if(ig_0 != mm  && jg_0 != mm)
+		{
+			for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
+			{
+				int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
+				double complex G_sys_prod = 0.;
+                #pragma omp simd 
+				for(int m_sub = 0;  m_sub < 3;  m_sub++)//loop for matricial multiplication
+				{
+					int mm_2d = (3*mm + m_sub);
+					G_sys_prod += G_sys_old[ig_0_2d][mm_2d]*pow(k,2)*alpha_0[mm]*G_sys_new[mm_2d][jg_0_2d];
+					//G_sys_prod += G_sys_old[ig_0_2d][mm_2d]*pow(k,2)*alpha_0[mm]*G_sys_new_mm[m_sub][jg_0_2d];
+				}
+				//int index = 9 * (submatrix_i * tot_sub_vol + submatrix_j) + 3 * row_in_submatrix + col_in_submatrix;
+				//G_sys_new[ig_0_2d][jg_0_2d] = upperTriangularMatrix[index] + G_sys_prod; //alpha_0[mm]*[ig_0_2d][jg_0_2d]
+				G_sys_new[ig_0_2d][jg_0_2d] = G_sys_old[ig_0_2d][jg_0_2d] + G_sys_prod; //alpha_0[mm]*[ig_0_2d][jg_0_2d]
+				G_sys_new[jg_0_2d][ig_0_2d] = G_sys_new[ig_0_2d][jg_0_2d]; // reciprocity
+			} // j_subG_0    
+		} // jg_0   	
+		}// i_subG_0   	        				
+		} // if(ig_0 != mm)              	
+	} // ig_0    
+
+	/*
+	//previous version
+	#pragma omp parallel for collapse(2) // if (multithread == 'Y')	// PARALLELIZE HERE	
 	// Next, solve all systems of equations for ii not equal to mm		
 	//for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //complete system
 	for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //upper triangular matrix
@@ -117,11 +152,25 @@ void offdiagonal_solver(int tot_sub_vol, int mm, double k, double complex alpha_
 		}// i_subG_0   	        				
 		} // if(ig_0 != mm)              	
 	} // ig_0    
+	
+	*/
 
 }
 
 void update_G_old(int tot_sub_vol, double complex G_sys_old[3*tot_sub_vol][3*tot_sub_vol], double complex G_sys_new[3*tot_sub_vol][3*tot_sub_vol]){
-			
+
+	// new version from Martin Cuma
+	#pragma omp parallel for collapse(2) // if (multithread == 'Y')	// PARALLELIZE HERE	
+	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //lower triangular
+	{ 
+		for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
+		{
+			int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
+			memcpy(G_sys_old[ig_0_2d],G_sys_new[ig_0_2d],sizeof(double complex)*tot_sub_vol*3);
+		}// j_subG_0   	                 	
+	} // jg_0 
+
+	/* // old version
 	#pragma omp parallel for // if (multithread == 'Y')	// PARALLELIZE HERE	
 	for (int jg_0 = 0; jg_0 < tot_sub_vol; jg_0++) //upper triangular matrix
 	{
@@ -138,7 +187,8 @@ void update_G_old(int tot_sub_vol, double complex G_sys_old[3*tot_sub_vol][3*tot
 					} // j_subG_0    
 			} // jg_0   	
 		}// i_subG_0   	                 	
-	} // ig_0    
+	} // ig_0 
+	*/	   
 
 }
 

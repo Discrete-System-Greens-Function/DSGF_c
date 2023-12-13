@@ -417,11 +417,7 @@ int main()
 			} 
 			populate_G_sys(tot_sub_vol, G_0, G_sys);
 			free(G_0);
-			/*
-			populate_G_sys(tot_sub_vol, b_direct, G_sys);
-			free(b_direct);
-			*/
-
+			
 			//#pragma omp parallel for if (multithread == 'Y')// PARALELLIZE HERE
 			for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 			{

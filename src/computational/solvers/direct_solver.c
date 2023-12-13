@@ -58,7 +58,7 @@ void b_direct_populator_2D(int tot_sub_vol,  double complex G_0[3*tot_sub_vol][3
 void populate_G_sys(int tot_sub_vol, double complex b_direct[3*3*tot_sub_vol*tot_sub_vol], double complex G_sys[3*tot_sub_vol][3*tot_sub_vol]){
 //void populate_G_sys(int tot_sub_vol, double complex b_direct[3*3*tot_sub_vol*tot_sub_vol], double complex G_sys[3*tot_sub_vol][3*tot_sub_vol], char multithread){
 
-	#pragma omp parallel for // if (multithread == 'Y')
+	#pragma omp parallel for collapse(2)// if (multithread == 'Y')
 	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 	{
 		for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
@@ -69,7 +69,7 @@ void populate_G_sys(int tot_sub_vol, double complex b_direct[3*3*tot_sub_vol*tot
 				for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
 				{
 					int jg_0_2d = (3*jg_0 + j_subG_0);
-					long index = j_subG_0+jg_0*3+i_subG_0*3*tot_sub_vol+ig_0*3*tot_sub_vol*3;
+					long index = j_subG_0+jg_0*3+(long)i_subG_0*3*tot_sub_vol+(long)ig_0*3*tot_sub_vol*3;
 					G_sys[ig_0_2d][jg_0_2d] = b_direct[index];
 				}    
 			}
