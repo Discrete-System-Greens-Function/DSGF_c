@@ -253,6 +253,29 @@ int main()
 			fclose(non_uniform_spectra);
 		}	
 	}
+	else if (strcmp(material, "SiC_poly") == 0)
+	{
+		if (uniform_spectra == 'Y')
+		{
+			double initial,final;
+			initial = 1.4e14;
+			final = 1.9e14;
+			double_linspace(initial, final, const_N_omega, omega);
+		}
+		if (uniform_spectra == 'N')
+		{
+			FILE *non_uniform_spectra; 	// Import non-uniform spectra
+			char dirPathFileNameSpectra[260];
+
+			sprintf(dirPathFileNameSpectra, "library/Non_uniform_spectra/SiC_non_uniform_spectra_%d.csv", const_N_omega);
+			non_uniform_spectra = fopen(dirPathFileNameSpectra, "r");
+			for (int i = 0; i < const_N_omega; i++)
+			{
+				fscanf(non_uniform_spectra, "%lf", &omega[i]); //
+			}
+			fclose(non_uniform_spectra);
+		}	
+	}
 	else if (strcmp(material, "SiN") == 0) // cannot compare strings in C with ==; source: https://ideone.com/BrFA00
 	{
 		if (uniform_spectra == 'Y')
@@ -322,6 +345,12 @@ int main()
 		{
 			epsilon = calculate_epsilon_SiC(omega_value);
 		}
+		
+		else if (strcmp(material, "SiC_poly") == 0)
+		{
+			epsilon = calculate_epsilon_SiC_poly(omega_value);
+		}
+		
 		else if (strcmp(material, "u-SiC") == 0)
 		{
 			epsilon = calculate_epsilon_u_SiC(omega_value, pi, c_0);
