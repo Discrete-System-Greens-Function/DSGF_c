@@ -3,10 +3,10 @@
 #include <math.h>
 #include "functions_DSGF.h"
 
-void spectral_total_conductance_thermal_power(int tot_sub_vol, int i_omega, int const_N_omega, double k_0, double h_bar, double k_b, double complex epsilon, double omega_value, double T_vector[],double delta_V_vector[], double const_N_subvolumes_per_object, double pi,double complex G_sys[3*tot_sub_vol][3*tot_sub_vol], double *sum_trans_coeff, double Q_subvol[tot_sub_vol][const_N_omega]){
+void spectral_post_processing(int tot_sub_vol, int i_omega, int const_N_omega, double k_0, double h_bar, double k_b, double complex epsilon, double omega_value, double T_vector[],double delta_V_vector[], double const_N_subvolumes_per_object, double pi,double complex G_sys[3*tot_sub_vol][3*tot_sub_vol], double *sum_trans_coeff, double Q_subvol[tot_sub_vol][const_N_omega]){
 
-
-
+	double complex trans_coeff;
+	double inner_sum;
 	for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //tot_sub_vol
 	{
 		double complex Q_omega_subvol = 0;
@@ -27,8 +27,15 @@ void spectral_total_conductance_thermal_power(int tot_sub_vol, int i_omega, int 
 				}    
 			}
 			// Transmissivity coefficient matrix tau(omega) for comparison with Czapla Mathematica output [dimensionless]
-			double complex trans_coeff = 4.*pow(k_0,4)*delta_V_vector[ig_0]*delta_V_vector[jg_0]*cimag(epsilon)*cimag(epsilon)*G_element; 
-			double inner_sum;
+			trans_coeff = 4.*pow(k_0,4)*delta_V_vector[ig_0]*delta_V_vector[jg_0]*cimag(epsilon)*cimag(epsilon)*G_element; 
+			
+			//Trans_bulk: Transmission coefficient between two bulk objects
+			// This function calculates the transmission coefficient between bulk objects given the transmission coefficient between every pair of dipoles for a given frequency.
+			if(ig_0 < const_N_subvolumes_per_object && jg_0 >= const_N_subvolumes_per_object)// bulk 1 -> 2
+			{
+				*sum_trans_coeff += trans_coeff;
+			} 			
+			
 			// Thermal power dissipated calculation, based on the matlab code (Using Tervo's Eq. 26)
 			if (ig_0 != jg_0) 
 			{
@@ -37,14 +44,6 @@ void spectral_total_conductance_thermal_power(int tot_sub_vol, int i_omega, int 
 			else {
 				inner_sum = 0;
 			}
-
-			//Trans_bulk: Transmission coefficient between two bulk objects
-			// This function calculates the transmission coefficient between bulk objects given the transmission coefficient between every pair of dipoles for a given frequency.
-			if(ig_0 < const_N_subvolumes_per_object && jg_0 >= const_N_subvolumes_per_object)// bulk 1 -> 2
-			{
-				*sum_trans_coeff += trans_coeff;
-			} 
-
 			Q_omega_subvol += (1 / (2 * pi)) * inner_sum; // calculates the thermal power dissipated per subvolume
 
 		} 
