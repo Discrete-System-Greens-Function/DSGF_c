@@ -1,0 +1,4 @@
+d = 100.e-9
+file_name = 2_films_Lx990nm_Ly990nm_Lz60nm_d100nm_N4356
+T1 = 400
+T2 = 300
