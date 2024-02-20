@@ -1,0 +1,7 @@
+geometry_1 = sphere
+L_char_1 = 10.e-9
+geometry_2 = sphere
+L_char_2 = 10.e-9
+d = 100.e-9
+T1 = 300.
+T2 = 400.

@@ -1,0 +1,7 @@
+geometry_1 = cube
+L_char_1 = 500.e-9
+geometry_2 = cube
+L_char_2 = 500.e-9
+d = 100.e-9
+T1 = 300.
+T2 = 800.
