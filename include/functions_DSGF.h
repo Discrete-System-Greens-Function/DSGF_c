@@ -31,6 +31,21 @@ typedef struct node {
 	float z;
 } subvol;
 
+
+// Definition for Green's tensors
+struct Matrix3x3 {
+	double complex xx, xy, xz;
+	double complex yx, yy, yz;
+	double complex zx, zy, zz;
+};
+
+struct Eye3x3 {
+	double  xx, xy, xz;
+	double  yx, yy, yz;
+	double  zx, zy, zz;
+};
+
+
 // Function a for free space green's function calculation:
 double a_j_function(double delta_V_vector, double pi);
 
