@@ -872,7 +872,7 @@ int main()
 				}
 				FILE *power_density; // append
 				char dirPathPower_density_FileName[260];
-				sprintf(dirPathPower_density_FileName, "%s/Q_density_t_subvol.csv", results_folder); // former name: Q_density_subvol
+				sprintf(dirPathPower_density_FileName, "%s/Q_density_subvol.csv", results_folder); // former name: Q_density_subvol
 				for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) // tot_sub_vol
 				{
 					if (ig_0 == 0)
