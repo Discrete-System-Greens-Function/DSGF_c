@@ -723,7 +723,7 @@ int main()
 				
 					FILE *power_dissipated_spectral; // append
 					char dirPathPower_dissipated_spectral_subvolumes_FileName[260];
-					sprintf(dirPathPower_dissipated_spectral_subvolumes_FileName, "%s/Q_omega_subvol.csv", results_folder); // path where the file is stored
+					sprintf(dirPathPower_dissipated_spectral_subvolumes_FileName, "%s/Q_w_subvol.csv", results_folder); // former name: Q_omega_subvol
 					if (ig_0 == 0 && i_omega ==0){ power_dissipated_spectral = fopen(dirPathPower_dissipated_spectral_subvolumes_FileName, "w");} // write
 					else if (ig_0 == 0 && i_omega!=0)
 					{
@@ -764,8 +764,8 @@ int main()
 			{
 				FILE *spectral_conductance; // append
 				char dirPathSpectral_cond_FileName[260];
-				sprintf(dirPathSpectral_cond_FileName, "%s/G_omega_bulk_12_%eK.csv", results_folder, Tcalc_vector[iTcalc]); // path where the file is stored
-				if (i_omega == 0)
+				sprintf(dirPathSpectral_cond_FileName, "%s/G_w_AB_%eK.csv", results_folder, Tcalc_vector[iTcalc]); // former name: G_omega_bulk_12_%eK
+				if (i_omega == 0) 
 					spectral_conductance = fopen(dirPathSpectral_cond_FileName, "w"); // write
 				else
 					spectral_conductance = fopen(dirPathSpectral_cond_FileName, "a"); // append
@@ -809,7 +809,7 @@ int main()
 			}
 			FILE *power_dissipated_spectral; // append
 			char dirPathPower_dissipated_spectral_subvolumes_FileName[260];
-			sprintf(dirPathPower_dissipated_spectral_subvolumes_FileName, "%s/Q_omega_subvol.csv", results_folder); // path where the file is stored
+			sprintf(dirPathPower_dissipated_spectral_subvolumes_FileName, "%s/Q_w_subvol.csv", results_folder); // former name: Q_omega_subvol
 			power_dissipated_spectral = fopen(dirPathPower_dissipated_spectral_subvolumes_FileName, "r"); // read
 			
 			for (int i_omega = 0; i_omega < const_N_omega; i_omega++)
@@ -852,7 +852,7 @@ int main()
 				{	
 					FILE *power_dissipated_total; // append
 					char dirPathPower_dissipated_FileName[260];
-					sprintf(dirPathPower_dissipated_FileName, "%s/Q_total_subvol.csv", results_folder); // path where the file is stored
+					sprintf(dirPathPower_dissipated_FileName, "%s/Q_t_subvol.csv", results_folder); // former name: Q_total_subvol
 					if (ig_0 == 0)
 						power_dissipated_total = fopen(dirPathPower_dissipated_FileName, "w"); // write
 					else
@@ -872,7 +872,7 @@ int main()
 				}
 				FILE *power_density; // append
 				char dirPathPower_density_FileName[260];
-				sprintf(dirPathPower_density_FileName, "%s/Q_density_subvol.csv", results_folder); // path where the file is stored
+				sprintf(dirPathPower_density_FileName, "%s/Q_density_t_subvol.csv", results_folder); // former name: Q_density_subvol
 				for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) // tot_sub_vol
 				{
 					if (ig_0 == 0)
@@ -892,7 +892,7 @@ int main()
 			{
 				FILE *power_dissipated_total_bulk; // append
 				char dirPathPower_dissipated_bulk_FileName[260];
-				sprintf(dirPathPower_dissipated_bulk_FileName, "%s/Q_total_bulk.csv", results_folder); // path where the file is stored
+				sprintf(dirPathPower_dissipated_bulk_FileName, "%s/Q_t.csv", results_folder); // former name: Q_total_bulk
 				power_dissipated_total_bulk = fopen(dirPathPower_dissipated_bulk_FileName, "w"); // write
 				fprintf(power_dissipated_total_bulk, "%e,%e\n", Q_bulk_1,Q_bulk_2);
 				fclose(power_dissipated_total_bulk);
@@ -912,7 +912,7 @@ int main()
 				}
 				FILE *power_dissipated_spectral_bulk; // append
 				char dirPathPower_dissipated_spectral_bulk_FileName[260];
-				sprintf(dirPathPower_dissipated_spectral_bulk_FileName, "%s/Q_omega_bulk.csv", results_folder); // path where the file is stored
+				sprintf(dirPathPower_dissipated_spectral_bulk_FileName, "%s/Q_w_AB.csv", results_folder); // former name: Q_omega_bulk
 			
 				for (int i_omega = 0; i_omega < const_N_omega; ++i_omega)
 				{
@@ -958,8 +958,8 @@ int main()
 			FILE *spectral_conductance; // append
 			char dirPathSpectral_cond_FileName[260];
 			char buffer[260];
-			sprintf(dirPathSpectral_cond_FileName, "%s/G_omega_bulk_12_%eK.csv", results_folder, Tcalc_vector[iTcalc]); // path where the file is stored
-			spectral_conductance = fopen(dirPathSpectral_cond_FileName, "r"); // read	
+			sprintf(dirPathSpectral_cond_FileName, "%s/G_w_AB_%eK.csv", results_folder, Tcalc_vector[iTcalc]); // former name: G_omega_bulk_12
+			spectral_conductance = fopen(dirPathSpectral_cond_FileName, "r"); // read G_w_AB_%eK.csv	
 			for (int i_omega = 0; i_omega < const_N_omega; i_omega++)
 			{
 				//fprintf(spectral_conductance, "%e , %e\n", omega_value, G_12_omega_SGF[i_omega][iTcalc]);
@@ -980,7 +980,7 @@ int main()
 			
 			FILE *Total_conductance_file; // append
 			char dirPath_Total_conductance_FileName[260];
-			sprintf(dirPath_Total_conductance_FileName, "%s/G_bulk_12.csv", results_folder); // path where the file is stored
+			sprintf(dirPath_Total_conductance_FileName, "%s/G_t_AB.csv", results_folder); // former name: G_total_bulk_12
 			if (iTcalc == 0)
 				Total_conductance_file = fopen(dirPath_Total_conductance_FileName, "w"); // write
 			else
