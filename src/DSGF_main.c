@@ -3,7 +3,7 @@
 // Near-field radiative heat transfer framework between thermal objects
 // Developed by RETL group at the University of Utah, USA
 
-// LAST UPDATE: September 27, 2023
+// LAST UPDATE: March 20, 2024
 // 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // General c libraries
