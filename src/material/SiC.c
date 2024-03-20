@@ -16,7 +16,7 @@ double complex calculate_epsilon_SiC(double omega){
 double complex calculate_epsilon_SiC_poly(double omega){
 
 	// Dielectric function for SiC -  Lorentz oscillator model:
-	// Defined in Francoeur et al., PRB, 2011. DOI: https://doi.org/10.1103/PhysRevB.84.075436           
+	// Defined in St.Gelais et al., Nature nanoletters, 2016. DOI: http://dx.doi.org/10.1038/nnano.2016.20          
 	double epsilon_inf = 8;              // [-]
 	double Gamma = 3.767e12; 		//[1/s]  Drude relaxation time
 	double omega_TO = 1.486e14;		//[rad/s]		
