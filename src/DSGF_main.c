@@ -276,7 +276,7 @@ int main()
 			fclose(non_uniform_spectra);
 		}	
 	}
-	else if (strcmp(material, "SiN") == 0) // cannot compare strings in C with ==; source: https://ideone.com/BrFA00
+	else if (strcmp(material, "SiN") == 0) // same case as Si3N4. The code implementation was previously performed using SiN to represent silicon nitride.
 	{
 		if (uniform_spectra == 'Y')
 		{
@@ -300,6 +300,29 @@ int main()
 		}
 	}
 
+	else if (strcmp(material, "Si3N4") == 0) // same case as SiN, just to be consistent with the chemical formula
+	{
+		if (uniform_spectra == 'Y')
+		{
+		double initial,final;
+		initial = 2.e13;
+		final = 3.e14;
+		double_linspace(initial, final, const_N_omega, omega);
+		}
+		if (uniform_spectra == 'N')
+		{
+			FILE *non_uniform_spectra; // Import non-uniform spectra
+			char dirPathFileNameSpectra[260];
+
+			sprintf(dirPathFileNameSpectra, "library/Non_uniform_spectra/SiN_non_uniform_spectra_%d.csv", const_N_omega);
+			non_uniform_spectra = fopen(dirPathFileNameSpectra, "r");
+			for (int i = 0; i < const_N_omega; i++)
+			{
+				fscanf(non_uniform_spectra, "%lf", &omega[i]); //
+			}
+			fclose(non_uniform_spectra);
+		}
+	}	
 	// #################################################################
 	// ################## FREQUENCY RANGE ANALYSIS #####################
 	// #################################################################
