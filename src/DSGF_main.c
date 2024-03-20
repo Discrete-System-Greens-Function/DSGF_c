@@ -366,17 +366,18 @@ int main()
 
 		else if (strcmp(material, "SiC") == 0)
 		{
-			epsilon = calculate_epsilon_SiC(omega_value);
+			// epsilon = calculate_epsilon_SiC(omega_value); // dielectric function from Francoeur et. al 2011
+			epsilon = calculate_epsilon_SiC_poly(omega_value); // dielectric function from St-Gelais et. al 2016
 		}
 		
 		else if (strcmp(material, "SiC_poly") == 0)
 		{
-			epsilon = calculate_epsilon_SiC_poly(omega_value);
+			epsilon = calculate_epsilon_SiC_poly(omega_value); // dielectric function from St-Gelais et. al 2016
 		}
 		
 		else if (strcmp(material, "u-SiC") == 0)
 		{
-			epsilon = calculate_epsilon_u_SiC(omega_value, pi, c_0);
+			epsilon = calculate_epsilon_u_SiC(omega_value, pi, c_0); // dielectric function from St-Gelais et. al 2016
 		}
 
 		else if (strcmp(material, "SiN") == 0)
