@@ -314,7 +314,7 @@ int main()
 			FILE *non_uniform_spectra; // Import non-uniform spectra
 			char dirPathFileNameSpectra[260];
 
-			sprintf(dirPathFileNameSpectra, "library/Non_uniform_spectra/SiN_non_uniform_spectra_%d.csv", const_N_omega);
+			sprintf(dirPathFileNameSpectra, "library/Non_uniform_spectra/Si3N4_non_uniform_spectra_%d.csv", const_N_omega);
 			non_uniform_spectra = fopen(dirPathFileNameSpectra, "r");
 			for (int i = 0; i < const_N_omega; i++)
 			{
