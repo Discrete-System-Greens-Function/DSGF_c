@@ -385,6 +385,11 @@ int main()
 			epsilon = calculate_epsilon_SiN(omega_value, pi);
 		}
 
+		else if (strcmp(material, "Si3N4") == 0)
+		{
+			epsilon = calculate_epsilon_SiN(omega_value, pi);
+		}
+
 		double k_0 = k_0_function(omega_value, epsilon_0, mu_0); // wave vector in free space
 
 		double k = k_function(omega_value, epsilon_ref, epsilon_0, mu_0); // wave vector in reference medium
