@@ -251,7 +251,20 @@ int main()
 				fscanf(non_uniform_spectra, "%lf", &omega[i]); //
 			}
 			fclose(non_uniform_spectra);
-		}	
+		}
+		if (uniform_spectra == 'S')
+		{
+			FILE *spectra_split; // Import non-uniform spectra
+			char dirPathFileNameSpectraSplit[260];
+
+			sprintf(dirPathFileNameSpectraSplit, "library/Non_uniform_spectra/%s.csv", frequency_set);
+			spectra_split = fopen(dirPathFileNameSpectraSplit, "r");
+			for (int i = 0; i < const_N_omega; i++)
+			{
+				fscanf(spectra_split, "%lf", &omega[i]); //
+			}
+			fclose(spectra_split);
+		}
 	}
 	else if (strcmp(material, "SiC_poly") == 0)
 	{
@@ -274,6 +287,19 @@ int main()
 				fscanf(non_uniform_spectra, "%lf", &omega[i]); //
 			}
 			fclose(non_uniform_spectra);
+		}
+		if (uniform_spectra == 'S')
+		{
+			FILE *spectra_split; // Import non-uniform spectra
+			char dirPathFileNameSpectraSplit[260];
+
+			sprintf(dirPathFileNameSpectraSplit, "library/Non_uniform_spectra/%s.csv", frequency_set);
+			spectra_split = fopen(dirPathFileNameSpectraSplit, "r");
+			for (int i = 0; i < const_N_omega; i++)
+			{
+				fscanf(spectra_split, "%lf", &omega[i]); //
+			}
+			fclose(spectra_split);
 		}	
 	}
 	else if (strcmp(material, "SiN") == 0) // same case as Si3N4. The code implementation was previously performed using SiN to represent silicon nitride.
@@ -298,6 +324,19 @@ int main()
 			}
 			fclose(non_uniform_spectra);
 		}
+		if (uniform_spectra == 'S')
+		{
+			FILE *spectra_split; // Import non-uniform spectra
+			char dirPathFileNameSpectraSplit[260];
+
+			sprintf(dirPathFileNameSpectraSplit, "library/Non_uniform_spectra/%s.csv", frequency_set);
+			spectra_split = fopen(dirPathFileNameSpectraSplit, "r");
+			for (int i = 0; i < const_N_omega; i++)
+			{
+				fscanf(spectra_split, "%lf", &omega[i]); //
+			}
+			fclose(spectra_split);
+		}	
 	}
 
 	else if (strcmp(material, "Si3N4") == 0) // same case as SiN, just to be consistent with the chemical formula
@@ -322,6 +361,19 @@ int main()
 			}
 			fclose(non_uniform_spectra);
 		}
+		if (uniform_spectra == 'S')
+		{
+			FILE *spectra_split; // Import non-uniform spectra
+			char dirPathFileNameSpectraSplit[260];
+
+			sprintf(dirPathFileNameSpectraSplit, "library/Non_uniform_spectra/%s.csv", frequency_set);
+			spectra_split = fopen(dirPathFileNameSpectraSplit, "r");
+			for (int i = 0; i < const_N_omega; i++)
+			{
+				fscanf(spectra_split, "%lf", &omega[i]); //
+			}
+			fclose(spectra_split);
+		}	
 	}	
 	// #################################################################
 	// ################## FREQUENCY RANGE ANALYSIS #####################
