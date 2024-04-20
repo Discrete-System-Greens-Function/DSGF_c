@@ -1,4 +1,4 @@
-discretization_type = sphere
+discretization_type = sample
 number_subvolumes_per_object_1 = 8
 number_subvolumes_per_object_2 = 8
 material = SiO2
