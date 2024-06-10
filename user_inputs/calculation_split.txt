@@ -1,1 +1,1 @@
-frequency_file_name = SiC_non_uniform_spectra_100
+frequency_file_name = SiC_uniform_spectra_11
