@@ -4,7 +4,8 @@
 #include <complex.h>
 #include <functions_DSGF.h>
 
-void read_user_control(char *geometry,char *material, char *solution, char *single_spectrum_analysis, int *number_subvolumes_per_object_1, int *number_subvolumes_per_object_2, int *number_omega, char *multithread, double *epsilon_ref, char *uniform_spectra, char *save_spectral_conductance, char *save_total_conductance, char *save_power_dissipated_spectral_subvolumes,char *save_power_dissipated_total_subvolumes, char *save_power_dissipated_spectral_bulk, char *save_power_dissipated_total_bulk, char *save_power_density_total_subvolumes, char *save_spectral_transmissivity);
+void read_user_control(char *geometry,char *material, char *solution, char *single_spectrum_analysis, int *number_subvolumes_per_object_1, int *number_subvolumes_per_object_2, int *number_omega, char *multithread, double *epsilon_ref, char *frequency_set, char *save_spectral_conductance, char *save_total_conductance, char *save_power_dissipated_spectral_subvolumes,char *save_power_dissipated_total_subvolumes, char *save_power_dissipated_spectral_bulk, char *save_power_dissipated_total_bulk, char *save_power_density_total_subvolumes, char *save_spectral_transmissivity);
+//void read_user_control(char *geometry,char *material, char *solution, char *single_spectrum_analysis, int *number_subvolumes_per_object_1, int *number_subvolumes_per_object_2, int *number_omega, char *multithread, double *epsilon_ref, char *uniform_spectra, char *save_spectral_conductance, char *save_total_conductance, char *save_power_dissipated_spectral_subvolumes,char *save_power_dissipated_total_subvolumes, char *save_power_dissipated_spectral_bulk, char *save_power_dissipated_total_bulk, char *save_power_density_total_subvolumes, char *save_spectral_transmissivity);
 
 void read_geometry_sample(char *geometry_1, double *radius1, char *geometry_2, double *radius2, double *d, double *T1, double *T2);
 
@@ -15,8 +16,6 @@ void read_geometry_thin_films(double *d, double *Lx, double *Ly, double *Lz, dou
 void read_geometry_user_defined(double *d, char file_name_ud[], double *T1, double *T2);
 
 void read_calculation_temperatures(int N_Tcalc, double Tcalc_vector[]);
-
-void read_calculation_split(char *frequency_set);
 
 void create_folder(char folder_name[]);
 

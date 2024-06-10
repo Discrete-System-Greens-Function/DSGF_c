@@ -10,7 +10,7 @@
 #include <time.h>
 #include <file_utils.h>
 
-void read_user_control(char *geometry_type,char *material, char *solution, char *single_spectrum_analysis, int *number_subvolumes_per_object_1, int *number_subvolumes_per_object_2, int *number_omega, char *multithread, double *epsilon_ref, char *uniform_spectra, char *save_spectral_conductance, char *save_total_conductance, char *save_power_dissipated_spectral_subvolumes,char *save_power_dissipated_total_subvolumes, char *save_power_dissipated_spectral_bulk, char *save_power_dissipated_total_bulk, char *save_power_density_total_subvolumes, char *save_spectral_transmissivity){
+void read_user_control(char *geometry_type,char *material, char *solution, char *single_spectrum_analysis, int *number_subvolumes_per_object_1, int *number_subvolumes_per_object_2, int *number_omega, char *multithread, double *epsilon_ref, char *frequency_set, char *save_spectral_conductance, char *save_total_conductance, char *save_power_dissipated_spectral_subvolumes,char *save_power_dissipated_total_subvolumes, char *save_power_dissipated_spectral_bulk, char *save_power_dissipated_total_bulk, char *save_power_density_total_subvolumes, char *save_spectral_transmissivity){
 
 	char dirPathUserControl[260] = "user_inputs/control.txt";
 	FILE *import_control_inputs = fopen(dirPathUserControl, "r"); 
@@ -22,7 +22,8 @@ void read_user_control(char *geometry_type,char *material, char *solution, char 
 	fscanf(import_control_inputs,"%s = %s\n",buffer, material);
 	fscanf(import_control_inputs,"%s = %lf\n", buffer, epsilon_ref);
 	fscanf(import_control_inputs,"%s = %d\n", buffer, number_omega);
-	fscanf(import_control_inputs,"%s = %c\n",buffer, uniform_spectra);
+	//fscanf(import_control_inputs,"%s = %c\n",buffer, uniform_spectra);
+	fscanf(import_control_inputs,"%s = %s\n",buffer, frequency_set);
 	fscanf(import_control_inputs,"%s = %c\n",buffer, solution);
 	fscanf(import_control_inputs,"%s = %c\n",buffer, multithread);
 	fscanf(import_control_inputs,"%s = %c\n",buffer, single_spectrum_analysis);
@@ -103,15 +104,6 @@ void read_calculation_temperatures(int N_Tcalc, double Tcalc_vector[]){
 		fscanf(import_T_calc,"%lf\n", &Tcalc_vector[i_T_calc]);
 	}	
 	fclose(import_T_calc);
-}
-
-void read_calculation_split(char *frequency_set){
-
-	char dirPathCalculation_Split[260] = "user_inputs/calculation_split.txt";
-	FILE *import_calculation_split = fopen(dirPathCalculation_Split, "r"); 
-	char buffer[256]; 
-	fscanf(import_calculation_split,"%s = %s",buffer, frequency_set);	
-	fclose(import_calculation_split);
 }
 
 void create_folder(char folder_name[]){

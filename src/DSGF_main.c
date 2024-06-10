@@ -3,7 +3,7 @@
 // Near-field radiative heat transfer framework between thermal objects
 // Developed by RETL group at the University of Utah, USA
 
-// LAST UPDATE: March 20, 2024
+// LAST UPDATE: June 10, 2024
 // 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // General c libraries
@@ -74,13 +74,9 @@ int main()
 
 	char wave_type, multithread;
 
-	read_user_control(geometry, material, &solution, &single_spectrum_analysis, &N_subvolumes_per_object_1, &N_subvolumes_per_object_2, &N_omega, &multithread, &epsilon_ref, &uniform_spectra, &save_spectral_conductance, &save_total_conductance, &save_power_dissipated_spectral_subvolumes, &save_power_dissipated_total_subvolumes, &save_power_dissipated_spectral_bulk, &save_power_dissipated_total_bulk, &save_power_density_total_subvolumes, &save_spectral_transmissivity); //&wave_type,
-	//read_user_control(geometry, material, solution, &single_spectrum_analysis, &N_subvolumes_per_object_1, &N_subvolumes_per_object_2, &N_omega, &multithread, &epsilon_ref, &uniform_spectra, &save_spectral_conductance, &save_total_conductance, &save_power_dissipated_spectral_subvolumes, &save_power_dissipated_total_subvolumes, &save_power_dissipated_spectral_bulk, &save_power_dissipated_total_bulk, &save_power_density_total_subvolumes, &save_spectral_transmissivity); //&wave_type,
+	read_user_control(geometry, material, &solution, &single_spectrum_analysis, &N_subvolumes_per_object_1, &N_subvolumes_per_object_2, &N_omega, &multithread, &epsilon_ref, frequency_set, &save_spectral_conductance, &save_total_conductance, &save_power_dissipated_spectral_subvolumes, &save_power_dissipated_total_subvolumes, &save_power_dissipated_spectral_bulk, &save_power_dissipated_total_bulk, &save_power_density_total_subvolumes, &save_spectral_transmissivity); //&wave_type,
 	
 	read_calculation_temperatures(N_Tcalc, Tcalc_vector);
-	
-	char frequency_set[260]; // definition for the file with the frequencies 
-	read_calculation_split(frequency_set); 
 	
 	int const const_N_bulk_objects = N_bulk_objects; // Number of objects
 	int const const_N_omega = N_omega; // Number of frequencies to be computed 
@@ -186,195 +182,17 @@ int main()
 	//	setup_G_0_matrices(tot_sub_vol, modulo_r_i_j, r_i_j_outer_r_i_j, R, multithread);
 	//	free(R);
 	
+	FILE *spectral_discretization_file; // Import spectral discretization
+		char dirPathFileNameSpectraSplit[260];
+
+		sprintf(dirPathFileNameSpectraSplit, "library/spectral_discretizations/%s", frequency_set);
+		spectral_discretization_file = fopen(dirPathFileNameSpectraSplit, "r");
+		for (int i = 0; i < const_N_omega; i++)
+		{
+			fscanf(spectral_discretization_file, "%lf", &omega[i]); //
+		}
+		fclose(spectral_discretization_file);
 	
-	if(strcmp(material,"SiO2")==0 || strcmp(material,"u-SiC")==0)  // removed strcmp(material,"SiC")==0 || from uniform
-	{
-		if (uniform_spectra == 'Y')
-		{
-			double initial,final;
-			initial = 25.e-6; // 5.e-6;
-			final = 5.e-6; //25.e-6;
-			double lambda[const_N_omega];
-			double_linspace(initial, final, const_N_omega, lambda);
-			for (int i_lambda = 0; i_lambda < const_N_omega; i_lambda++)
-			{
-				omega[i_lambda] = 2. * pi * c_0 / lambda[i_lambda]; // Radial frequency [rad/s]
-			}
-		}
-		if (uniform_spectra == 'N')
-		{
-			FILE *non_uniform_spectra; // Import non-uniform spectra
-			char dirPathFileNameSpectra[260];
-
-			sprintf(dirPathFileNameSpectra, "library/Non_uniform_spectra/SiO2_non_uniform_spectra_%d.csv", const_N_omega);
-			non_uniform_spectra = fopen(dirPathFileNameSpectra, "r");
-			for (int i = 0; i < const_N_omega; i++)
-			{
-				fscanf(non_uniform_spectra, "%lf", &omega[i]); //
-			}
-			fclose(non_uniform_spectra);
-		}	
-		
-		if (uniform_spectra == 'S')
-		{
-			FILE *spectra_split; // Import non-uniform spectra
-			char dirPathFileNameSpectraSplit[260];
-
-			sprintf(dirPathFileNameSpectraSplit, "library/Non_uniform_spectra/%s.csv", frequency_set);
-			spectra_split = fopen(dirPathFileNameSpectraSplit, "r");
-			for (int i = 0; i < const_N_omega; i++)
-			{
-				fscanf(spectra_split, "%lf", &omega[i]); //
-			}
-			fclose(spectra_split);
-		}
-		
-	}
-	else if (strcmp(material, "SiC") == 0)
-	{
-		if (uniform_spectra == 'Y')
-		{
-			double initial,final;
-			initial = 1.4e14;
-			final = 1.9e14;
-			double_linspace(initial, final, const_N_omega, omega);
-		}
-		if (uniform_spectra == 'N')
-		{
-			FILE *non_uniform_spectra; 	// Import non-uniform spectra
-			char dirPathFileNameSpectra[260];
-
-			sprintf(dirPathFileNameSpectra, "library/Non_uniform_spectra/SiC_non_uniform_spectra_%d.csv", const_N_omega);
-			non_uniform_spectra = fopen(dirPathFileNameSpectra, "r");
-			for (int i = 0; i < const_N_omega; i++)
-			{
-				fscanf(non_uniform_spectra, "%lf", &omega[i]); //
-			}
-			fclose(non_uniform_spectra);
-		}
-		if (uniform_spectra == 'S')
-		{
-			FILE *spectra_split; // Import non-uniform spectra
-			char dirPathFileNameSpectraSplit[260];
-
-			sprintf(dirPathFileNameSpectraSplit, "library/Non_uniform_spectra/%s.csv", frequency_set);
-			spectra_split = fopen(dirPathFileNameSpectraSplit, "r");
-			for (int i = 0; i < const_N_omega; i++)
-			{
-				fscanf(spectra_split, "%lf", &omega[i]); //
-			}
-			fclose(spectra_split);
-		}
-	}
-	else if (strcmp(material, "SiC_poly") == 0)
-	{
-		if (uniform_spectra == 'Y')
-		{
-			double initial,final;
-			initial = 1.4e14;
-			final = 1.9e14;
-			double_linspace(initial, final, const_N_omega, omega);
-		}
-		if (uniform_spectra == 'N')
-		{
-			FILE *non_uniform_spectra; 	// Import non-uniform spectra
-			char dirPathFileNameSpectra[260];
-
-			sprintf(dirPathFileNameSpectra, "library/Non_uniform_spectra/SiC_non_uniform_spectra_%d.csv", const_N_omega);
-			non_uniform_spectra = fopen(dirPathFileNameSpectra, "r");
-			for (int i = 0; i < const_N_omega; i++)
-			{
-				fscanf(non_uniform_spectra, "%lf", &omega[i]); //
-			}
-			fclose(non_uniform_spectra);
-		}
-		if (uniform_spectra == 'S')
-		{
-			FILE *spectra_split; // Import non-uniform spectra
-			char dirPathFileNameSpectraSplit[260];
-
-			sprintf(dirPathFileNameSpectraSplit, "library/Non_uniform_spectra/%s.csv", frequency_set);
-			spectra_split = fopen(dirPathFileNameSpectraSplit, "r");
-			for (int i = 0; i < const_N_omega; i++)
-			{
-				fscanf(spectra_split, "%lf", &omega[i]); //
-			}
-			fclose(spectra_split);
-		}	
-	}
-	else if (strcmp(material, "SiN") == 0) // same case as Si3N4. The code implementation was previously performed using SiN to represent silicon nitride.
-	{
-		if (uniform_spectra == 'Y')
-		{
-		double initial,final;
-		initial = 2.e13;
-		final = 3.e14;
-		double_linspace(initial, final, const_N_omega, omega);
-		}
-		if (uniform_spectra == 'N')
-		{
-			FILE *non_uniform_spectra; // Import non-uniform spectra
-			char dirPathFileNameSpectra[260];
-
-			sprintf(dirPathFileNameSpectra, "library/Non_uniform_spectra/SiN_non_uniform_spectra_%d.csv", const_N_omega);
-			non_uniform_spectra = fopen(dirPathFileNameSpectra, "r");
-			for (int i = 0; i < const_N_omega; i++)
-			{
-				fscanf(non_uniform_spectra, "%lf", &omega[i]); //
-			}
-			fclose(non_uniform_spectra);
-		}
-		if (uniform_spectra == 'S')
-		{
-			FILE *spectra_split; // Import non-uniform spectra
-			char dirPathFileNameSpectraSplit[260];
-
-			sprintf(dirPathFileNameSpectraSplit, "library/Non_uniform_spectra/%s.csv", frequency_set);
-			spectra_split = fopen(dirPathFileNameSpectraSplit, "r");
-			for (int i = 0; i < const_N_omega; i++)
-			{
-				fscanf(spectra_split, "%lf", &omega[i]); //
-			}
-			fclose(spectra_split);
-		}	
-	}
-
-	else if (strcmp(material, "Si3N4") == 0) // same case as SiN, just to be consistent with the chemical formula
-	{
-		if (uniform_spectra == 'Y')
-		{
-		double initial,final;
-		initial = 2.e13;
-		final = 3.e14;
-		double_linspace(initial, final, const_N_omega, omega);
-		}
-		if (uniform_spectra == 'N')
-		{
-			FILE *non_uniform_spectra; // Import non-uniform spectra
-			char dirPathFileNameSpectra[260];
-
-			sprintf(dirPathFileNameSpectra, "library/Non_uniform_spectra/Si3N4_non_uniform_spectra_%d.csv", const_N_omega);
-			non_uniform_spectra = fopen(dirPathFileNameSpectra, "r");
-			for (int i = 0; i < const_N_omega; i++)
-			{
-				fscanf(non_uniform_spectra, "%lf", &omega[i]); //
-			}
-			fclose(non_uniform_spectra);
-		}
-		if (uniform_spectra == 'S')
-		{
-			FILE *spectra_split; // Import non-uniform spectra
-			char dirPathFileNameSpectraSplit[260];
-
-			sprintf(dirPathFileNameSpectraSplit, "library/Non_uniform_spectra/%s.csv", frequency_set);
-			spectra_split = fopen(dirPathFileNameSpectraSplit, "r");
-			for (int i = 0; i < const_N_omega; i++)
-			{
-				fscanf(spectra_split, "%lf", &omega[i]); //
-			}
-			fclose(spectra_split);
-		}	
-	}	
 	// #################################################################
 	// ################## FREQUENCY RANGE ANALYSIS #####################
 	// #################################################################

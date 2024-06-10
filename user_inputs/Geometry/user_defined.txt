@@ -1,4 +1,4 @@
 d = 100.e-9
-file_name = 2_films_Lx1000nm_Ly1000nm_Lz600nm_d100nm_N7920
+file_name = 2_cubes_Lx500nm_Ly500nm_Lz500nm_d500nm_N576
 T_A = 400
 T_B = 300

@@ -1,7 +1,7 @@
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // User inputs definitions in DSGF framework
 // Developed by RETL Lab, Department of Mechanical Engineering, The University of Utah, USA.
-// LAST UPDATE: OCTOBER 4, 2023  
+// LAST UPDATE: JUNE 10, 2024  
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 #ifndef __user_inputs_h //https://stackoverflow.com/questions/28361391/calling-define-from-another-file
@@ -20,9 +20,10 @@ char uniform_spectra;
 // %%%%%%  Material, geometry and temperature %%%%%%%%%%%
 
 double epsilon_ref; // dielectric function of the background reference medium
-char material[]; // Material options: SiC or SiO2
-char geometry[]; //Geometry options: sphere, thin-films or user-defined
-char discretization_thin_film[260]; //discretization_thin_film = 2_thin_films_Lx200nm_Ly1um_Lz200nm_d150nm_N640_discretization
+char material[10]; // Material options: SiC or SiO2
+char geometry[100]; //Geometry options: sphere, thin-films or user-defined
+char frequency_set[260];
+//char discretization_thin_film[260]; //discretization_thin_film = 2_thin_films_Lx200nm_Ly1um_Lz200nm_d150nm_N640_discretization
 //char file_name_ud[]; // user_defined
 
 double d; // Separation distance
@@ -31,8 +32,8 @@ double radius; // Perfect same-sized spheres
 
 //double radius1; // Perfect same-sized spheres
 //double radius2; // Perfect same-sized spheres
-char geometry_1[]; //Geometry options: sphere, thin-films or user-defined
-char geometry_2[]; //Geometry options: sphere, thin-films or user-defined
+char geometry_1[100]; //Geometry options: sphere, thin-films or user-defined
+char geometry_2[100]; //Geometry options: sphere, thin-films or user-defined
 
 // Dimensions for membranes/thin films 
 double Lx; // Depth: 200.e-9
