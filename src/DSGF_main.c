@@ -199,9 +199,9 @@ int main()
 	// Loop to analyze a range of desired frequencies
 	//printf("----- Spectrum range calculation -----\n");
 	
-	if(solution =='D'){printf("spectrum range calculation using direct inversion: \n");}
-	if(solution =='I'){printf("spectrum range calculation using iterative solver: \n");}
-	if(solution =='H'){printf("spectrum range calculation using iterative solver file handler: \n");}	
+	if(solution =='D'){printf("Calculation using direct inversion: \n");}
+	if(solution =='I'){printf("Calculation using iterative solver: \n");}
+	if(solution =='H'){printf("Calculation using iterative solver file handler: \n");}	
 	/*
 	if (strcmp(solution, "DC") == 0){printf("spectrum range calculation using direct inversion: \n");}		
 	else if (strcmp(solution, "IC") == 0){printf("spectrum range calculation using iterative solver: \n");}

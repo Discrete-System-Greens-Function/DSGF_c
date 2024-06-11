@@ -1,10 +1,10 @@
-discretization_type = sample
-number_subvolumes_per_object_1 = 8
-number_subvolumes_per_object_2 = 8
-material = SiO2
+spatial_discretization_type = user_defined
+number_subvolumes_per_object_1 = 800
+number_subvolumes_per_object_2 = 800
+material = SiC
 epsilon_ref = 1
 number_omega = 100 
-spectral_discretization = SiO2_100_uniform_5_25_um.csv
+spectral_discretization = SiC_non_uniform_spectra_100.csv
 solution = D
 multithread = Y
 single_spectrum_analysis = N
