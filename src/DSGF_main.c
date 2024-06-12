@@ -643,6 +643,7 @@ int main()
 		// save spectral transmissivity
 		if (save_spectral_transmissivity == 'Y')
 		{
+			char spectral_transmissivity_folder[100];
 			sprintf(spectral_transmissivity_folder, "%s/spectral_transmissivity", results_folder);
 			create_folder(spectral_transmissivity_folder);
 			FILE *spectral_transmissivity;

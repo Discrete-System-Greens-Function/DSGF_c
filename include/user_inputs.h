@@ -20,7 +20,7 @@ char uniform_spectra;
 // %%%%%%  Material, geometry and temperature %%%%%%%%%%%
 
 double epsilon_ref; // dielectric function of the background reference medium
-char material[10]; // Material options: SiC or SiO2
+char material[100]; // Material options: SiC or SiO2
 char geometry[100]; //Geometry options: sphere, thin-films or user-defined
 char frequency_set[260];
 //char discretization_thin_film[260]; //discretization_thin_film = 2_thin_films_Lx200nm_Ly1um_Lz200nm_d150nm_N640_discretization
