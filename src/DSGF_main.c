@@ -23,7 +23,7 @@
 #include "file_utils.h"		// header with definitions of read_user_inputs and read_calculation_temperatures functions
 #include "computational/solvers/iterative_solver.h"
 #include "array_functions.h"
-#include "memory.h"
+// #include "memory.h"
 
 #include <malloc.h>
 
@@ -65,7 +65,7 @@ int main()
 	const double c_0 = 299792458;				 // Speed of light in vacuum [m/s]
 	const double mu_0 = (4. * pi) * pow(10, -7); // Permeability of free space [H/m]
 	
-	baseline = get_mem_usage(); // measure baseline memory usage
+	// long baseline = get_mem_usage(); // measure baseline memory usage
 	
 	time_t simulation_start;
 	time(&simulation_start);
@@ -906,7 +906,7 @@ int main()
 				
 	/*
 	// The memory usage output is commented 
-	total_memory = get_mem_usage(); // measure post-processing memory usage
+	long total_memory = get_mem_usage(); // measure post-processing memory usage
 	{
 		FILE * memory; //append
 		char dirPathMemory_FileName[260];
