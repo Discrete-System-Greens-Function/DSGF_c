@@ -43,8 +43,10 @@ double Lz; // Thickness: 200.e-9
 double T1; // Temperature in K modified to calculate thermal power dissipated
 double T2; // Temperature in K
 double T_calc; // Temperature at which conductance is calculated [K]
-int const N_Tcalc = 5;
-double Tcalc_vector[N_Tcalc]; // Multiple temperatures at which conductance is calculated [K]
+
+// Moved to DSGF_main.c
+//int const N_Tcalc = 5;
+//double Tcalc_vector[N_Tcalc]; // Multiple temperatures at which conductance is calculated [K]
 
 
 // %%%%%%%%%%%%%%%%%%% Solution %%%%%%%%%%%%%%%%%%%%%

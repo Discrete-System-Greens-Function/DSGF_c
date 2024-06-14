@@ -80,6 +80,7 @@ void populate_G_sys(int tot_sub_vol, double complex b_direct[3*3*tot_sub_vol*tot
 void direct_solver_memory(int tot_sub_vol, double complex A_direct[3*tot_sub_vol*3*tot_sub_vol], double complex b_direct[3*tot_sub_vol*3*tot_sub_vol]){
 	
 	// F08ANF (ZGELS) solves linear least-squares problems using a QR or LQ factorization of A. Description of ZGELS: https://extras.csc.fi/math/nag/mark21/pdf/F08/f08anf.pdf
-	int info = LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',3*tot_sub_vol,3*tot_sub_vol,3*tot_sub_vol,A_direct,3*tot_sub_vol,b_direct,3*tot_sub_vol); 
+	//int info = LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',3*tot_sub_vol,3*tot_sub_vol,3*tot_sub_vol,A_direct,3*tot_sub_vol,b_direct,3*tot_sub_vol); 
+	LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',3*tot_sub_vol,3*tot_sub_vol,3*tot_sub_vol,A_direct,3*tot_sub_vol,b_direct,3*tot_sub_vol); 
 
 }

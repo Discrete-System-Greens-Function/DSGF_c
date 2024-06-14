@@ -73,7 +73,8 @@ void remaining_pertubations(int tot_sub_vol, int mm, double complex G_sys_old[3*
 		double complex b_iterative[3*3];
 		A_b_iterative_populator(tot_sub_vol, A_iterative, b_iterative, A_2d, G_sys_old, mm, jg_0);
 		//A_b_iterative_populator(tot_sub_vol, A_iterative, b_iterative, A_2d, size, upperTriangularMatrix, mm, jg_0);
-		int info = LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',3,3,3,A_iterative,3,b_iterative,3);
+		//int info = LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',3,3,3,A_iterative,3,b_iterative,3);
+		LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',3,3,3,A_iterative,3,b_iterative,3);
 		G_sys_new_populator(tot_sub_vol, mm, jg_0, G_sys_new, b_iterative);
 	} // end jg_0					
 	
@@ -239,7 +240,6 @@ void iterative_solver_file_handler(int tot_sub_vol, double complex epsilon, doub
 	//get_G_old_struct_matrix_memory_file(tot_sub_vol, k_0, pi, epsilon_ref, modulo_r_i_j, r_i_j_outer_r_i_j, delta_V_vector, multithread,G_old_file_name);
 	set_up_get_G_old_file(tot_sub_vol, k_0, pi, epsilon_ref, delta_V_vector, multithread, G_old_file_name, R);
 
-	double complex A_2d[3][3];
 	for (int mm = 0; mm < tot_sub_vol; mm++) //tot_sub_vol
 	{
 		//printf("mm= %d \n",mm+1);
@@ -312,13 +312,14 @@ void iterative_solver_file_handler(int tot_sub_vol, double complex epsilon, doub
 				}    
 			}
 			//printf("\n");
-			int info = LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',3,3,3,A_iterative,3,b_iterative,3); // G_new using Linear inversion using LAPACK
+			// int info = LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',3,3,3,A_iterative,3,b_iterative,3); // G_new using Linear inversion using LAPACK
+			LAPACKE_zgels(LAPACK_ROW_MAJOR,'N',3,3,3,A_iterative,3,b_iterative,3); // G_new using Linear inversion using LAPACK
 			
 			//b_iterative is stored directly into a file, according to the term's position.
 			
 			for (int mm_sub = 0; mm_sub < 3; mm_sub++) // 3D coordinate positions
 			{
-				int mm_2d = (3*mm + mm_sub);
+				//int mm_2d = (3*mm + mm_sub);
 				for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
 				{
 					int index = j_subG_0+ 3*mm_sub;
@@ -355,7 +356,7 @@ void iterative_solver_file_handler(int tot_sub_vol, double complex epsilon, doub
 		{
 			for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
 			{
-				int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
+				//int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
 				for (int ig_0 = 0; ig_0 < tot_sub_vol; ig_0++) //complete system
 				//for (int ig_0 = jg_0; ig_0 < tot_sub_vol; ig_0++) //lower triangular
 				{ 
@@ -364,7 +365,7 @@ void iterative_solver_file_handler(int tot_sub_vol, double complex epsilon, doub
 					{
 						for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
 						{
-							int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
+							//int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
 							int position_old_ij = 9*tot_sub_vol*ig_0+3*tot_sub_vol*i_subG_0+3*jg_0+j_subG_0; //seems to be correct
 
 							fseek(G_old_import, position_old_ij * sizeof(double complex), SEEK_SET); // Set the file position to the specified position
@@ -377,7 +378,7 @@ void iterative_solver_file_handler(int tot_sub_vol, double complex epsilon, doub
 							double complex G_sys_prod = 0.;
 							for(int m_sub = 0;  m_sub < 3;  m_sub++)//loop for matricial multiplication
 							{
-								int mm_2d = (3*mm + m_sub);
+								//int mm_2d = (3*mm + m_sub);
 								//printf("G_old_im_value = %e + i %e, ",creal(G_old_im_value),cimag(G_old_im_value));
 								//printf("G_new_mj_value = %e + i %e; ",creal(G_new_mj_value[m_sub]),cimag(G_new_mj_value[m_sub]));
 								//G_sys_prod += G_old_im_value*pow(k,2)*alpha_0[mm]*G_new_mj_value[m_sub];

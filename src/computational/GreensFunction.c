@@ -75,10 +75,10 @@ void set_up_get_G0_1D(int tot_sub_vol, double complex G_0[3*tot_sub_vol*3*tot_su
 			double complex const_3 = (1. - 3./(epsilon_ref*pow(k_0*r_ij_mag,2)) + 3.*I/(k_0*sqrt(epsilon_ref)*r_ij_mag)) ;
 			for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
 			{
-				int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
+				//int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
 				for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions
 				{
-					int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
+					//int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
 					long index_ij = j_subG_0+jg_0*3+(long)i_subG_0*3*tot_sub_vol+(long)	ig_0*3*tot_sub_vol*3;
 					long index_ji = i_subG_0+ig_0*3+j_subG_0*3*tot_sub_vol+jg_0*3*tot_sub_vol*3;
 					G_0[index_ij] = const_1*((const_2*eyeG_0[i_subG_0][j_subG_0])-(const_3*r_i_j_outer_r_i_j_t[i_subG_0][j_subG_0]));  
@@ -98,10 +98,10 @@ void set_up_get_G0_1D(int tot_sub_vol, double complex G_0[3*tot_sub_vol*3*tot_su
 				double complex part3ii = part2iiexp*(1-part2ii) - 1. ; // part3ii is inside brackets
 				for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
 				{					
-					int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
+					//int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
 					for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions
 					{
-						int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
+						//int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
 						long index_ij = j_subG_0+jg_0*3+(long)i_subG_0*3*tot_sub_vol+(long)ig_0*3*tot_sub_vol*3;
 						G_0[index_ij] = eyeG_0[i_subG_0][j_subG_0]*part1ii*(2.*part3ii-1.);
 						//G_0[ig_0_2d][jg_0_2d] = eyeG_0[i_subG_0][j_subG_0]*part1ii*(2.*part3ii-1.); 
@@ -282,10 +282,10 @@ void set_up_get_G_old_file(int tot_sub_vol, double k_0, double pi, double epsilo
 			double complex const_3 = (1. - 3./denom_NF + 3.*I/denom_IF) ;
 			for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
 			{
-				int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
+				//int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
 				for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions
 				{
-					int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
+					//int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
 					//G_old[ig_0_2d][jg_0_2d] = const_1*((const_2*eyeG_0[i_subG_0][j_subG_0])-(const_3*r_i_j_outer_r_i_j[ig_0][jg_0][i_subG_0][j_subG_0]));  
 					double complex G_oldValue = const_1*((const_2*eyeG_0[i_subG_0][j_subG_0])-(const_3*r_i_j_outer_r_i_j_t[i_subG_0][j_subG_0]));  
 					int position_old_ij = 9*tot_sub_vol*ig_0+3*tot_sub_vol*i_subG_0+3*jg_0+j_subG_0; //seems to be correct
@@ -318,10 +318,10 @@ void set_up_get_G_old_file(int tot_sub_vol, double k_0, double pi, double epsilo
 				double complex part3ii = part2iiexp*(1-part2ii) - 1. ; // part3ii is inside brackets
 				for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
 				{
-					int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
+					//int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
 					for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions
 					{
-						int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
+						//int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
 						//G_old[ig_0_2d][jg_0_2d] = eyeG_0[i_subG_0][j_subG_0]*part1ii*(2.*part3ii-1.); 
 						int position_old_ij = 9*tot_sub_vol*ig_0+3*tot_sub_vol*i_subG_0+3*jg_0+j_subG_0; //seems to be correct
 						double complex G_oldValue = eyeG_0[i_subG_0][j_subG_0]*part1ii*(2.*part3ii-1.); 

@@ -70,12 +70,15 @@ int main()
 	time_t simulation_start;
 	time(&simulation_start);
 
-	int N_subvolumes_per_object, N_bulk_objects, N_omega;
-
-	char wave_type, multithread;
+	int N_omega; 
+	int N_bulk_objects = 2;
+	// char wave_type; // not used in this current version
+	char multithread;
 
 	read_user_control(geometry, material, &solution, &single_spectrum_analysis, &N_subvolumes_per_object_1, &N_subvolumes_per_object_2, &N_omega, &multithread, &epsilon_ref, frequency_set, &save_spectral_conductance, &save_total_conductance, &save_power_dissipated_spectral_subvolumes, &save_power_dissipated_total_subvolumes, &save_power_dissipated_spectral_bulk, &save_power_dissipated_total_bulk, &save_power_density_total_subvolumes, &save_spectral_transmissivity); //&wave_type,
 	
+	int const N_Tcalc = 5;
+	double Tcalc_vector[N_Tcalc]; // Multiple temperatures at which conductance is calculated [K]
 	read_calculation_temperatures(N_Tcalc, Tcalc_vector);
 	
 	int const const_N_bulk_objects = N_bulk_objects; // Number of objects
@@ -574,16 +577,16 @@ int main()
 					double complex G_element = 0;
 					for(int i_subG_0 = 0; i_subG_0 < 3; i_subG_0++) // 3D coordinate positions
 					{
-						int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
+						//int ig_0_2d = (3*ig_0 + i_subG_0); // Set indices
 						for(int j_subG_0 = 0; j_subG_0 < 3; j_subG_0++) // 3D coordinate positions 
 						{
-							int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
+							//int jg_0_2d = (3*jg_0 + j_subG_0); // Set indices
 							
 							int position_ij = 9*tot_sub_vol*ig_0+3*tot_sub_vol*i_subG_0+3*jg_0+j_subG_0; //seems to be correct
 							double complex G_sysValue;  //definition for files-solution 
 							fseek(G_new_import, position_ij * sizeof(double complex), SEEK_SET); // Set the file position to the specified position
-        					size_t elements_read = fread(&G_sysValue, sizeof(double complex), 1, G_new_import); // Read the matrix data from the binary file into the struct
-				
+        					//size_t elements_read = fread(&G_sysValue, sizeof(double complex), 1, G_new_import); // Read the matrix data from the binary file into the struct
+							fread(&G_sysValue, sizeof(double complex), 1, G_new_import); // Read the matrix data from the binary file into the struct
 							double complex transpose_G_sys = G_sysValue; // full matrix using files solution
 							double complex G_sys_cross = conj(transpose_G_sys);
 							G_element+=G_sysValue*G_sys_cross; // full matrix using files solution
@@ -727,7 +730,7 @@ int main()
 				printf("Failure with memory after spectral analysis when spectral power dissipated is defined. ");
 				return 1;
 			}
-			double sum_Q = 0.;
+			//double sum_Q = 0.;
 			double Q_bulk_1=0;
 			double Q_bulk_2=0;
 		
@@ -901,7 +904,8 @@ int main()
 	time_t simulation_time;
 	time(&simulation_time);
 				
-
+	/*
+	// The memory usage output is commented 
 	total_memory = get_mem_usage(); // measure post-processing memory usage
 	{
 		FILE * memory; //append
@@ -918,6 +922,7 @@ int main()
 		}
 		fclose(memory);
 	}
+	*/
 	 
 	printf("\nThe results can be accessed in the folder:\n %s\n",results_folder);
 	//free(Total_conductance);
