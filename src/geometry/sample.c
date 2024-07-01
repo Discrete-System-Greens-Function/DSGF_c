@@ -24,7 +24,7 @@ void populate_R_sample(int tot_sub_vol, int subvol_per_object, double origin1[],
 			//R[i][1] = shape_file2[i].y*pow(delta_V_2,1./3) + origin2[1]; 
 			//R[i][2] = shape_file2[i].z*pow(delta_V_2,1./3) + origin2[2]; 
 		}
-		printf("%e, %e, %e \n",R[i][0],R[i][1],R[i][2]);
+		//printf("%e, %e, %e \n",R[i][0],R[i][1],R[i][2]);
 
 	}   
 
@@ -98,6 +98,7 @@ void populate_R_sample_center_of_mass(int tot_sub_vol, int subvol_per_object, do
 			}
 		}	
 		//printf("\n");
+		//printf("R[%d]: %e, %e, %e \n",i, R[i][0],R[i][1],R[i][2]);
 	}   
 
 }
@@ -117,6 +118,7 @@ void set_up_sample_geometry(double pi, int tot_sub_vol, int subvol_per_object, i
 	if (strcmp(geometry_2, "cube") == 0){ vol2 = pow(radius2, 3); } // calls function that calculates the volume for the sphere 1
 	*delta_V_1 = vol1/subvol_per_object; // defines the subvolumes' volume for sphere 1
 	*delta_V_2 = vol2/N_subvolumes_per_object_2; // defines the subvolumes' volume for sphere 2
+	//printf("DV1 =  %e, DV2 = %e \n",*delta_V_1,*delta_V_2);
 
 	//subvol shape_file1[subvol_per_object];
 	//subvol shape_file2[N_subvolumes_per_object_2];

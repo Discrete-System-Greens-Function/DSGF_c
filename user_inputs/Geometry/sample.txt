@@ -4,4 +4,4 @@ geometry_2 = sphere
 L_char_2 = 50.e-9
 d = 10.e-9
 T_A = 400.
-T_B = 30.
+T_B = 300.

@@ -207,6 +207,14 @@ void populate_subvol_struct(char file_name[], int array_length, subvol shape[arr
 	
 	int i_import = 0;
 	FILE *import_discretization = fopen(file_name, "r");
+	if (import_discretization == NULL)
+	{
+    	printf("Error with spatial discretization.\n");
+	}
+	else
+	{
+    	printf("Spatial discretization imported, ");
+	}
 	while (3 == fscanf(import_discretization, "%e %e %e", &shape[i_import].x, &shape[i_import].y, &shape[i_import].z))
 	{   
 		i_import++;
@@ -227,6 +235,14 @@ void populate_subvol_struct_object_2(char file_name[], int array_length, subvol 
 
 void populate_subvol_delta_v(char file_name[], int array_length, double delta_V_vector[array_length]){
 	FILE *import_delta_v = fopen(file_name, "r");
+	if (import_delta_v == NULL)
+	{
+    	printf("Error with delta_v.\n");
+	}
+	else
+	{
+    	printf("delta_v imported. \n");
+	}
 	for (int i = 0; i < array_length; i++) {
    		fscanf(import_delta_v,"%le", &delta_V_vector[i]);
  	}

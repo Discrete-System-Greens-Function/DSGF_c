@@ -186,15 +186,67 @@ int main()
 	//	free(R);
 	
 	FILE *spectral_discretization_file; // Import spectral discretization
-		char dirPathFileNameSpectraSplit[260];
-
-		sprintf(dirPathFileNameSpectraSplit, "library/spectral_discretizations/%s", frequency_set);
-		spectral_discretization_file = fopen(dirPathFileNameSpectraSplit, "r");
+	char dirPathFileNameSpectraSplit[260];
+	sprintf(dirPathFileNameSpectraSplit, "library/spectral_discretizations/%s", frequency_set);
+	spectral_discretization_file = fopen(dirPathFileNameSpectraSplit, "r");
+	if (spectral_discretization_file == NULL)
+	{
+    	printf("Error with spectral discretization: '%s'.\n", strerror(errno));
+	}
+	else
+	{
+    	printf("Spectral discretization imported. \n");
+	}
+	for (int i = 0; i < const_N_omega; i++)
+	{
+		fscanf(spectral_discretization_file, "%lf", &omega[i]); //
+		//printf("%lf ; ", omega[i]);
+	}
+	fclose(spectral_discretization_file);
+	/*
+	double(*real_epsilon) = malloc(sizeof *real_epsilon * const_N_omega);
+	double(*imag_epsilon) = malloc(sizeof *imag_epsilon * const_N_omega);
+	if (strcmp(material, "MgF2") == 0)
+	{
+		FILE *real_dielectric_function_file; // Import spectral discretization
+		char dirPathFileNameMaterial[260];
+		sprintf(dirPathFileNameMaterial, "library/materials/%s", real_epsilon_set);
+		real_dielectric_function_file = fopen(dirPathFileNameMaterial, "r");
+		if (real_dielectric_function_file == NULL)
+		{
+    		printf("Error with material: '%s'.\n", strerror(errno));
+		}
+		else
+		{
+    			printf("Material imported \n");
+		}
 		for (int i = 0; i < const_N_omega; i++)
 		{
-			fscanf(spectral_discretization_file, "%lf", &omega[i]); //
+			fscanf(real_dielectric_function_file, "%lf", &real_epsilon[i]); //
+			// printf("%lf ; ", omega[i]);
 		}
-		fclose(spectral_discretization_file);
+		fclose(real_dielectric_function_file);
+
+		FILE *imag_dielectric_function_file; // Import spectral discretization
+		char dirPathFileNameMaterial[260];
+		sprintf(dirPathFileNameMaterial, "library/materials/%s", imag_epsilon_set);
+		imag_dielectric_function_file = fopen(dirPathFileNameMaterial, "r");
+		if (imag_dielectric_function_file == NULL)
+		{
+    		printf("Error with material: '%s'.\n", strerror(errno));
+		}
+		else
+		{
+    			printf("Material imported \n");
+		}
+		for (int i = 0; i < const_N_omega; i++)
+		{
+			fscanf(imag_dielectric_function_file, "%lf", &imag_epsilon[i]); //
+		}
+		fclose(imag_dielectric_function_file);
+	}
+	
+	*/
 	
 	// #################################################################
 	// ################## FREQUENCY RANGE ANALYSIS #####################
@@ -262,6 +314,12 @@ int main()
 		{
 			epsilon = calculate_epsilon_SiN(omega_value, pi);
 		}
+		/*
+		else if (strcmp(material, "MgF2") == 0)
+		{
+			epsilon = &real_epsilon[i_omega] + &imag_epsilon[i_omega]*I;
+		}
+		*/
 
 		double k_0 = k_0_function(omega_value, epsilon_0, mu_0); // wave vector in free space
 
@@ -646,14 +704,25 @@ int main()
 		// save spectral transmissivity
 		if (save_spectral_transmissivity == 'Y')
 		{
+			/*
 			char spectral_transmissivity_folder[100];
 			sprintf(spectral_transmissivity_folder, "%s/spectral_transmissivity", results_folder);
 			create_folder(spectral_transmissivity_folder);
 			FILE *spectral_transmissivity;
 			char dirPathSpectral_trans_FileName[260];
 			sprintf(dirPathSpectral_trans_FileName, "%s/%d.csv", spectral_transmissivity_folder, i_omega + 1); // path where the file is stored
-			spectral_transmissivity = fopen(dirPathSpectral_trans_FileName, "w");
-			fprintf(spectral_transmissivity, "%e", sum_trans_coeff);
+			*/
+
+			FILE *spectral_transmissivity;
+			char dirPathSpectral_trans_FileName[260];
+			sprintf(dirPathSpectral_trans_FileName, "%s/Trans_w_AB.csv", results_folder); // path where the file is stored
+			
+			if (i_omega == 0)
+				spectral_transmissivity = fopen(dirPathSpectral_trans_FileName, "w"); // write
+			else
+				spectral_transmissivity = fopen(dirPathSpectral_trans_FileName, "a"); // append
+			//spectral_transmissivity = fopen(dirPathSpectral_trans_FileName, "w");
+			fprintf(spectral_transmissivity, "%e\n", sum_trans_coeff);
 			fclose(spectral_transmissivity);
 		}
 
