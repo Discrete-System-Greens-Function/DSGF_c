@@ -15,4 +15,4 @@ save_power_dissipated_total_subvolumes = Y
 save_power_dissipated_spectral_bulk = Y
 save_power_dissipated_total_bulk = Y
 save_power_density_total_subvolumes = Y
-save_spectral_transmissivity = Y
+save_spectral_transmissivity = N
