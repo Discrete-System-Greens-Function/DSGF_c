@@ -20,8 +20,8 @@ char uniform_spectra;
 // %%%%%%  Material, geometry and temperature %%%%%%%%%%%
 
 double epsilon_ref; // dielectric function of the background reference medium
-char material[100]; // Material options: SiC or SiO2
-char geometry[100]; //Geometry options: sphere, thin-films or user-defined
+char material[20]; // Material options: SiC or SiO2
+char geometry[20]; //Geometry options: sphere, thin-films or user-defined
 char frequency_set[260];
 //char discretization_thin_film[260]; //discretization_thin_film = 2_thin_films_Lx200nm_Ly1um_Lz200nm_d150nm_N640_discretization
 //char file_name_ud[]; // user_defined
@@ -32,8 +32,8 @@ double radius; // Perfect same-sized spheres
 
 //double radius1; // Perfect same-sized spheres
 //double radius2; // Perfect same-sized spheres
-char geometry_1[100]; //Geometry options: sphere, thin-films or user-defined
-char geometry_2[100]; //Geometry options: sphere, thin-films or user-defined
+char geometry_1[20]; //Geometry options: sphere, thin-films or user-defined
+char geometry_2[20]; //Geometry options: sphere, thin-films or user-defined
 
 // Dimensions for membranes/thin films 
 double Lx; // Depth: 200.e-9
