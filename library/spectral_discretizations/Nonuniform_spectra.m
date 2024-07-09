@@ -13,24 +13,56 @@ epsilon_0 = 8.8542e-12;     % Permittivity of free space [F/m]
 mu_0 = (4*pi)*(10^-7);      % Permeability of free space [H/m]
 c_0 = 299792458;            % Speed of light in vacuum [m/s]
 
-%%%%%%%%%%%%%%%%%%%%%%%
-% Select the material %
-%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Uncomment to select the material %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------- SiC in terms of angular frequency for two membranes of SiC -----------------  
+material = 'SiC';   
+omega_i = 1.4e14; %original: 1.4e14
+N_ref_1 = 5; %original: 5
+omega_ref_1 = 1.43e14; %original: 1.43e14
+N_ref_2 = 60; %original: 60
+omega_ref_2 = 1.55e14 ; %original: 1.55e14
+N_ref_3 = 25; %original: 25
+omega_ref_3 = 1.76e14 ; %original: 1.76e14
+N_ref_4 = 5; %original: 5
+omega_ref_4 = 1.8e14 ; %original: 1.8e14 
+N_ref_5 = 5; %original:  5
+omega_ref_5 = 1.84e14; %original: 1.84e14 
+N_ref_6 = 5; %original: 5
+omega_f = 1.9e14 ; %original: 1.9e14
+split = 'N'; 
+
+N_ref_total = N_ref_1+N_ref_2+N_ref_3+N_ref_4+N_ref_5+N_ref_6;
+omega_range_ref_1 = linspace(omega_i, omega_ref_1, N_ref_1);
+omega_range_ref_2 = linspace(omega_ref_1, omega_ref_2, N_ref_2);
+omega_range_ref_3 = linspace(omega_ref_2, omega_ref_3, N_ref_3);
+omega_range_ref_4 = linspace(omega_ref_3, omega_ref_4, N_ref_4);
+omega_range_ref_5 = linspace(omega_ref_4, omega_ref_5, N_ref_5);
+omega_range_ref_6 = linspace(omega_ref_5, omega_f, N_ref_6);
+omega = [omega_range_ref_1,omega_range_ref_2,omega_range_ref_3,omega_range_ref_4,omega_range_ref_5,omega_range_ref_6];
+omega = unique (omega');
+N = length(omega);
+%----------- end SiC in terms of angular frequency for two membranes of SiC  ----------------- 
+
 %{
+%----------- SiO2 in terms of angular frequency  -----------------
 material = 'SiO2';
-omega_i = 7.5e13;
-N_ref_1 = 20;
-omega_ref_1 = 1.e14;
-N_ref_2 = 20; 
-omega_ref_2 = 1.5e14 ;
-N_ref_3 = 20; 
-omega_ref_3 = 2.e14 ;
-N_ref_4 = 30; 
-omega_ref_4 = 2.5e14 ;
-N_ref_5 = 10; 
-omega_ref_5 = 3e14;
-N_ref_6 = 5;
-omega_f = 3.5e14 ;
+omega_i = 7.5e13; %original: 7.5e13
+N_ref_1 = 20; %original: 20
+omega_ref_1 = 1.e14; %original: 1.e14
+N_ref_2 = 20; %original: 20
+omega_ref_2 = 1.5e14 ; %original: 1.5e14
+N_ref_3 = 20; %original: 20
+omega_ref_3 = 2.e14 ; %original: 2.e14
+N_ref_4 = 30; %original: 30
+omega_ref_4 = 2.5e14 ; %original: 2.5e14
+N_ref_5 = 10; %original: 10
+omega_ref_5 = 3e14; %original: 3e14
+N_ref_6 = 5; %original: 5
+omega_f = 3.5e14 ; %original: 3.5e14
+split = 'N';  
 N_ref_total = N_ref_1+N_ref_2+N_ref_3+N_ref_4+N_ref_5+N_ref_6;
 omega_range_ref_1 = linspace(omega_i, omega_ref_1, N_ref_1);
 omega_range_ref_2 = linspace(omega_ref_1, omega_ref_2, N_ref_2);
@@ -41,76 +73,25 @@ omega_range_ref_6 = linspace(omega_ref_5, omega_f, N_ref_6);
 omega = [omega_range_ref_1,omega_range_ref_2,omega_range_ref_3,omega_range_ref_4,omega_range_ref_5,omega_range_ref_6];
 omega = unique (omega');
 N = length(omega);
-%}
-
-
-material = 'SiC';  % version from December 19,2023
-omega_i = 1.4e14;
-N_ref_1 = 5;
-omega_ref_1 = 1.43e14; %1.44
-N_ref_2 = 60; 
-omega_ref_2 = 1.55e14 ; %1.7
-N_ref_3 = 25;%15, 10; 
-omega_ref_3 = 1.76e14 ;
-N_ref_4 = 5;%10; 
-omega_ref_4 = 1.8e14 ;
-N_ref_5 = 5;%10; 
-omega_ref_5 = 1.84e14;
-N_ref_6 = 5;%10;
-omega_f = 1.9e14 ;
-N_ref_total = N_ref_1+N_ref_2+N_ref_3+N_ref_4+N_ref_5+N_ref_6;
-omega_range_ref_1 = linspace(omega_i, omega_ref_1, N_ref_1);
-omega_range_ref_2 = linspace(omega_ref_1, omega_ref_2, N_ref_2);
-omega_range_ref_3 = linspace(omega_ref_2, omega_ref_3, N_ref_3);
-omega_range_ref_4 = linspace(omega_ref_3, omega_ref_4, N_ref_4);
-omega_range_ref_5 = linspace(omega_ref_4, omega_ref_5, N_ref_5);
-omega_range_ref_6 = linspace(omega_ref_5, omega_f, N_ref_6);
-omega = [omega_range_ref_1,omega_range_ref_2,omega_range_ref_3,omega_range_ref_4,omega_range_ref_5,omega_range_ref_6];
-omega = unique (omega');
-N = length(omega);
-
-
-%{
-material = 'SiC'; % old version
-omega_i = 1.4e14;
-N_ref_1 = 5;
-omega_ref_1 = 1.47e14;
-N_ref_2 = 80; 
-omega_ref_2 = 1.55e14 ;
-N_ref_3 = 5; 
-omega_ref_3 = 1.76e14 ;
-N_ref_4 = 5; 
-omega_ref_4 = 1.8e14 ;
-N_ref_5 = 5; 
-omega_ref_5 = 1.84e14;
-N_ref_6 = 5;
-omega_f = 1.9e14 ;
-N_ref_total = N_ref_1+N_ref_2+N_ref_3+N_ref_4+N_ref_5+N_ref_6;
-omega_range_ref_1 = linspace(omega_i, omega_ref_1, N_ref_1);
-omega_range_ref_2 = linspace(omega_ref_1, omega_ref_2, N_ref_2);
-omega_range_ref_3 = linspace(omega_ref_2, omega_ref_3, N_ref_3);
-omega_range_ref_4 = linspace(omega_ref_3, omega_ref_4, N_ref_4);
-omega_range_ref_5 = linspace(omega_ref_4, omega_ref_5, N_ref_5);
-omega_range_ref_6 = linspace(omega_ref_5, omega_f, N_ref_6);
-omega = [omega_range_ref_1,omega_range_ref_2,omega_range_ref_3,omega_range_ref_4,omega_range_ref_5,omega_range_ref_6];
-omega = unique (omega');
-N = length(omega);
+%----------- end SiO2 in terms of angular frequency  -----------------
 %}
 
 %{
+%----------- Si3N4 in terms of angular frequency  -----------------
 material = 'Si3N4';
 % May 2024, 70 frequencies and range until 400 Trad/s
-omega_i = 0.2e14;
-N_ref_1 = 5;
-omega_ref_1 = 0.5e14;
-N_ref_2 = 12; 
-omega_ref_2 = 1.3e14 ;
-N_ref_3 = 25; 
-omega_ref_3 = 1.7e14;
-N_ref_4 = 25;
-omega_ref_4 = 2.3e14;
-N_ref_5 = 7;
-omega_f = 4e14 ;
+omega_i = 0.2e14; %original: 0.2e14
+N_ref_1 = 5; %original: 5
+omega_ref_1 = 0.5e14; %original: 0.5e14
+N_ref_2 = 12; %original: 12
+omega_ref_2 = 1.3e14 ; %original: 1.3e14
+N_ref_3 = 25; %original: 25
+omega_ref_3 = 1.7e14; %original: 1.7e14
+N_ref_4 = 25; %original: 25
+omega_ref_4 = 2.3e14; %original: 2.3e14
+N_ref_5 = 7; %original: 7
+omega_f = 4e14 ; %original: 4e14
+split = 'N'; 
 N_ref_total = N_ref_1+N_ref_2+N_ref_3+N_ref_4+N_ref_5;
 omega_range_ref_1 = linspace(omega_i, omega_ref_1, N_ref_1);
 omega_range_ref_2 = linspace(omega_ref_1, omega_ref_2, N_ref_2);
@@ -120,24 +101,26 @@ omega_range_ref_5 = linspace(omega_ref_4, omega_f, N_ref_5);
 omega = [omega_range_ref_1,omega_range_ref_2,omega_range_ref_3,omega_range_ref_4,omega_range_ref_5];
 omega = unique (omega');
 N = length(omega);
+%----------- end Si3N4 in terms of angular frequency  -----------------
 %}
 
 %{
+%----------- Si3N4 in terms of angular frequency with 100 frequencies and range until 300 Trad/s -----------------
 material = 'Si3N4';
-% 100 frequencies and range until 300 Trad/s.
-omega_i = 0.2e14;
-N_ref_1 = 5;
-omega_ref_1 = 0.5e14;
-N_ref_2 = 20; 
-omega_ref_2 = 1.e14 ;
-N_ref_3 = 20; 
-omega_ref_3 = 1.5e14 ;
-N_ref_4 = 35; 
-omega_ref_4 = 2.e14 ;
-N_ref_5 = 20; 
-omega_ref_5 = 2.5e14;
-N_ref_6 = 5;
-omega_f = 3.e14 ;
+omega_i = 0.2e14; %original: 0.2e14
+N_ref_1 = 5; %original: 5
+omega_ref_1 = 0.5e14; %original: 0.5e14
+N_ref_2 = 20; %original: 20
+omega_ref_2 = 1.e14 ; %original: 1.e14
+N_ref_3 = 20; %original: 20
+omega_ref_3 = 1.5e14 ; %original: 1.5e14
+N_ref_4 = 35; %original: 35
+omega_ref_4 = 2.e14 ; %original: 2e14
+N_ref_5 = 20; %original: 20
+omega_ref_5 = 2.5e14; %original: 2.5e14
+N_ref_6 = 5; %original: 5
+omega_f = 3.e14 ; %original: 3e14
+split = 'N'; 
 N_ref_total = N_ref_1+N_ref_2+N_ref_3+N_ref_4+N_ref_5+N_ref_6;
 omega_range_ref_1 = linspace(omega_i, omega_ref_1, N_ref_1);
 omega_range_ref_2 = linspace(omega_ref_1, omega_ref_2, N_ref_2);
@@ -148,6 +131,37 @@ omega_range_ref_6 = linspace(omega_ref_5, omega_f, N_ref_6);
 omega = [omega_range_ref_1,omega_range_ref_2,omega_range_ref_3,omega_range_ref_4,omega_range_ref_5,omega_range_ref_6];
 omega = unique (omega');
 N = length(omega);
+%----------- end Si3N4 in terms of angular frequency with 100 frequencies and range until 300 Trad/s -----------------
+%}
+
+%{
+%----------- SiC in terms of angular frequency old version ----------------- 
+material = 'SiC'; 
+omega_i = 1.4e14; %original: 1.4e14
+N_ref_1 = 5; %original: 5
+omega_ref_1 = 1.47e14; %original: 1.47e14
+N_ref_2 = 80; %original: 80
+omega_ref_2 = 1.55e14 ; %original: 1.55e14
+N_ref_3 = 5; %original: 5
+omega_ref_3 = 1.76e14 ; %original: 1.76e14
+N_ref_4 = 5; %original: 5
+omega_ref_4 = 1.8e14 ; %original: 1.8e14
+N_ref_5 = 5; %original: 5
+omega_ref_5 = 1.84e14; %original: 1.84e14
+N_ref_6 = 5; %original: 5
+omega_f = 1.9e14 ; %original: 1.9e14
+split = 'N'; 
+N_ref_total = N_ref_1+N_ref_2+N_ref_3+N_ref_4+N_ref_5+N_ref_6;
+omega_range_ref_1 = linspace(omega_i, omega_ref_1, N_ref_1);
+omega_range_ref_2 = linspace(omega_ref_1, omega_ref_2, N_ref_2);
+omega_range_ref_3 = linspace(omega_ref_2, omega_ref_3, N_ref_3);
+omega_range_ref_4 = linspace(omega_ref_3, omega_ref_4, N_ref_4);
+omega_range_ref_5 = linspace(omega_ref_4, omega_ref_5, N_ref_5);
+omega_range_ref_6 = linspace(omega_ref_5, omega_f, N_ref_6);
+omega = [omega_range_ref_1,omega_range_ref_2,omega_range_ref_3,omega_range_ref_4,omega_range_ref_5,omega_range_ref_6];
+omega = unique (omega');
+N = length(omega);
+%----------- SiC in terms of angular frequency old version -----------------
 %}
 
 %%%%%%%%%%%%%%%%%%%%%%%
