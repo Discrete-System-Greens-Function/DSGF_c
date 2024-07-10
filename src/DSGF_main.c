@@ -809,18 +809,15 @@ int main()
 				printf("Failure with memory after spectral analysis when spectral power dissipated is defined. ");
 				return 1;
 			}
-			char token_omega[1024];
-			//const char delimiter[] = ",";
 			FILE *power_dissipated_spectral; // append
 			char dirPathPower_dissipated_spectral_subvolumes_FileName[260];
 			sprintf(dirPathPower_dissipated_spectral_subvolumes_FileName, "%s/Q_w_subvol.csv", results_folder); // path where the file is stored
 			power_dissipated_spectral = fopen(dirPathPower_dissipated_spectral_subvolumes_FileName, "r"); // read
-			fgets(token_omega, 1024, power_dissipated_spectral); //ignore first row
+			fscanf(power_dissipated_spectral, "%*[^\n]");  // Read and discard a line
 			for (int i_omega = 0; i_omega < const_N_omega; i_omega++)
 			{
 				for (int i_subvol = 0; i_subvol < tot_sub_vol; i_subvol++)
 				{
-					//token_omega = strtok(NULL, delimiter);
 					fscanf(power_dissipated_spectral,"%lf ,", &Q_subvol[i_subvol][i_omega]);
 					//printf("w = %d, i = %d, Q = %lf\n",i_omega, i_subvol, Q_subvol[i_subvol][i_omega]);
 				}
