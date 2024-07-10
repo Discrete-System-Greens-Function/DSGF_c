@@ -17,7 +17,7 @@ c_0 = 299792458;            % Speed of light in vacuum [m/s]
 % Uncomment to select the material %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%----------- SiC in terms of angular frequency for two membranes of SiC -----------------  
+%----------- SiC in terms of angular frequency for two membranes -----------------  
 material = 'SiC';   
 omega_i = 1.4e14; %original: 1.4e14
 N_ref_1 = 5; %original: 5
@@ -44,7 +44,7 @@ omega_range_ref_6 = linspace(omega_ref_5, omega_f, N_ref_6);
 omega = [omega_range_ref_1,omega_range_ref_2,omega_range_ref_3,omega_range_ref_4,omega_range_ref_5,omega_range_ref_6];
 omega = unique (omega');
 N = length(omega);
-%----------- end SiC in terms of angular frequency for two membranes of SiC  ----------------- 
+%----------- end SiC in terms of angular frequency for two membranes ----------------- 
 
 %{
 %----------- SiO2 in terms of angular frequency  -----------------
