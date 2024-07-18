@@ -1,0 +1,2 @@
+real_part = MgF2_78_nonuniform_56_333_Trad_s_real.csv
+imag_part = MgF2_78_nonuniform_56_333_Trad_s_imag.csv

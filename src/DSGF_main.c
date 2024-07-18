@@ -203,22 +203,25 @@ int main()
 		//printf("%lf ; ", omega[i]);
 	}
 	fclose(spectral_discretization_file);
-	/*
+	
+
+
 	double(*real_epsilon) = malloc(sizeof *real_epsilon * const_N_omega);
 	double(*imag_epsilon) = malloc(sizeof *imag_epsilon * const_N_omega);
-	if (strcmp(material, "MgF2") == 0)
+	if (strcmp(material, "user_defined") == 0) //(strcmp(material, "MgF2") == 0)
 	{
+		read_material(epsilon_real_part, epsilon_imag_part);
 		FILE *real_dielectric_function_file; // Import spectral discretization
-		char dirPathFileNameMaterial[260];
-		sprintf(dirPathFileNameMaterial, "library/materials/%s", real_epsilon_set);
-		real_dielectric_function_file = fopen(dirPathFileNameMaterial, "r");
+		char dirPathFileNameMaterialReal[260];
+		sprintf(dirPathFileNameMaterialReal, "library/materials/%s", epsilon_real_part);
+		real_dielectric_function_file = fopen(dirPathFileNameMaterialReal, "r");
 		if (real_dielectric_function_file == NULL)
 		{
     		printf("Error with material: '%s'.\n", strerror(errno));
 		}
 		else
 		{
-    			printf("Material imported \n");
+    			printf("Real part of dielectric function imported \n");
 		}
 		for (int i = 0; i < const_N_omega; i++)
 		{
@@ -228,16 +231,16 @@ int main()
 		fclose(real_dielectric_function_file);
 
 		FILE *imag_dielectric_function_file; // Import spectral discretization
-		char dirPathFileNameMaterial[260];
-		sprintf(dirPathFileNameMaterial, "library/materials/%s", imag_epsilon_set);
-		imag_dielectric_function_file = fopen(dirPathFileNameMaterial, "r");
+		char dirPathFileNameMaterialImag[260];
+		sprintf(dirPathFileNameMaterialImag, "library/materials/%s", epsilon_imag_part);
+		imag_dielectric_function_file = fopen(dirPathFileNameMaterialImag, "r");
 		if (imag_dielectric_function_file == NULL)
 		{
     		printf("Error with material: '%s'.\n", strerror(errno));
 		}
 		else
 		{
-    			printf("Material imported \n");
+    			printf("Imaginary part of dielectric function imported \n");
 		}
 		for (int i = 0; i < const_N_omega; i++)
 		{
@@ -246,7 +249,7 @@ int main()
 		fclose(imag_dielectric_function_file);
 	}
 	
-	*/
+	
 	
 	// #################################################################
 	// ################## FREQUENCY RANGE ANALYSIS #####################
@@ -314,12 +317,12 @@ int main()
 		{
 			epsilon = calculate_epsilon_SiN(omega_value, pi);
 		}
-		/*
-		else if (strcmp(material, "MgF2") == 0)
+		
+		else if (strcmp(material, "user_defined") == 0) //if (strcmp(material, "MgF2") == 0)
 		{
-			epsilon = &real_epsilon[i_omega] + &imag_epsilon[i_omega]*I;
+			epsilon = real_epsilon[i_omega] + imag_epsilon[i_omega]*I;
 		}
-		*/
+		
 
 		double k_0 = k_0_function(omega_value, epsilon_0, mu_0); // wave vector in free space
 

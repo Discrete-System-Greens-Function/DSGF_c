@@ -15,6 +15,8 @@ void read_geometry_thin_films(double *d, double *Lx, double *Ly, double *Lz, dou
 
 void read_geometry_user_defined(double *d, char file_name_ud[], double *T1, double *T2);
 
+void read_material(char *epsilon_real_part, char *epsilon_imag_part);
+
 void read_calculation_temperatures(int N_Tcalc, double Tcalc_vector[]);
 
 void create_folder(char folder_name[]);

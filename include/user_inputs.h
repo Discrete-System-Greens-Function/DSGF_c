@@ -49,6 +49,9 @@ double T_calc; // Temperature at which conductance is calculated [K]
 //double Tcalc_vector[N_Tcalc]; // Multiple temperatures at which conductance is calculated [K]
 
 
+char epsilon_real_part[260];
+char epsilon_imag_part[260];
+
 // %%%%%%%%%%%%%%%%%%% Solution %%%%%%%%%%%%%%%%%%%%%
 
 char solution; // Solution method: D for "direct" or I for "iterative"

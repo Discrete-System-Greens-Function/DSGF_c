@@ -106,6 +106,17 @@ void read_calculation_temperatures(int N_Tcalc, double Tcalc_vector[]){
 	fclose(import_T_calc);
 }
 
+void read_material(char *epsilon_real_part, char *epsilon_imag_part){
+
+	char dirPathMaterialUserDefinedInputs[260] = "user_inputs/material_user_defined.txt";
+	FILE *import_user_defined_inputs = fopen(dirPathMaterialUserDefinedInputs, "r"); 
+	char buffer[256]; 
+	fscanf(import_user_defined_inputs,"%s = %s\n",buffer, epsilon_real_part);
+	fscanf(import_user_defined_inputs,"%s = %s\n",buffer, epsilon_imag_part);
+	fclose(import_user_defined_inputs);
+	
+}
+
 void create_folder(char folder_name[]){
 
 	struct stat st = {0};
